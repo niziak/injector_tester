@@ -7,7 +7,9 @@
 //		LCD_JustWriteCommand - zapisuje rozkaz do sterownika wyœwietlacza (bezzw³ocznie)
 //		LCD_JustWriteData	 - zapisuje dane do sterownika wyœwietlacza (bezzw³ocznie) 
 //=================================================================================================
-#define 	  LCD_LINES				4
+#include "HD44780.h"
+
+#define 	  LCD_LINES				2
 #define 	  LCD_CHARSPERLINE		16
 
 unsigned char LCDBuffer[LCD_LINES][LCD_CHARSPERLINE];
@@ -48,17 +50,17 @@ for(j = 0; j < LCD_LINES; j++)
 //=================================================================================================
 // Nale¿y wywo³ywaæ cykliczne w pêtli g³ównej
 //=================================================================================================
-int LCDUpdateTask(void)
+void LCDUpdateTask(void)
 {
-if(LCDNeedUpdate[LCDLineIndex])
-  {
-  if(LCD_NotBusy())
-    {
+   if(LCDNeedUpdate[LCDLineIndex])
+   {
+       if(LCD_NotBusy())
+       {
 	if(LCDCharIndex[LCDLineIndex] == -1)
 	  {
 	  LCD_JustWriteCommand(0x80 | LCDLineAddress[LCDLineIndex]);
 	  LCDCharIndex[LCDLineIndex]++;
-	  return 0;
+	  return;
 	  } 
 	LCD_JustWriteData(LCDBuffer[LCDLineIndex][LCDCharIndex[LCDLineIndex]++]);
 	if(LCDCharIndex[LCDLineIndex] == (LCD_CHARSPERLINE - 1))
@@ -67,7 +69,7 @@ if(LCDNeedUpdate[LCDLineIndex])
 	  LCDNeedUpdate[LCDLineIndex] 	= 0;
 	  }
 	}
-	return 0;
+	return;
 	}
 	LCDLineIndex++;
 	if(LCDLineIndex == LCD_LINES)

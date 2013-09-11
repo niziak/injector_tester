@@ -20,37 +20,37 @@
 #define LCD_RS_DIR		DDRD
 #define LCD_RS_PORT 	PORTD
 #define LCD_RS_PIN		PIND
-#define LCD_RS			(1 << PD0)
+#define LCD_RS			(1 << PD2)
 
-#define LCD_RW_DIR		DDRD
-#define LCD_RW_PORT		PORTD
-#define LCD_RW_PIN		PIND
-#define LCD_RW			(1 << PD1)
+#define LCD_RW_DIR		DDRC
+#define LCD_RW_PORT		PORTC
+#define LCD_RW_PIN		PINC
+#define LCD_RW			(1 << PC5)
 
-#define LCD_E_DIR		DDRD
-#define LCD_E_PORT		PORTD
-#define LCD_E_PIN		PIND
-#define LCD_E			(1 << PB2)
+#define LCD_E_DIR		DDRC
+#define LCD_E_PORT		PORTC
+#define LCD_E_PIN		PINC
+#define LCD_E			(1 << PC4)
 
-#define LCD_DB4_DIR		DDRB
-#define LCD_DB4_PORT	PORTB
-#define LCD_DB4_PIN		PINB
-#define LCD_DB4			(1 << PB0)
+#define LCD_DB4_DIR		DDRC
+#define LCD_DB4_PORT	PORTC
+#define LCD_DB4_PIN		PINC
+#define LCD_DB4			(1 << PC3)
 
-#define LCD_DB5_DIR		DDRB
-#define LCD_DB5_PORT	PORTB
-#define LCD_DB5_PIN		PINB
-#define LCD_DB5			(1 << PB1)
+#define LCD_DB5_DIR		DDRC
+#define LCD_DB5_PORT	PORTC
+#define LCD_DB5_PIN		PINC
+#define LCD_DB5			(1 << PC2)
 
-#define LCD_DB6_DIR		DDRB
-#define LCD_DB6_PORT	PORTB
-#define LCD_DB6_PIN		PINB
-#define LCD_DB6			(1 << PB2)
+#define LCD_DB6_DIR		DDRC
+#define LCD_DB6_PORT	PORTC
+#define LCD_DB6_PIN		PINC
+#define LCD_DB6			(1 << PC1)
 
-#define LCD_DB7_DIR		DDRB
-#define LCD_DB7_PORT	PORTB
-#define LCD_DB7_PIN		PINB
-#define LCD_DB7			(1 << PB3)
+#define LCD_DB7_DIR		DDRC
+#define LCD_DB7_PORT	PORTC
+#define LCD_DB7_PIN		PINC
+#define LCD_DB7			(1 << PC0)
 
 //-------------------------------------------------------------------------------------------------
 //
@@ -100,15 +100,25 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-void LCD_WriteCommand(unsigned char);
-unsigned char LCD_ReadStatus(void);
-void LCD_WriteData(unsigned char);
-unsigned char LCD_ReadData(void);
-void LCD_WriteText(char *);
-void LCD_GoTo(unsigned char, unsigned char);
-void LCD_Clear(void);
-void LCD_Home(void);
-void LCD_Initalize(void);
+extern void LCD_WriteCommand(unsigned char);
+extern unsigned char LCD_ReadStatus(void);
+extern void LCD_WriteData(unsigned char);
+extern unsigned char LCD_ReadData(void);
+extern void LCD_WriteText(char *);
+extern void LCD_GoTo(unsigned char, unsigned char);
+extern void LCD_Clear(void);
+extern void LCD_Home(void);
+extern void LCD_Initalize(void);
+
+// internals:
+extern unsigned char LCD_NotBusy(void);
+extern void LCD_JustWriteCommand(unsigned char commandToWrite);
+extern void LCD_JustWriteData(unsigned char dataToWrite);
+
+extern void LCDUpdateTask(void);
+extern int LCDWriteToBuffer(unsigned char x, unsigned char y, char * str);
+extern void LCDClearBuffer(void);
+
 
 //-------------------------------------------------------------------------------------------------
 //

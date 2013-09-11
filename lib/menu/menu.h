@@ -1,0 +1,96 @@
+/*
+ * menu.h
+ *
+ *  Created on: Sep 5, 2013
+ *      Author: nizinski_w
+ */
+
+#ifndef MENU_H_
+#define MENU_H_
+
+#include <config.h>
+#include <lib/menu/menu_config.h>
+#include <types.h>
+#include <avr/pgmspace.h>
+#include <lib/menu/events.h>
+
+typedef enum
+{
+	MID_INVALID,
+	MID_SETTINGS,
+	MID_1W_ZASOBNIK,
+	MID_1W_KRAN,
+} MENU_ITEM_ID_DEF;
+
+typedef enum
+{
+	LVL_UNDEF,
+	LVL0,
+	LVL1,
+	LVL2,
+	LVL3
+} MENU_LEVEL_ID_DEF;
+
+typedef enum
+{
+	UNDEF,
+	MENU_FN_CHILD_MENU,
+
+
+	MENU_FN_REBOOT,
+	MENU_FN_SET_1W_ZASOBNIK,
+	MENU_FN_SET_1W_KRAN,
+
+} MENU_FN_ID_DEF;
+
+typedef enum
+{
+	MENU_CONFIRM_UNDEF,
+	MENU_CONFIRM_ASK,
+	MENU_CONFIRM_NOASK,
+} MENU_CONFIRM_DEF;
+
+typedef struct
+{
+	MENU_LEVEL_ID_DEF		eLevel;
+	MENU_ITEM_ID_DEF		eMID;
+	PGM_P					pcLabel;
+	MENU_FN_ID_DEF			eMenuFnId;
+	MENU_CONFIRM_DEF    	eConfirmation;
+} MENU_ITEM_DEF;
+
+
+
+#define NUMBER_OF_MENU_ITEMS		10
+extern MENU_ITEM_DEF				atdMenuItems[NUMBER_OF_MENU_ITEMS];
+//#define NUMBER_OF_MENU_ITEMS		(sizeof(atdMenuItems)/sizeof(atdMenuItems[0]))
+
+typedef struct
+{
+    BOOL    bMenuActive;
+    UCHAR   ucCurrentItem;      ///< currenlty selected menu item (indexed from 0). Can be used as index for atdMenuItems[]
+    BOOL    bEndMarkerSelected;
+
+    BOOL    bConfirmationScreenActive;
+    BOOL    bConfirmationStateIsNo;    ///<    From YES/NO choice, NO is currently selected
+} MENU_DEF;
+
+
+#define PTDMENU         (&(tdMenu))
+#define PCURRENT_ITEM   (&(atdMenuItems[PTDMENU->ucCurrentItem]))
+extern MENU_DEF tdMenu;
+
+extern void MENU_vInit(void);
+extern void MENU_HandleEvent(MENU_EVENT_DEF eMenuEvent);
+extern BOOL MENU_bIsMenuActive(void);
+extern void MENU_vShow(void);
+extern void MENU_Activate(void);
+extern void MENU_Deactivate(void);
+
+// internals:
+extern void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId);
+extern void MENU_ConfirmationScreenHandler(MENU_EVENT_DEF eMenuAction);
+extern void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent);
+extern MENU_LEVEL_ID_DEF MENU_eGetCurrentItemLevel(void);
+
+#endif /* MENU_H_ */
