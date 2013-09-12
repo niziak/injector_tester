@@ -32,9 +32,10 @@
 #define OW_in   {OW_DDR  &= ~_BV(OW_PIN);  }
 #define OW_get  ( (OW_PINS & _BV(OW_PIN)) == _BV(OW_PIN) ? 1 : 0 )
 
-#define OW_CRITICAL_ENTER
+#include <avr/interrupt.h>
+#define OW_CRITICAL_ENTER           {cli();}  //TODO
 #define OW_MICRO_DELAY(a)			_delay_us(a)
-#define OW_CRITICAL_EXIT
+#define OW_CRITICAL_EXIT            {sei();}  //TODO in some cases better to restore previous int state
 
 #define OW_GCC_OPT2
 //#define OW_GCC_OPT2 __attribute__((optimize(2)))

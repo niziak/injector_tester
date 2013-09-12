@@ -21,6 +21,26 @@
   #define OW_PRINTF(x,s...)
 #endif
 
+#if 1
+/********************/
+/* standard timings */      // write slot minimum 60us with 1us recovery
+/********************/
+  #define DA    6     /* read / write "1" pulse */            // must be released within 15us
+  #define DB    64   /* recovery to complete time slot */     //
+
+  #define DC    60   /* write "0" pulse */                   // // keep for full time slot (at least 60us)
+  #define DD    10    /* recovery to complete time slot  */
+
+  #define DE    9         /* read - sample */                 // redefined below to nothing
+  #define DF    550     /* read - recovery */
+
+  #define DG    0        /* reset - inital wait */
+  #define DH    480   /* reset - pulse */                  //-20
+  #define DI    70       /* reset - wait for presence */      //
+  #define DJ    410   /* reset - recovery */               //-20
+#endif
+
+#if 0
 /********************/
 /* standard timings */      // write slot minimum 60us with 1us recovery
 /********************/
@@ -37,6 +57,7 @@
   #define DH    480-20   /* reset - pulse */                  //-20
   #define DI    70       /* reset - wait for presence */      //
   #define DJ    410-20   /* reset - recovery */               //-20
+#endif
 
 /*********************/
 /* Overdrive timings */

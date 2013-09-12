@@ -26,7 +26,6 @@
  */
 #include <config.h>
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <avr/wdt.h>
 #include <util/delay.h>
 #include <stdio.h>
@@ -38,6 +37,13 @@
 #include <key.h>
 #include <log.h>
 #include <pulsegen.h>
+#include "timer0.h"
+#include "rtc.h"
+
+#include <lib/1wire_config.h>
+#include <lib/1wire.h>
+#include "display_status.h"
+#include <lib/nvm.h>
 
 //#include "HD44780.h"
 
@@ -52,130 +58,122 @@
 #define LED_SETUP	{   LED_DDR  |=  _BV(LED_PIN); }
 
 
-#include <lib/1wire_config.h>
-#include <lib/1wire.h>
 
 OW_NEW_DEVICE_DEF			atdNewTempSensors  [NUM_OF_TEMP_SENSORS];
 TEMP_SENSOR_PARAMS_DEF		atdKnownTempSensors[NUM_OF_TEMP_SENSORS];
 
 volatile unsigned long ulSystemTickMS = 0;
 volatile unsigned long ulSystemTickS = 0;
-volatile BOOL bBlinkState;      ///< alternating variable to control blink speed
-
-#define RESET_TIMER0_CNT    { TCNT0 = 0xFF-8; }              // set value - overflow every 8 ticks 128us*8=1024
-ISR(TIMER0_OVF_vect)
-{
-    RESET_TIMER0_CNT;
-    ulSystemTickMS++;
-    if (ulSystemTickMS % 1000 == 0)
-    {
-        ulSystemTickS++;
-    }
-
-    if (ulSystemTickMS % 250 == 0)
-    {
-        bBlinkState = (bBlinkState==0 ? 1 : 0);
-    }
-}
-
-
-
-
-void vPrintStatusScreen(void)
-{
-    char cLine1Buf[LCD_COLS+1]; // +1 for NT
-    char cLine2Buf[LCD_COLS+1];
-
-	memset (&(cLine1Buf[0]),0, sizeof(cLine1Buf));
-	memset (&(cLine2Buf[0]),0, sizeof(cLine2Buf));
-
-	OW_vWorker();
-	UCHAR a;
-	for (a=0; a<OW_ADDRESS_LEN; a++)
-		sprintf_P ( &(cLine1Buf[a*2]), PSTR("%02X"), atdNewTempSensors[0].aucROM[a]);
-
-	for (a=0; a<OW_ADDRESS_LEN; a++)
-		sprintf_P ( &(cLine2Buf[a*2]), PSTR("%02X"), atdNewTempSensors[1].aucROM[a]);
-
-
-	LCD_vHome ();
-	LCD_vPuts (&(cLine1Buf[0]));
-	LCD_vGotoXY (0,1);
-	LCD_vPuts (&(cLine2Buf[0]));
-}
+volatile BOOL bBlinkState;                  ///< alternating variable to control blink speed
+volatile UCHAR ucUIInactiveCounter;       ///< in seconds. Counts down
 
 //
-int main(void)
+void main(void) __attribute__ ((noreturn));
+void main(void)
 {
-	// init
+	// LOW level setup
 	LED_SETUP
 	LED_LOW
 
-	TIMSK |= (1<<TOIE0);    // enable timer overflow int
-	RESET_TIMER0_CNT;
-	TCCR0 = (1<<CS00) | (1<<CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick co 128us * 256  = 32ms
-	sei();
+	// LCD first to display potential error messages
+    LCD_vInit();
+    LCD_vClrScr();
+    LCD_vPuts_P("Build " __TIME__ );
+    LCD_vGotoXY(0,1);
+    LCD_vPuts_P(__DATE__);
+    _delay_ms(1000);
+    LCD_vClrScr();
 
-	wdt_enable(WDTO_2S);
+	NVM_vLoadSettings();
+
+	EventInit();
+	TIMER_vInit();
+	RTC_vInit();
+
+	//wdt_enable(WDTO_2S);
 	KEY_vInit();
-	LCD_vInit();
+
 	MENU_vInit();
-	LCD_vClrScr();
-	LCD_vPuts_P("Start\n");
-	_delay_ms(500);
-	LCD_vClrScr();
 
 	EventPost(SYS_EVENT_NONE);
 	do {
 #if (INJECTOR_TESTER_MODE)
 				vPulseGenApplication();
 #endif
-//		if (ulSystemTick % 100000 == 0)
-//		{
-//		    LOG("1w");
-//			vPrintStatusScreen();
-//			_delay_ms(500);
-//		}
 
-		if (TRUE==bEventCheck())
+		if (TRUE==bIsEventWaiting())
 		{
-			// handle menu events if menu active
-			if (TRUE==MENU_bIsMenuActive())
-			{
-			    MENU_HandleEvent(EventGet());
-			}
-			// menu not active - so activate it
-			else
-			{
-			    if (MENU_ACTION_SELECT==EventGet())
-			    {
-			        LOG ("Activate");
-			        MENU_Activate();
-			    }
-			}
-		}
+		    MENU_EVENT_DEF eEvent = EventGet();
+		    switch (eEvent)
+		    {
+		        case SYS_1WIRE_CONVERT:
+//		            LOG("1w convert");
+		            OW_vStartConversion();
+		            break;
+
+		        case SYS_1WIRE_READ:
+//		            LOG("1w read");
+		            OW_vWorker();
+		            break;
+
+		        case MENU_ACTION_NEXT:
+		        case MENU_ACTION_SELECT:
+		             ucUIInactiveCounter = UI_INACTIVE_TIMEOUT; // Reinitialize timeout conter with every keypres
+		             break;
+
+		        default:
+		            break;
+		    }
+		    if (TRUE==MENU_bIsMenuActive())
+		    {
+		        MENU_HandleEvent(eEvent);   // handle menu events if menu active
+		    }
+		    else
+		    {
+		        switch (eEvent)
+		        {
+                    case MENU_ACTION_SELECT:
+                        MENU_Activate();                // menu not active - so activate it
+                        break;
+
+                    case MENU_ACTION_NEXT:
+                        DISP_vStatusScreenNext();
+                        break;
+
+                    default:
+                        break;
+		        }
+		    }
+		} //   if (TRUE==bIsEventWaiting())
 
 		if (TRUE==MENU_bIsMenuActive())
 		{
 			MENU_vShow(); // redraw menu
 		}
+		else
+		{
+		    DISP_vPrintStatusScreen();
+		}
 
 		wdt_reset();
         // if no event pending, try to read keyboard
-		if (FALSE==bEventCheck())
-		{
-			KEY_ReadKeyboard();
-		}
+//		if (FALSE==bEventCheck())
+//		{
+//			KEY_ReadKeyboard();
+//		}
 		// if still no events, sleep a while
-		if (FALSE==bEventCheck())
+		if (FALSE==bIsEventWaiting())
 		{
 			_delay_ms(50);
 		}
+
 		LCD_vGotoXY(0,1);
-		LCD_vPrintf("%lu %d %d", ulSystemTickMS, ulSystemTickS, bBlinkState);
+		LCD_vPrintf("%lu[%d %d]",ulSystemTickS, BTN_NEXT_PRESSED, BTN_OK_PRESSED);
+		LCD_vPrintf("[%d %d]%d", ucKeyNextState, ucKeyOkState, ucKeyBlocked>0);
+
         //_delay_ms(100);
 	} while (1); //do
 
-	return 0;
+//	return 0;
 }
  

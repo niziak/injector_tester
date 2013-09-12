@@ -13,7 +13,7 @@
 void LOG (char * message)
 {
 	LCD_vClrScr();
-	LCD_vPuts_P("LOG");
+	LCD_vPuts_P("LOG:");
 	LCD_vGotoXY(0,1);
 	LCD_vPuts (message);
 	_delay_ms(300);
@@ -23,7 +23,7 @@ void LOG (char * message)
 void LOG_Reset (char * message)
 {
 	LCD_vClrScr();
-	LCD_vPuts_P("RESET");
+	LCD_vPuts_P("RESET:");
 	LCD_vGotoXY(0,1);
 	LCD_vPuts (message);
 	for (;;) wdt_reset();

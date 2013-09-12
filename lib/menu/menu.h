@@ -20,6 +20,10 @@ typedef enum
 	MID_SETTINGS,
 	MID_1W_ZASOBNIK,
 	MID_1W_KRAN,
+	MID_1W_KRAN_POKAZ,
+	MID_1W_KRAN_USTAW,
+    MID_1W_ZASOBNIK_POKAZ,
+    MID_1W_ZASOBNIK_USTAW,
 } MENU_ITEM_ID_DEF;
 
 typedef enum
@@ -38,17 +42,22 @@ typedef enum
 
 
 	MENU_FN_REBOOT,
+	MENU_FN_SHOW_1W_ZASOBNIK,
 	MENU_FN_SET_1W_ZASOBNIK,
+	MENU_FN_SHOW_1W_KRAN,
 	MENU_FN_SET_1W_KRAN,
+
+	MENU_FN_FACTORY_DEFAULT,
 
 } MENU_FN_ID_DEF;
 
 typedef enum
 {
 	MENU_CONFIRM_UNDEF,
-	MENU_CONFIRM_ASK,
-	MENU_CONFIRM_NOASK,
+	ASK,
+	NO_ASK,
 } MENU_CONFIRM_DEF;
+
 
 typedef struct
 {
@@ -59,9 +68,11 @@ typedef struct
 	MENU_CONFIRM_DEF    	eConfirmation;
 } MENU_ITEM_DEF;
 
+#define MENU_ITEM_ID_FIRST      0x00
+#define MENU_ITEM_ID_NOT_FOUND  0xFF
 
 
-#define NUMBER_OF_MENU_ITEMS		10
+#define NUMBER_OF_MENU_ITEMS		15
 extern MENU_ITEM_DEF				atdMenuItems[NUMBER_OF_MENU_ITEMS];
 //#define NUMBER_OF_MENU_ITEMS		(sizeof(atdMenuItems)/sizeof(atdMenuItems[0]))
 
@@ -92,5 +103,6 @@ extern void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId);
 extern void MENU_ConfirmationScreenHandler(MENU_EVENT_DEF eMenuAction);
 extern void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent);
 extern MENU_LEVEL_ID_DEF MENU_eGetCurrentItemLevel(void);
+extern UCHAR MENU_ucGetParentItem(UCHAR ucCurrentItem);
 
 #endif /* MENU_H_ */

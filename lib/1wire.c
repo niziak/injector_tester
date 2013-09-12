@@ -259,11 +259,14 @@ void vOWConfigDevices(void)
      OWWriteByte(DS1W_COPY_SCRATCHPAD);
    }
 }
-/*
- *
+
+
+/**
+ * Start conversion on all 1wire thermometers.
+ * To prevent self-heating of thermometer it should be started only every 10 seconds
  */
-void vOWStartConversion(void) OW_GCC_OPT2;
-void vOWStartConversion(void)
+void OW_vStartConversion(void) OW_GCC_OPT2;
+void OW_vStartConversion(void)
 {
 #ifdef OW_DEBUG
   PRINTF("vOWStartConversion()\n");
@@ -320,17 +323,17 @@ UINT uiOWGetTemp(UCHAR *pucROM)
   return temper;
 }
 
-/*
- * to prevent self-heating of thermometer it should be started only every 10 seconds
+/**
+ * Process 1wire results
  */
-void OW_vWorker(void)
+void OW_vWorker()
 {
   UCHAR ucSensIdx;
   OWDetectDevices(); // detect and print devices to console TODO maybe mutex to access from http ?
   vOWConfigDevices(); // set resultion etc...
 
-  vOWStartConversion();
-  OW_SLEEP_MS (900); // wait for conversion result at least 750ms
+//  OW_vStartConversion();
+//  OW_SLEEP_MS (900); // wait for conversion result at least 750ms
 
   for (ucSensIdx=0; ucSensIdx<NUM_OF_TEMP_SENSORS; ucSensIdx++)
   {

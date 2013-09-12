@@ -44,18 +44,28 @@ void MENU_Deactivate(void)
 
 
 
-void MENU_HandleEvent(MENU_EVENT_DEF eMenuAction)
+void MENU_HandleEvent(MENU_EVENT_DEF eMenuEvent)
 {
-    EventClear(); // event is now stored as local variable, don't need events
-	if (TRUE==PTDMENU->bConfirmationScreenActive)
+    switch (eMenuEvent)
+    {
+        case SYS_UI_TIMEOUT:
+            MENU_Deactivate();
+            return;
+            break;
+
+        default:
+            break;
+    }
+
+	if (TRUE == PTDMENU->bConfirmationScreenActive)
 	{
-	    LOG("Conf Hndl");
-		MENU_ConfirmationScreenHandler(eMenuAction);
+//	    LOG("Conf Hndl");
+		MENU_ConfirmationScreenHandler(eMenuEvent);
 	}
 	else
 	{
-	    LOG("Menu Hndl");
-		MENU_MenuNavigationHandler(eMenuAction);
+//	    LOG("Menu Hndl");
+		MENU_MenuNavigationHandler(eMenuEvent);
 	}
 
 }

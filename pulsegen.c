@@ -115,7 +115,7 @@ void vPulseGenApplication (void)
 
 
 	  sprintf_P ( &(cLine1Buf[0]), PSTR("OC2=%3d %6lus"),      OCR2, (long)OCR2 * 1000L * 65L / 255L);
-	  sprintf_P ( &(cLine2Buf[0]), PSTR("%5d %d %d %d"),  ulSystemTickMS++, BTN_SET_GETSTATE, BTN_START_GETSTATE, bPWMstate);
+	  sprintf_P ( &(cLine2Buf[0]), PSTR("%5d %d %d %d"),  ulSystemTickMS++, BTN_NEXT_GETSTATE, BTN_OK_GETSTATE, bPWMstate);
 
 	  LCD_vHome ();
 	  LCD_vPuts (&(cLine1Buf[0]));

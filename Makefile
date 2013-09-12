@@ -67,12 +67,14 @@ EXTRAINCDIRS = lib
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c pulsegen.c log.c
+SRC = $(TARGET).c pulsegen.c log.c timer0.c rtc.c display_status.c
 SRC+= lib/key.c
 SRC+= lib/1wire_low.c lib/1wire.c 
 #SRC+= lib/lcd_radzio/HD44780.c lib/lcd_radzio/bufferedLcd.c 
 SRC+= lib/lcd_pfleury/lcd.c
 SRC+= lib/hal_lcd.c
+
+SRC+= lib/nvm.c
 
 SRC+=	lib/menu/menu_def.c \
 		lib/menu/menu.c \
@@ -159,7 +161,15 @@ CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:%.c=$(OBJDIR)/%.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
-
+#Niziak:
+#CFLAGS += -fno-inline
+#CFLAGS += --param inline-call-cost=2 
+CFLAGS += -finline-limit=3
+CFLAGS += -fno-inline-small-functions
+CFLAGS += -ffunction-sections
+CFLAGS += -fdata-sections
+CFLAGS += -ffreestanding
+CFLAGS += -mcall-prologues
 
 #---------------- Compiler Options C++ ----------------
 #  -g*:          generate debugging information
@@ -255,10 +265,14 @@ EXTMEMOPTS =
 #    -Map:      create map file
 #    --cref:    add cross reference to  map file
 LDFLAGS = -Wl,-Map=$(OUTDIR)/$(TARGET).map,--cref
+#Niziak: GCC to optimize RCALL/RET to RJMP
+LDFLAGS += -Wl,--relax
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(patsubst %,-L%,$(EXTRALIBDIRS))
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 #LDFLAGS += -T linker_script.x
+
+
 
 
 
@@ -289,7 +303,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(OUTDIR)/$(TARGET).hex
 # Increase verbosity level.  Please use this when submitting bug
 # reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude> 
 # to submit bug reports.
-#AVRDUDE_VERBOSE = -v -v
+AVRDUDE_VERBOSE = -v -v
 
 AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
@@ -390,8 +404,8 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-#all: begin gccversion sizebefore build sizeafter end
-all: begin build sizeafter end
+all: begin gccversion sizebefore build sizeafter end
+#all: begin build sizeafter end
 
 # Change the build target to build a HEX file or a library.
 build: elf hex
@@ -425,6 +439,7 @@ end:
 # Display size of file.
 HEXSIZE = $(SIZE) --target=$(FORMAT) $(OUTDIR)/$(TARGET).hex
 ELFSIZE = $(SIZE) --mcu=$(MCU) --format=avr $(OUTDIR)/$(TARGET).elf
+OBJSIZE = $(SIZE) --mcu=$(MCU) $(OBJ)
 
 sizebefore:
 	@if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); \
@@ -432,9 +447,10 @@ sizebefore:
 
 sizeafter:
 	@echo --- sizeafter ---
+	
 #	@if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); \
 #	2>/dev/null; echo; fi
-	if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); \
+	if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(OBJSIZE); $(ELFSIZE); \
 	echo; fi
 
 

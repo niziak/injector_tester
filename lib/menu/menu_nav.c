@@ -11,10 +11,97 @@ MENU_LEVEL_ID_DEF MENU_eGetCurrentItemLevel(void)
     return PCURRENT_ITEM->eLevel;
 }
 
-void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent)
+#if 0
+/**
+ * Finds FIRST entry of parent menu level
+ * @return index in atdMenuItems[] array
+ */
+UCHAR MENU_ucGetParentFirstItemId(void)
+{
+    UCHAR ucI;
+    for (ucI=0; ucI<NUMBER_OF_MENU_ITEMS; ucI++)
+    {
+        if (MENU_eGetCurrentItemLevel()-1 == atdMenuItems[ucI].eLevel)
+        {
+            return ucI;
+        }
+    }
+    RESET("gpii");
+    return MENU_ITEM_ID_NOT_FOUND;
+}
+#endif
+
+/**
+ * Gets next item from the same menu level
+ * @return index in atdMenuItems[] array
+ */
+UCHAR MENU_ucGetNextItem(void)
+{
+    UCHAR ucI;
+    for (ucI=PTDMENU->ucCurrentItem + 1; ucI<NUMBER_OF_MENU_ITEMS; ucI++)
+    {
+        // item with parent (lower) level found, means no more item on this level
+        if (MENU_eGetCurrentItemLevel() > atdMenuItems[ucI].eLevel)
+        {
+            // next item is from parent level , so no more items - go to end marker emulation
+            return MENU_ITEM_ID_NOT_FOUND;
+        }
+        if (MENU_eGetCurrentItemLevel() == atdMenuItems[ucI].eLevel)
+        {
+            // next item is from the same level, so return it
+            return ucI;
+        }
+    }
+    return MENU_ITEM_ID_NOT_FOUND;
+}
+
+
+
+/**
+ * Finds parent menu item, first child can be calculated by adding one - for wrap around
+ * @return index in atdMenuItems[] array
+ */
+UCHAR MENU_ucGetParentItem(UCHAR ucCurrentItem)
 {
     UCHAR ucI;
 
+    if (atdMenuItems[ucCurrentItem].eLevel==LVL0)
+    {
+        return MENU_ITEM_ID_FIRST;
+    }
+    // search back first entry on the same menu level
+    for (ucI=ucCurrentItem; ucI-- > 0 ; )   // unigned ucI counts to 0
+    {
+//        LCD_vClrScr();
+//        LCD_vPrintf("ucI=%d citem=%d", ucI, ucCurrentItem);
+//        LCD_vGotoXY(0,1);
+//        LCD_vPrintf("el=%d < clvl=%d", atdMenuItems[ucI].eLevel, MENU_eGetCurrentItemLevel());
+//        _delay_ms(1000);
+        // ignore child levels, react only on parent levels
+        if (atdMenuItems[ucI].eLevel < MENU_eGetCurrentItemLevel())
+        {
+            // parent entry found
+            return ucI;
+        }
+    }
+//    return ucI; // LVL0 wrap around, so back to first menu item
+    RESET ("gpit");
+    return MENU_ITEM_ID_NOT_FOUND;
+}
+
+
+UCHAR MENU_ucGetFirstItem(void)
+{
+    if (atdMenuItems[PTDMENU->ucCurrentItem].eLevel==LVL0)
+    {
+           return MENU_ITEM_ID_FIRST;
+    }
+    return MENU_ucGetParentItem(PTDMENU->ucCurrentItem)+1;
+}
+
+
+void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent)
+{
     switch (eMenuEvent)
     {
         case MENU_ACTION_PAUSE:
@@ -30,43 +117,24 @@ void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent)
             {
                 // end marker is currently selected, so wrap around menu
                 PTDMENU->bEndMarkerSelected = FALSE;
-                // search back first entry on the same menu level
-                for (ucI=PTDMENU->ucCurrentItem; ucI>0 ; ucI--)
-                {
-                    // ignore child levels, react only on parent levels
-                    if (MENU_eGetCurrentItemLevel() > atdMenuItems[ucI].eLevel)
-                    {
-                        break;
-                    }
-                }
-                PTDMENU->ucCurrentItem = ucI;
+                PTDMENU->ucCurrentItem = MENU_ucGetFirstItem();             // search back first entry on the same menu level
                 return;
             }
 
-            // check if current item is not last one
-//          if (PTDMENU->ucCurrentItem + 1 < NUMBER_OF_MENU_ITEMS)
+
+            if (MENU_ITEM_ID_NOT_FOUND == MENU_ucGetNextItem())
             {
-                // search next item on the same level
-                for (ucI=PTDMENU->ucCurrentItem + 1; ucI<NUMBER_OF_MENU_ITEMS; ucI++)
-                {
-                    // item with parent (lower) level found, means no more item on this level
-                    if (MENU_eGetCurrentItemLevel() > atdMenuItems[ucI].eLevel)
-                    {
-                        // next item is from parent level , so no more items - go to end marker emulation
-                        break;
-                    }
-                    if (MENU_eGetCurrentItemLevel() == atdMenuItems[ucI].eLevel)
-                    {
-                        // next item is from the same level, so scroll to it
-                        PTDMENU->ucCurrentItem = ucI;
-                        return;
-                    }
-                }
+                // next item is from parent level , so no more items - go to end marker emulation
+
+                // emulate one fake item "end marker"
+                PTDMENU->bEndMarkerSelected = TRUE;
             }
-
-
-            // emulate one fake item "end marker"
-            PTDMENU->bEndMarkerSelected = TRUE;
+            else
+            {
+                // next item is from the same level, so scroll to it
+                PTDMENU->ucCurrentItem = MENU_ucGetNextItem();
+                return;
+            }
             break;
 
         case MENU_ACTION_SELECT:
@@ -81,27 +149,20 @@ void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent)
                 else
                 // find first entry of parent menu level
                 {
-                    for (ucI=0; ucI<NUMBER_OF_MENU_ITEMS; ucI++)
-                    {
-                        if (MENU_eGetCurrentItemLevel()-1 == atdMenuItems[ucI].eLevel)
-                        {
-                            PTDMENU->ucCurrentItem = ucI;
-                            break;
-                        }
-                    }
+                    PTDMENU->ucCurrentItem = MENU_ucGetParentItem(PTDMENU->ucCurrentItem); //MENU_ucGetParentFirstItemId();
                 }
                 break;
             }
 
-            if (PCURRENT_ITEM->eConfirmation==MENU_CONFIRM_ASK)
+            if (PCURRENT_ITEM->eConfirmation==ASK)
             {
-                LOG("Needs confirm");
+//                LOG("Cfm ASK");
                 PTDMENU->bConfirmationScreenActive = TRUE;
                 PTDMENU->bConfirmationStateIsNo = TRUE;
             }
             else
             {
-                LOG("No need to confirm");
+//                LOG("Cfm No ASK");
                 PTDMENU->bConfirmationStateIsNo = FALSE;
                 EventPost(MENU_ACTION_CONFIRMED);
             }
@@ -110,17 +171,18 @@ void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent)
         case MENU_ACTION_CONFIRMED:
             if (PTDMENU->bConfirmationStateIsNo == FALSE)
             {
-                LOG ("Do!");
+//                LOG ("Do!");
                 MENU_vDoFunction(PCURRENT_ITEM->eMenuFnId);
             }
             else
             {
-                LOG ("Ignore!");
+//                LOG ("Ignore!");
             }
             break;
 
         default:
-            RESET("MEN unh evnt");
+//            LOG("MEN unh evnt");
+//            LCD_vPrintf(PSTR(" %d"), eMenuEvent);
             break;
 
     }
