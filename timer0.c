@@ -13,9 +13,22 @@
 #include "rtc.h"
 #include <lib/key.h>
 
-ISR(TIMER0_OVF_vect)
+#define WITH_INT_OVERLAP_DETECTION      TRUE
+
+#if (WITH_INT_OVERLAPPED_DETECTION)
+static volatile BOOL bInISR = FALSE;
+#endif
+
+ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
 {
     RESET_TIMER0_CNT;
+#if (WITH_INT_OVERLAPPED_DETECTION)
+    if (bInISR==TRUE)
+    {
+        RESET("INT OVLP");
+    }
+    bInISR = TRUE;
+#endif
     ulSystemTickMS++;
 
     // ONE SECOND TICK
@@ -58,6 +71,9 @@ ISR(TIMER0_OVF_vect)
         EventPostFromIRQ (SYS_1WIRE_CONVERT);
     }
     EventTimerTickEveryMS();
+#if (WITH_INT_OVERLAPPED_DETECTION)
+    bInISR = FALSE;
+#endif
 }
 
 void TIMER_vInit(void)
