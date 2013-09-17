@@ -18,8 +18,18 @@
     #define DEBUG(a)
 #endif
 
-#define EVENT_QUEUE_REAL_LEN (EVENT_QUEUE_LEN)+1
 
+typedef struct
+{
+    MENU_EVENT_DEF eEvent;  ///< event to post when timer expires
+    unsigned int delayms;   ///< countdown timer. Event is posted when reach zero
+} EVENT_DELAYED_TIMER_DEF;
+
+static EVENT_DELAYED_TIMER_DEF  atdTimers[EVENT_TIMER_LAST];    ///< array indexed by @ref EVENT_DELAYED_TIMER_ID
+
+
+
+#define EVENT_QUEUE_REAL_LEN (EVENT_QUEUE_LEN)+1
 typedef struct
 {
     MENU_EVENT_DEF      aeCurrentEvent[EVENT_QUEUE_REAL_LEN];
@@ -106,6 +116,40 @@ void EventPost (MENU_EVENT_DEF eEvent)
 {
     DEBUG("Post");
     EventPostFromIRQ(eEvent);
+}
+
+/**
+ * Schedule event to be posted after specified time
+ *
+ * To prevent dynamic creation (linked list, etc), each timer needs special ID defined in @ref EVENT_DELAYED_TIMER_ID
+ *
+ * @param eTimerId  timer id to use
+ * @param eEvent    event to post after time
+ * @param delayms   delay in ms (unsidned int)
+ */
+void EventTimerPostAFter (EVENT_DELAYED_TIMER_ID eTimerId, MENU_EVENT_DEF eEvent, unsigned int delayms)
+{
+    atdTimers[eTimerId].delayms = delayms;
+    atdTimers[eTimerId].eEvent = eEvent;
+}
+
+/**
+ * Timer handling routine to be called every 1 ms from ISR
+ */
+void EventTimerTickEveryMS(void)
+{
+    UCHAR a;
+    for (a=0; a<sizeof(atdTimers)/sizeof(atdTimers[0]); a++)
+    {
+        if (atdTimers[a].delayms > 0)
+        {
+            atdTimers[a].delayms--;
+            if (atdTimers[a].delayms == 0)
+            {
+                EventPostFromIRQ(atdTimers[a].eEvent);
+            }
+        }
+    }
 }
 
 BOOL bIsEventWaiting(void)

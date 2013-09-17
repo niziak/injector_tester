@@ -53,14 +53,11 @@ ISR(TIMER0_OVF_vect)
         KEY_vKeyIsr();
     }
 
-    if (ulSystemTickMS % 10000 == 0)    // do not use seconds counter because it will run 1000 times per second
+    if (ulSystemTickMS % 5000 == 0)    // do not use seconds counter because it will run 1000 times per second
     {
         EventPostFromIRQ (SYS_1WIRE_CONVERT);
     }
-    if (ulSystemTickMS % 11000 == 0)
-    {
-        EventPostFromIRQ (SYS_1WIRE_READ);
-    }
+    EventTimerTickEveryMS();
 }
 
 void TIMER_vInit(void)

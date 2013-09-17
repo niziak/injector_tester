@@ -114,6 +114,7 @@ void main(void)
 		        case SYS_1WIRE_CONVERT:
 //		            LOG("1w convert");
 		            OW_vStartConversion();
+		            EventTimerPostAFter(EVENT_TIMER_1WIRE, SYS_1WIRE_READ, 2000);
 		            break;
 
 		        case SYS_1WIRE_READ:
