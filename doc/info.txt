@@ -1,0 +1,27 @@
+
+
+unsigned long ulPumpRunningState
+
+Program:    6804 bytes (83.1% Full)
+(.text + .data + .bootloader)
+
+Data:        364 bytes (35.5% Full)
+(.data + .bss + .noinit)
+
+EEPROM:       51 bytes (10.0% Full)	
+
+
+
+
+
+volatile unsigned int uiPumpRunningState; 
+Device: atmega8
+
+Program:    6716 bytes (82.0% Full)
+(.text + .data + .bootloader)
+
+Data:        362 bytes (35.4% Full)
+(.data + .bss + .noinit)
+
+EEPROM:       51 bytes (10.0% Full)
+(.eeprom)
