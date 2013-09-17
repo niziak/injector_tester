@@ -10,16 +10,10 @@
 #include <string.h>
 #include <1wire_config.h>
 #include <stdio.h>
+#include "display_status.h"
+#include <rtc.h>
+#include <tools.h>
 
-typedef enum
-{
-    STATUS_SCREEN_IDLE=0,
-    STATUS_SCREEN_NEW_SENSORS,
-    STATUS_SCREEN_KNOWN_SENSORS,
-    STATUS_SCREEN_TEMP,
-
-    STATUS_SCREEN_LAST
-} STATUS_SCREEEN_ID_DEF;
 
 static STATUS_SCREEEN_ID_DEF    eCurrentScreenId;
 static BOOL bShowScreenTitle;
@@ -57,7 +51,7 @@ static void vDisplayScreenTitle(void)
             break;
 
     }
-    _delay_ms(500);
+    int_delay_ms(500);
 }
 
 /**
@@ -71,25 +65,70 @@ void DISP_vStatusScreenNext(void)
         eCurrentScreenId=0;
 }
 
+void DISP_vStatusScreenShow(STATUS_SCREEEN_ID_DEF eNewScreenId)
+{
+    bShowScreenTitle = TRUE;
+    eCurrentScreenId = eNewScreenId;
+}
+
+/**
+ * Print temperature on LCD on current position
+ * @param ucOneWireIdx
+ */
+static void vPrintTemp (UCHAR ucOneWireIdx)
+{
+    if (TEMP_ERROR == atdKnownTempSensors[ucOneWireIdx].iTempInt)
+    {
+        //           23.3'
+        LCD_vPuts_P("error");
+    }
+    else
+    {
+        LCD_vPrintf_P("%02d,%01d%c",        atdKnownTempSensors[ucOneWireIdx].iTempInt,
+                                            atdKnownTempSensors[ucOneWireIdx].iTempFrac/1000, (unsigned char)223);
+    }
+}
+
+/**
+ * prints serial number pointed by pucROM
+ * @param pucROM pointer to 8 bytes of rom
+ */
+static void vPrintOneWireSerial(UCHAR *pucROM)
+{
+    UCHAR a;
+    for (a=0; a<OW_ADDRESS_LEN; ++a)
+        LCD_vPrintf_P("%02X", pucROM[a]);
+}
 
 void DISP_vPrintStatusScreen(void)
 {
-    char cLine1Buf[LCD_COLS+1]; // +1 for NT
-    char cLine2Buf[LCD_COLS+1];
-    UCHAR a;
-
     if (bShowScreenTitle)
     {
         vDisplayScreenTitle();
         bShowScreenTitle = FALSE;
     }
 
-    memset (&(cLine1Buf[0]),0, sizeof(cLine1Buf));
-    memset (&(cLine2Buf[0]),0, sizeof(cLine2Buf));
-
+    LCD_vClrScr();
     switch (eCurrentScreenId)
     {
         case STATUS_SCREEN_IDLE:
+            vPrintTemp(ONEWIRE_ZASO_IDX);
+            LCD_vPutc(' ');
+            vPrintTemp(ONEWIRE_KRAN_IDX);
+            if ((uiPumpRunningState>0) && (bBlinkState==TRUE))
+            {
+                LCD_vGotoXY(15,0);
+                LCD_vPutc(255);
+            }
+            if ((uiPumpRunningState>0))
+            {
+                LCD_vGotoXY(10,1);
+                LCD_vPrintf_P("%4d", uiPumpRunningState);
+            }
+            LCD_vGotoXY(0,1);
+            LCD_vPrintf_P("%02d:%02d:%02d", ptdLocalTime->tm_hour,
+                                            ptdLocalTime->tm_min,
+                                            ptdLocalTime->tm_sec);
             return;
             break;
 
@@ -98,35 +137,24 @@ void DISP_vPrintStatusScreen(void)
             break;
 
         case STATUS_SCREEN_NEW_SENSORS:
-            for (a=0; a<OW_ADDRESS_LEN; ++a)
-                sprintf_P ( &(cLine1Buf[a*2]), PSTR("%02X"), atdNewTempSensors[ONEWIRE_ZASO_IDX].aucROM[a]);
-
-            for (a=0; a<OW_ADDRESS_LEN; ++a)
-                sprintf_P ( &(cLine2Buf[a*2]), PSTR("%02X"), atdNewTempSensors[ONEWIRE_KRAN_IDX].aucROM[a]);
+            vPrintOneWireSerial (atdNewTempSensors[ONEWIRE_ZASO_IDX].aucROM);
+            LCD_vGotoXY (0,1);
+            vPrintOneWireSerial (atdNewTempSensors[ONEWIRE_KRAN_IDX].aucROM);
             break;
 
         case STATUS_SCREEN_KNOWN_SENSORS:
-            for (a=0; a<OW_ADDRESS_LEN; ++a)
-                sprintf_P ( &(cLine1Buf[a*2]), PSTR("%02X"), atdKnownTempSensors[ONEWIRE_ZASO_IDX].aucROM[a]);
-
-            for (a=0; a<OW_ADDRESS_LEN; ++a)
-                sprintf_P ( &(cLine2Buf[a*2]), PSTR("%02X"), atdKnownTempSensors[ONEWIRE_KRAN_IDX].aucROM[a]);
+            vPrintOneWireSerial (atdKnownTempSensors[ONEWIRE_ZASO_IDX].aucROM);
+            LCD_vGotoXY(0,1);
+            vPrintOneWireSerial (atdKnownTempSensors[ONEWIRE_KRAN_IDX].aucROM);
             break;
 
         case STATUS_SCREEN_TEMP:
-            sprintf_P ( &(cLine1Buf[0]), PSTR("Zasobnik: %d,%01d"),
-                    atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempInt,
-                    atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempFrac/1000);
-            sprintf_P ( &(cLine2Buf[0]), PSTR("Kran:     %d,%01d"),
-                    atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt,
-                    atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempFrac/1000);
+            LCD_vPuts_P("Zasobnik: ");
+            vPrintTemp(ONEWIRE_ZASO_IDX);
+            LCD_vGotoXY(0,1);
+            LCD_vPuts_P("Kran:     ");
+            vPrintTemp(ONEWIRE_KRAN_IDX);
             break;
     }
-
-
-    LCD_vClrScr();
-    LCD_vPuts (&(cLine1Buf[0]));
-    LCD_vGotoXY (0,1);
-    LCD_vPuts (&(cLine2Buf[0]));
-    _delay_ms(500);
+    //int_delay_ms(500);
 }

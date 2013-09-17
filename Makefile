@@ -67,7 +67,7 @@ EXTRAINCDIRS = lib
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c pulsegen.c log.c timer0.c rtc.c display_status.c
+SRC = $(TARGET).c pulsegen.c log.c timer0.c rtc.c display_status.c tools.c
 SRC+= lib/key.c
 SRC+= lib/1wire_low.c lib/1wire.c 
 #SRC+= lib/lcd_radzio/HD44780.c lib/lcd_radzio/bufferedLcd.c 
@@ -294,7 +294,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(OUTDIR)/$(TARGET).hex
 # Uncomment the following if you want avrdude's erase cycle counter.
 # Note that this counter needs to be initialized first using -Yn,
 # see avrdude manual.
-#AVRDUDE_ERASE_COUNTER = -y
+AVRDUDE_ERASE_COUNTER = -y
 
 # Uncomment the following if you do /not/ wish a verification to be
 # performed after programming the device.
@@ -303,12 +303,15 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(OUTDIR)/$(TARGET).hex
 # Increase verbosity level.  Please use this when submitting bug
 # reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude> 
 # to submit bug reports.
-AVRDUDE_VERBOSE = -v -v
+#AVRDUDE_VERBOSE = -v -v
+
+ACRDUDE_NO_AUTOERASE = -D
 
 AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
+#AVRDUDE_FLAGS += $(ACRDUDE_NO_AUTOERASE)
 
 
 

@@ -2,12 +2,12 @@
 /* układ ATmega 1MHz */
 /* PB0,PB1 - diody LED; PD0 - przycisk */
 /*
- *                 RESETn     PC6    1 ###  ### 28  PC5--------------LCD RW
- *                   RXD      PD0    2 ######## 27  PC4--------------LCD EN
- *                   TXD      PD1    3 ######## 26  PC3--------------LCD D4
- * LCD RS-----------INT0      PD2    4 ######## 25  PC2--------------LCD D5
- *                  INT1      PD3    5 ######## 24  PC1--------------LCD D6
- *                 XCK T0     PD4    6 ######## 23  PC0--------------LCD D7
+ *                 RESETn     PC6    1 ###  ### 28  PC5 ADC5/SCL-----LCD RW
+ *                   RXD      PD0    2 ######## 27  PC4 ADC4/SDA-----LCD EN
+ *                   TXD      PD1    3 ######## 26  PC3 ADC3---------LCD D4
+ * LCD RS-----------INT0      PD2    4 ######## 25  PC2 ADC2---------LCD D5
+ *                  INT1      PD3    5 ######## 24  PC1 ADC1---------LCD D6
+ *                 XCK T0     PD4    6 ######## 23  PC0 ADC0---------LCD D7
  *                            VCC    7 ######## 22  GND
  *                            GND    8 ######## 21  AREF
  *               XTAL1/TOSC1  PB6    9 ######## 20  AVCC
@@ -27,6 +27,7 @@
 #include <config.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
+#include <avr/sleep.h>
 #include <util/delay.h>
 #include <stdio.h>
 #include <string.h>
@@ -39,6 +40,7 @@
 #include <pulsegen.h>
 #include "timer0.h"
 #include "rtc.h"
+#include <tools.h>
 
 #include <lib/1wire_config.h>
 #include <lib/1wire.h>
@@ -65,7 +67,9 @@ TEMP_SENSOR_PARAMS_DEF		atdKnownTempSensors[NUM_OF_TEMP_SENSORS];
 volatile unsigned long ulSystemTickMS = 0;
 volatile unsigned long ulSystemTickS = 0;
 volatile BOOL bBlinkState;                  ///< alternating variable to control blink speed
-volatile UCHAR ucUIInactiveCounter;       ///< in seconds. Counts down
+volatile UCHAR ucUIInactiveCounter;         ///< in seconds. Counts down
+volatile unsigned int uiPumpRunningState;  ///< 0 - stop pump, autodecremented every 1S in timer
+volatile BOOL bRefreshDisplay;
 
 //
 void main(void) __attribute__ ((noreturn));
@@ -95,13 +99,14 @@ void main(void)
 
 	MENU_vInit();
 
-	EventPost(SYS_EVENT_NONE);
+	EventPost(SYS_1WIRE_READ);
 	do {
+        wdt_reset();
 #if (INJECTOR_TESTER_MODE)
 				vPulseGenApplication();
 #endif
-
-		if (TRUE==bIsEventWaiting())
+		// EVENT HANDLING
+		if (TRUE == bIsEventWaiting())
 		{
 		    MENU_EVENT_DEF eEvent = EventGet();
 		    switch (eEvent)
@@ -124,54 +129,70 @@ void main(void)
 		        default:
 		            break;
 		    }
-		    if (TRUE==MENU_bIsMenuActive())
-		    {
-		        MENU_HandleEvent(eEvent);   // handle menu events if menu active
-		    }
-		    else
-		    {
-		        switch (eEvent)
-		        {
-                    case MENU_ACTION_SELECT:
-                        MENU_Activate();                // menu not active - so activate it
-                        break;
 
-                    case MENU_ACTION_NEXT:
-                        DISP_vStatusScreenNext();
-                        break;
+	        if (TRUE == MENU_bIsMenuActive())
+	        {
+	            MENU_HandleEvent(eEvent);   // handle menu events if menu active
+	        }
+	        else
+	        {
+	            switch (eEvent)
+	            {
+	                case MENU_ACTION_SELECT:
+	                    MENU_Activate();                // menu not active - so activate it
+	                    break;
 
-                    default:
-                        break;
-		        }
-		    }
+	                case MENU_ACTION_NEXT:
+	                    DISP_vStatusScreenNext();
+	                    break;
+
+	                case SYS_UI_TIMEOUT:
+	                    LOG("UI TO");
+	                    DISP_vStatusScreenShow (STATUS_SCREEN_IDLE);
+	                    break;
+
+	                default:
+	                    break;
+	            }
+	        }
 		} //   if (TRUE==bIsEventWaiting())
-
-		if (TRUE==MENU_bIsMenuActive())
-		{
-			MENU_vShow(); // redraw menu
-		}
 		else
 		{
-		    DISP_vPrintStatusScreen();
+		    int_delay_ms(50); // no event - so sleep //TODO make real sleep
 		}
 
-		wdt_reset();
-        // if no event pending, try to read keyboard
-//		if (FALSE==bEventCheck())
-//		{
-//			KEY_ReadKeyboard();
-//		}
-		// if still no events, sleep a while
-		if (FALSE==bIsEventWaiting())
+		if (bRefreshDisplay==TRUE)
 		{
-			_delay_ms(50);
-		}
+            bRefreshDisplay = FALSE;
+            // DISPLAY HANDLING
+            if (TRUE == MENU_bIsMenuActive())
+            {
+                MENU_vShow(); // redraw menu
+            }
+            else
+            {
+                DISP_vPrintStatusScreen(); // redraw status screen
+            }
+	    }
 
-		LCD_vGotoXY(0,1);
-		LCD_vPrintf("%lu[%d %d]",ulSystemTickS, BTN_NEXT_PRESSED, BTN_OK_PRESSED);
-		LCD_vPrintf("[%d %d]%d", ucKeyNextState, ucKeyOkState, ucKeyBlocked>0);
+        if (uiPumpRunningState>0)
+        {
+            LED_HI
+        }
+        else
+        {
+            LED_LOW
+        }
 
-        //_delay_ms(100);
+//
+//		LCD_vGotoXY(0,1);
+//		LCD_vPrintf("%lu[%d %d]",ulSystemTickS, BTN_NEXT_PRESSED, BTN_OK_PRESSED);
+//		LCD_vPrintf("[%d %d]%d", ucKeyNextState, ucKeyOkState, ucKeyBlocked>0);
+//        // if still no events, sleep a while
+//        if (FALSE == bIsEventWaiting())
+//        {
+//            _delay_ms(50);
+//        }
 	} while (1); //do
 
 //	return 0;

@@ -20,13 +20,13 @@ typedef enum
 
     SYS_UI_TIMEOUT,            ///< no user action - timeout from last keypress
 
-    MENU_ACTION_NONE,           ///< invalid value
     MENU_ACTION_NEXT,           ///< navigagte to next element
     MENU_ACTION_SELECT,         ///< make action on selected element
-    MENU_ACTION_PAUSE,          ///< disable menu, but don't clear internal structure
-    MENU_ACTION_RESUME,         ///< enable menu, but don't reset internal structures
-
     MENU_ACTION_CONFIRMED,
+//    MENU_ACTION_PAUSE,          ///< disable menu, but don't clear internal structure
+//    MENU_ACTION_RESUME,         ///< enable menu, but don't reset internal structures
+
+    DISP_UPDATE,                ///< redraw display
 
 } MENU_EVENT_DEF;
 

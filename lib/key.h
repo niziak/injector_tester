@@ -22,8 +22,8 @@
 #define BTN_NEXT_PRESSED     ( BTN_NEXT_GETSTATE == 0 )
 #define BTN_OK_PRESSED       ( BTN_OK_GETSTATE   == 0 )
 
-#define KEY_DEBOUNCE        3       ///< n*10ms     how many cycles wait for key unchanged state
-#define KEY_INTERVAL        3       ///< n*10ms     how long block keyboard reading after keypress
+#define KEY_DEBOUNCE        2       ///< n*10ms     how many cycles wait for key unchanged state
+#define KEY_INTERVAL        5       ///< n*10ms     how long block keyboard reading after keypress
 
 extern void KEY_ReadKeyboard(void);
 extern void KEY_vInit(void);

@@ -13,13 +13,13 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
 {
     switch (eFunctionId)
     {
-        case MENU_FN_CHILD_MENU:
-            PTDMENU->ucCurrentItem++;
-            break;
-
         case MENU_FN_FACTORY_DEFAULT:
             NVM_vRestoreFactory();
             for(;;);
+            break;
+
+        case MENU_FN_10MIN:
+            uiPumpRunningState = (unsigned int)(10*60); //TODO
             break;
 
         case MENU_FN_REBOOT:
@@ -36,6 +36,7 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
             NVM_vSaveSettings();
             break;
 
+        case MENU_FN_UNDEF:
         default:
             break;
     }

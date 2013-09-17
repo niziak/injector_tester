@@ -10,9 +10,6 @@
 
 #include <limits.h>
 
-#define OW_TEMP_ERROR           ((INT)SHRT_MIN) // 0x8000 //(-32767) //SHRT_MIN
-#define TEMP_ERROR              (OW_TEMP_ERROR)
-
 extern void    OWDetectDevices(void);
 extern void    OWCalibrateDelays(void);
 extern void    OW_vWorker(void);

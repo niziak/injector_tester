@@ -29,5 +29,7 @@ typedef enum {
 #define LCD_vGotoXY(x,y)		lcd_gotoxy(x,y)
 
 extern void LCD_vPrintf(const char *format, ...);
+extern void LCD_vPrintf_p(const char *format, ...);
+#define LCD_vPrintf_P(format, args...)      LCD_vPrintf_p(PSTR(format), args)
 
 #endif /* HAL_LCD_H_ */

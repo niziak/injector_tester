@@ -9,6 +9,7 @@
 #include <lib/hal_lcd.h>
 #include <util/delay.h>
 #include <avr/wdt.h>
+#include <tools.h>
 
 void LOG (char * message)
 {
@@ -16,8 +17,9 @@ void LOG (char * message)
 	LCD_vPuts_P("LOG:");
 	LCD_vGotoXY(0,1);
 	LCD_vPuts (message);
-	_delay_ms(300);
-	wdt_reset();
+    wdt_reset();
+	int_delay_ms(500);
+    wdt_reset();
 	LCD_vClrScr();
 }
 void LOG_Reset (char * message)
@@ -26,5 +28,5 @@ void LOG_Reset (char * message)
 	LCD_vPuts_P("RESET:");
 	LCD_vGotoXY(0,1);
 	LCD_vPuts (message);
-	for (;;) wdt_reset();
+	for (;;);
 }

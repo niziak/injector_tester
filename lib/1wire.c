@@ -337,6 +337,8 @@ void OW_vWorker()
 
   for (ucSensIdx=0; ucSensIdx<NUM_OF_TEMP_SENSORS; ucSensIdx++)
   {
+    // mark temp as invalid, before read in case sensor is not known etc
+    OW_KNOWN_TEMP_SENSOR_TEMP_INT(ucSensIdx) = OW_TEMP_ERROR;
     // read temperature from stored only sensors
     if (OW_KNOWN_TEMP_SENSOR_ROM(ucSensIdx,0) == 0x00)
     {

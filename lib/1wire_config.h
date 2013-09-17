@@ -60,6 +60,11 @@ typedef struct PACKED
   UCHAR ucStatus;                         ///< 1 if sensor was found in last scan
 } TEMP_SENSOR_PARAMS_DEF;
 
+#include <limits.h>
+#define OW_TEMP_ERROR           ((INT)SHRT_MIN) // 0x8000 //(-32767) //SHRT_MIN
+#define TEMP_ERROR              (OW_TEMP_ERROR)
+
+
 
 #if 1 // AVR
 

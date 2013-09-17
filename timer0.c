@@ -17,23 +17,35 @@ ISR(TIMER0_OVF_vect)
 {
     RESET_TIMER0_CNT;
     ulSystemTickMS++;
+
+    // ONE SECOND TICK
     if (ulSystemTickMS % 1000 == 0)
     {
         ulSystemTickS++;
-        tNow++;
+        tSecondsUntilEpoch++;
         if (ucUIInactiveCounter>0)
         {
             ucUIInactiveCounter--;
             if (ucUIInactiveCounter==0)
             {
-                EventPostFromIRQ(SYS_UI_TIMEOUT);
+                EventPostFromIRQ (SYS_UI_TIMEOUT);
             }
         }
+
+        if (uiPumpRunningState>0)
+        {
+            uiPumpRunningState--;
+        }
+        RTC_vTickLocalTime();
+        RTC_vConvertLocalTime();
     }
 
-    if (ulSystemTickMS % 400 == 0)
+
+    if (ulSystemTickMS % 300 == 0)
     {
         bBlinkState = (bBlinkState==0 ? 1 : 0);
+        bRefreshDisplay = TRUE;
+        //EventPostFromIRQ (DISP_UPDATE); // do not enable, it is too fast for main loop to handle
     }
 
     if (ulSystemTickMS % 10 == 0)
@@ -43,11 +55,11 @@ ISR(TIMER0_OVF_vect)
 
     if (ulSystemTickMS % 10000 == 0)    // do not use seconds counter because it will run 1000 times per second
     {
-        EventPostFromIRQ(SYS_1WIRE_CONVERT);
+        EventPostFromIRQ (SYS_1WIRE_CONVERT);
     }
     if (ulSystemTickMS % 11000 == 0)
     {
-        EventPostFromIRQ(SYS_1WIRE_READ);
+        EventPostFromIRQ (SYS_1WIRE_READ);
     }
 }
 

@@ -10,6 +10,7 @@
 #include <key.h>
 #include <lib/menu/menu.h>
 #include <log.h>
+#include <tools.h>
 
 volatile unsigned char ucKeyOkState;      ///< 0 if key released. Incremented if key pressed
 volatile unsigned char ucKeyNextState;        ///< 0 if key released. Incremented if key pressed
@@ -34,6 +35,7 @@ void KEY_vKeyIsr(void)
         {
             EventPostFromIRQ(MENU_ACTION_NEXT);
             ucKeyBlocked = KEY_INTERVAL;
+            int_delay_break();
         }
         ucKeyNextState = 0;
     }
@@ -48,6 +50,7 @@ void KEY_vKeyIsr(void)
         {
             EventPostFromIRQ(MENU_ACTION_SELECT);
             ucKeyBlocked = KEY_INTERVAL;
+            int_delay_break();
         }
         ucKeyOkState = 0;
     }

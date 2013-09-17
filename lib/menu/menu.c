@@ -49,6 +49,7 @@ void MENU_HandleEvent(MENU_EVENT_DEF eMenuEvent)
     switch (eMenuEvent)
     {
         case SYS_UI_TIMEOUT:
+            LOG("UI TO");
             MENU_Deactivate();
             return;
             break;

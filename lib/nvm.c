@@ -13,6 +13,7 @@
 
 #define NVM_MAGIC_LEN       5
 #define NVM_MAGIC_BYTE      0xA5
+#define NVM_VERSION         1
 
 static EEMEM unsigned char                  NVM_aucMagic[NVM_MAGIC_LEN];
 static EEMEM unsigned int                   NVM_uiVersion;
@@ -27,25 +28,40 @@ void NVM_vRestoreFactory(void)
 
 void NVM_vLoadSettings(void)
 {
+    BOOL bError = FALSE;
     unsigned char aucMagic[NVM_MAGIC_LEN];
+    unsigned int  uiVersion;
+
     eeprom_read_block ( &(aucMagic[0]), &(NVM_aucMagic[0]), sizeof(aucMagic) );
+    eeprom_read_block ( &(uiVersion),                 &(NVM_uiVersion),                sizeof(uiVersion)          );
 
     for (UCHAR a=0; a<NVM_MAGIC_LEN; a++)
     {
         if (aucMagic[a] != NVM_MAGIC_BYTE)
         {
-            LOG("No NVM");
-            return;
+            bError = TRUE;
         }
     }
 
+    if (uiVersion != NVM_VERSION)
+    {
+        bError = TRUE;
+    }
+
+    if (bError == TRUE)
+    {
+        LOG("No NVM");
+        return;
+    }
     eeprom_read_block ( &(atdKnownTempSensors[0]),    &(NVM_atdKnownTempSensors[0]),   sizeof(atdKnownTempSensors));
 }
 
 void NVM_vSaveSettings(void)
 {
     unsigned char aucMagic[NVM_MAGIC_LEN];
+    unsigned int uiVersion = NVM_VERSION;
     memset (&aucMagic[0], NVM_MAGIC_BYTE, sizeof (aucMagic));
-    eeprom_update_block ( &(aucMagic[0]),             &(NVM_aucMagic[0]),              sizeof(aucMagic) );
+    eeprom_update_block ( &(uiVersion),               &(NVM_uiVersion),                sizeof(uiVersion)          );
+    eeprom_update_block ( &(aucMagic[0]),             &(NVM_aucMagic[0]),              sizeof(aucMagic)           );
     eeprom_update_block ( &(atdKnownTempSensors[0]),  &(NVM_atdKnownTempSensors[0]),   sizeof(atdKnownTempSensors));
 }

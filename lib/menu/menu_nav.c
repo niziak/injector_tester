@@ -99,18 +99,34 @@ UCHAR MENU_ucGetFirstItem(void)
     return MENU_ucGetParentItem(PTDMENU->ucCurrentItem)+1;
 }
 
+/**
+ * Make navigation BACK (for press on end marker or after finished action)
+ */
+void MENU_vLevelUp(void)
+{
+    // if top level, deactivate menu
+    if (LVL0==MENU_eGetCurrentItemLevel())
+    {
+        MENU_Deactivate();
+    }
+    else
+    // find first entry of parent menu level
+    {
+        PTDMENU->ucCurrentItem = MENU_ucGetParentItem(PTDMENU->ucCurrentItem); //MENU_ucGetParentFirstItemId();
+    }
+}
 
 void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent)
 {
     switch (eMenuEvent)
     {
-        case MENU_ACTION_PAUSE:
-            PTDMENU->bMenuActive = FALSE;
-            break;
-
-        case MENU_ACTION_RESUME:
-            PTDMENU->bMenuActive = TRUE;
-            break;
+//        case MENU_ACTION_PAUSE:
+//            PTDMENU->bMenuActive = FALSE;
+//            break;
+//
+//        case MENU_ACTION_RESUME:
+//            PTDMENU->bMenuActive = TRUE;
+//            break;
 
         case MENU_ACTION_NEXT:
             if (TRUE==PTDMENU->bEndMarkerSelected)
@@ -141,16 +157,7 @@ void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent)
             if (TRUE==PTDMENU->bEndMarkerSelected)
             {
                 PTDMENU->bEndMarkerSelected = FALSE;
-                // if top level, deactivate menu
-                if (LVL0==MENU_eGetCurrentItemLevel())
-                {
-                    MENU_Deactivate();
-                }
-                else
-                // find first entry of parent menu level
-                {
-                    PTDMENU->ucCurrentItem = MENU_ucGetParentItem(PTDMENU->ucCurrentItem); //MENU_ucGetParentFirstItemId();
-                }
+                MENU_vLevelUp();
                 break;
             }
 
@@ -172,7 +179,15 @@ void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent)
             if (PTDMENU->bConfirmationStateIsNo == FALSE)
             {
 //                LOG ("Do!");
-                MENU_vDoFunction(PCURRENT_ITEM->eMenuFnId);
+                if (MENU_FN_CHILD_MENU == PCURRENT_ITEM->eMenuFnId)
+                {
+                    PTDMENU->ucCurrentItem++;
+                }
+                else
+                {
+                    MENU_vDoFunction(PCURRENT_ITEM->eMenuFnId);
+                    MENU_vLevelUp();
+                }
             }
             else
             {

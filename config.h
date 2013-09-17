@@ -23,5 +23,7 @@ extern volatile unsigned long ulSystemTickMS;
 extern volatile unsigned long ulSystemTickS;
 extern volatile BOOL bBlinkState;
 extern volatile UCHAR ucUIInactiveCounter;
+extern volatile unsigned int uiPumpRunningState;
+extern volatile BOOL bRefreshDisplay;
 
 #endif /* CONFIG_H_ */
