@@ -10,6 +10,7 @@
 #include <key.h> //temp
 #include <log.h>
 #include <string.h>
+#include <display_status.h>
 
 MENU_DEF tdMenu;
 
@@ -38,6 +39,7 @@ void MENU_Deactivate(void)
 {
 	PTDMENU->bMenuActive = FALSE;
 	MENU_DISP_vClrScr();
+	DISP_vStatusScreenShow(STATUS_SCREEN_IDLE);
 }
 
 

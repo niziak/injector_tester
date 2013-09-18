@@ -305,13 +305,13 @@ AVRDUDE_ERASE_COUNTER = -y
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-ACRDUDE_NO_AUTOERASE = -D
+#AVRDUDE_NO_AUTOERASE = -D
 
 AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
-#AVRDUDE_FLAGS += $(ACRDUDE_NO_AUTOERASE)
+AVRDUDE_FLAGS += $(ACRDUDE_NO_AUTOERASE)
 
 
 
@@ -355,7 +355,7 @@ OBJDUMP = $(GCC_BIN_DIR_PREFIX)avr-objdump
 SIZE = $(GCC_BIN_DIR_PREFIX)avr-size
 AR = $(GCC_BIN_DIR_PREFIX)avr-ar rcs
 NM = $(GCC_BIN_DIR_PREFIX)avr-nm
-AVRDUDE = avrdude
+AVRDUDE = tools_win32/avrdude.exe
 REMOVE = $(POSIX_UTILS_DIR_PREFIX)rm -f
 REMOVEDIR = $(POSIX_UTILS_DIR_PREFIX)rm -rf
 COPY = $(POSIX_UTILS_DIR_PREFIX)cp
@@ -455,7 +455,7 @@ sizeafter:
 #	2>/dev/null; echo; fi
 	if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(OBJSIZE); $(ELFSIZE); \
 	echo; fi
-
+	$(OBJDUMP) -s -j .fuse $(OUTDIR)/$(TARGET).elf
 
 
 # Display compiler version information.

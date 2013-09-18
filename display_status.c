@@ -59,6 +59,7 @@ static void vDisplayScreenTitle(void)
  */
 void DISP_vStatusScreenNext(void)
 {
+    bRefreshDisplay = TRUE;
     bShowScreenTitle = TRUE;
     eCurrentScreenId++;
     if (eCurrentScreenId==STATUS_SCREEN_LAST)
@@ -68,6 +69,7 @@ void DISP_vStatusScreenNext(void)
 void DISP_vStatusScreenShow(STATUS_SCREEEN_ID_DEF eNewScreenId)
 {
     bShowScreenTitle = TRUE;
+    bRefreshDisplay = TRUE;
     eCurrentScreenId = eNewScreenId;
 }
 

@@ -14,18 +14,24 @@
  *               XTAL2/TOSC2  PB7   10 ######## 19  PB5 (SCK)
  * 1wire-------------T1       PD5   11 ######## 18  PB4 (MISO) -------MOSFET ON/OFF
  *                  AIN0      PD6   12 ######## 17  PB3 (MOSI) OC2----MOSFET PWM
- *                  AIN1      PD7   13 ######## 16  PB2 (SSn)  OC1B---BTN START/STOP
- *                  ICP1      PB0   14 ######## 15  PB1        OC1A---BTN SET
+ *                  AIN1      PD7   13 ######## 16  PB2 (SSn)  OC1B---BTN NEXT
+ *                  ICP1      PB0   14 ######## 15  PB1        OC1A---BTN OK/MENU
 */
 
-/*
- * Scenariusz: 900 rpm / 5ms  / 4 cyl / sekwencja
-				900 rpm / 4 cyl * 2 obroty/wtrysk = 450 wtryskow na minute = 9,33 wtryskow / sek 
-				
-				8bit PWM daje mi 15,31 Hz * 60 = 919 cykli na min = 1838 rpm silnika
- */
-#include <config.h>
 #include <avr/io.h>
+/* should be 2F d1 */
+    FUSES =
+    {
+        .low =  (     FUSE_BODLEVEL & FUSE_BODEN /* 4V BOD instead of 2,7V */
+                    & FUSE_SUT0 /* 4 ms delay + ext hi freq crystal */
+                ),
+        .high = (     FUSE_SPIEN                        /* spi enable */
+                    & FUSE_BOOTSZ1 & FUSE_BOOTSZ0       /* default but not used */
+                    & FUSE_EESAVE       /* preserve eeprom during flashing */
+                    /*& FUSE_CKOPT*/),     /* set CKOPT disable rail-to-rail oscillation (to reduce power) */
+    };
+
+#include <config.h>
 #include <avr/wdt.h>
 #include <avr/sleep.h>
 #include <util/delay.h>
@@ -64,12 +70,12 @@
 OW_NEW_DEVICE_DEF			atdNewTempSensors  [NUM_OF_TEMP_SENSORS];
 TEMP_SENSOR_PARAMS_DEF		atdKnownTempSensors[NUM_OF_TEMP_SENSORS];
 
-volatile unsigned long ulSystemTickMS = 0;
-volatile unsigned long ulSystemTickS = 0;
-volatile BOOL bBlinkState;                  ///< alternating variable to control blink speed
-volatile UCHAR ucUIInactiveCounter;         ///< in seconds. Counts down
-volatile unsigned int uiPumpRunningState;  ///< 0 - stop pump, autodecremented every 1S in timer
-volatile BOOL bRefreshDisplay;
+volatile unsigned long  ulSystemTickMS = 0;         ///< local time tick counter (increment every ms)
+volatile unsigned long  ulSystemTickS = 0;          ///< local time tick counter (increment every second)
+volatile BOOL           bBlinkState;                ///< alternating variable to control blinking characters
+volatile UCHAR          ucUIInactiveCounter;        ///< in seconds. Counts down
+volatile unsigned int   uiPumpRunningState;         ///< 0 - stop pump, autodecremented every 1S in timer
+volatile BOOL           bRefreshDisplay;            ///< flag to redraw display
 
 //
 void main(void) __attribute__ ((noreturn));
@@ -91,15 +97,16 @@ void main(void)
 	NVM_vLoadSettings();
 
 	EventInit();
-	TIMER_vInit();
 	RTC_vInit();
-
 	//wdt_enable(WDTO_2S);
 	KEY_vInit();
-
 	MENU_vInit();
 
-	EventPost(SYS_1WIRE_READ);
+	atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempInt = TEMP_ERROR;
+	atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt = TEMP_ERROR;
+
+    EventPost(SYS_1WIRE_CONVERT);
+    TIMER_vInit();
 	do {
         wdt_reset();
 #if (INJECTOR_TESTER_MODE)

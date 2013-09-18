@@ -18,6 +18,13 @@
 #include <key.h>
 #include <lib/hal_lcd.h>
 
+/*
+ * Scenariusz: 900 rpm / 5ms  / 4 cyl / sekwencja
+                900 rpm / 4 cyl * 2 obroty/wtrysk = 450 wtryskow na minute = 9,33 wtryskow / sek
+
+                8bit PWM daje mi 15,31 Hz * 60 = 919 cykli na min = 1838 rpm silnika
+ */
+
 static unsigned char bPWMstate;
 
 static void vPWMOn(void)

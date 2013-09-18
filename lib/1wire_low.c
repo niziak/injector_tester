@@ -22,6 +22,7 @@
 #endif
 
 #if 1
+// ATmega8 8MHz
 /********************/
 /* standard timings */      // write slot minimum 60us with 1us recovery
 /********************/
