@@ -5,11 +5,12 @@
  *      Author: nizinski_w
  */
 
-#include <config.h>
-#include "menu.h"
-#include <log.h>
 #include <util/atomic.h>
 #include <string.h>
+
+#include <config.h>
+#include <app_menu.h>
+#include <log.h>
 #include <tools.h>
 
 #if 0
@@ -21,7 +22,7 @@
 
 typedef struct
 {
-    MENU_EVENT_DEF eEvent;  ///< event to post when timer expires
+    EVENT_DEF eEvent;  ///< event to post when timer expires
     unsigned int delayms;   ///< countdown timer. Event is posted when reach zero
 } EVENT_DELAYED_TIMER_DEF;
 
@@ -32,7 +33,7 @@ static EVENT_DELAYED_TIMER_DEF  atdTimers[EVENT_TIMER_LAST];    ///< array index
 #define EVENT_QUEUE_REAL_LEN (EVENT_QUEUE_LEN)+1
 typedef struct
 {
-    MENU_EVENT_DEF      aeCurrentEvent[EVENT_QUEUE_REAL_LEN];
+    EVENT_DEF      aeCurrentEvent[EVENT_QUEUE_REAL_LEN];
     UCHAR               ucReadPtr;
     UCHAR               ucWritePtr;
     BOOL                bFull;
@@ -81,7 +82,7 @@ static void vDumpState(void)
 }
 
 //TODO make it real mutually exclusive
-void EventPostFromIRQ (MENU_EVENT_DEF eEvent)
+void EventPostFromIRQ (EVENT_DEF eEvent)
 {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
@@ -112,7 +113,7 @@ void EventPostFromIRQ (MENU_EVENT_DEF eEvent)
     }
 }
 
-void EventPost (MENU_EVENT_DEF eEvent)
+void EventPost (EVENT_DEF eEvent)
 {
     DEBUG("Post");
     EventPostFromIRQ(eEvent);
@@ -127,7 +128,7 @@ void EventPost (MENU_EVENT_DEF eEvent)
  * @param eEvent    event to post after time
  * @param delayms   delay in ms (unsidned int)
  */
-void EventTimerPostAFter (EVENT_DELAYED_TIMER_ID eTimerId, MENU_EVENT_DEF eEvent, unsigned int delayms)
+void EventTimerPostAFter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms)
 {
     atdTimers[eTimerId].delayms = delayms;
     atdTimers[eTimerId].eEvent = eEvent;
@@ -164,9 +165,9 @@ BOOL bIsEventWaiting(void)
 	return bReturn;
 }
 
-MENU_EVENT_DEF EventGet(void)
+EVENT_DEF EventGet(void)
 {
-    MENU_EVENT_DEF eRet;
+    EVENT_DEF eRet;
     DEBUG("Get");
     if (bIsEventWaiting()==FALSE)
     {

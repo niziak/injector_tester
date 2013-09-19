@@ -4,7 +4,7 @@
  *  Created on: Sep 11, 2013
  *      Author: nizinski_w
  */
-#include "menu.h"
+#include <app_menu.h>
 
 static void vDrawConfirmationScreen(void)
 {

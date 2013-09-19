@@ -4,8 +4,10 @@
  *  Created on: Sep 10, 2013
  *      Author: nizinski_w
  */
-#include "menu.h"
 #include <string.h>
+
+
+#include <app_menu.h>
 #include <lib/1wire_config.h>
 #include <lib/nvm.h>
 
@@ -19,7 +21,10 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
             break;
 
         case MENU_FN_10MIN:
-            uiPumpRunningState = (unsigned int)(10*60); //TODO
+            uiPumpSwitchOffAfter = (unsigned int)(10*60); //TODO
+            break;
+
+        case MENU_FN_CLOCK:
             break;
 
         case MENU_FN_REBOOT:

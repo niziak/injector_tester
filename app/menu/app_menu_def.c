@@ -8,7 +8,7 @@
 #ifndef MENU_DEF_C_
 #define MENU_DEF_C_
 
-#include <lib/menu/menu.h>
+#include <app_menu.h>
 
 MENU_ITEM_DEF	atdMenuItems[NUMBER_OF_MENU_ITEMS] =
 {
@@ -21,7 +21,7 @@ MENU_ITEM_DEF	atdMenuItems[NUMBER_OF_MENU_ITEMS] =
                 { LVL2, MID_1W_KRAN_POKAZ,          "Pokaz",            MENU_FN_SHOW_1W_KRAN,               NO_ASK  },
                 { LVL2, MID_1W_KRAN_USTAW,          "Ustaw",            MENU_FN_SET_1W_KRAN,                ASK     },
 
-			{ LVL1, MID_INVALID,			"Zegar",		    0, 0			},
+			{ LVL1, MID_INVALID,			"Zegar",		    MENU_FN_CLOCK,                              ASK	    },
 			{ LVL1, MID_INVALID,            "Fabryczne",        MENU_FN_FACTORY_DEFAULT,                    ASK     },
 
 		{ LVL0, MID_INVALID,		"Tryb",		                MENU_FN_CHILD_MENU,                         NO_ASK	},

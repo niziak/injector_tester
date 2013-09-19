@@ -37,14 +37,14 @@ typedef enum
 
     DISP_UPDATE,                ///< redraw display
 
-} MENU_EVENT_DEF;
+} EVENT_DEF;
 
-extern void EventPost (MENU_EVENT_DEF eEvent);
-extern void EventPostFromIRQ (MENU_EVENT_DEF eEvent);
-extern void EventTimerPostAFter (EVENT_DELAYED_TIMER_ID eTimerId, MENU_EVENT_DEF eEvent, unsigned int delayms);
+extern void EventPost (EVENT_DEF eEvent);
+extern void EventPostFromIRQ (EVENT_DEF eEvent);
+extern void EventTimerPostAFter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms);
 extern void EventTimerTickEveryMS(void);
 extern BOOL bIsEventWaiting(void);
-extern MENU_EVENT_DEF EventGet(void);
+extern EVENT_DEF EventGet(void);
 extern void EventInit(void);
 
 #endif /* EVENTS_H_ */

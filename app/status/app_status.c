@@ -10,7 +10,7 @@
 #include <string.h>
 #include <1wire_config.h>
 #include <stdio.h>
-#include "display_status.h"
+#include <app.h>
 #include <rtc.h>
 #include <tools.h>
 
@@ -117,15 +117,15 @@ void DISP_vPrintStatusScreen(void)
             vPrintTemp(ONEWIRE_ZASO_IDX);
             LCD_vPutc(' ');
             vPrintTemp(ONEWIRE_KRAN_IDX);
-            if ((uiPumpRunningState>0) && (bBlinkState==TRUE))
+            if ((uiPumpSwitchOffAfter>0) && (bBlinkState==TRUE))
             {
                 LCD_vGotoXY(15,0);
                 LCD_vPutc(255);
             }
-            if ((uiPumpRunningState>0))
+            if ((uiPumpSwitchOffAfter>0))
             {
                 LCD_vGotoXY(10,1);
-                LCD_vPrintf_P("%4d", uiPumpRunningState);
+                LCD_vPrintf_P("%4d", uiPumpSwitchOffAfter);
             }
             LCD_vGotoXY(0,1);
             LCD_vPrintf_P("%02d:%02d:%02d", ptdLocalTime->tm_hour,

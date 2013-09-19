@@ -6,9 +6,9 @@
  */
 
 #include <config.h>
-#include "menu.h"
+#include <app_menu.h>
 
-void MENU_ConfirmationScreenHandler(MENU_EVENT_DEF eMenuAction)
+void MENU_ConfirmationScreenHandler(EVENT_DEF eMenuAction)
 {
     if (FALSE==PTDMENU->bConfirmationScreenActive)
         RESET("cfmna");

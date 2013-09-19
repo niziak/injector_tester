@@ -7,8 +7,9 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+
 #include <key.h>
-#include <lib/menu/menu.h>
+#include <app.h>
 #include <log.h>
 #include <tools.h>
 

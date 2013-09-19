@@ -9,7 +9,7 @@
  *                  INT1      PD3    5 ######## 24  PC1 ADC1---------LCD D6
  *                 XCK T0     PD4    6 ######## 23  PC0 ADC0---------LCD D7
  *                            VCC    7 ######## 22  GND
- *                            GND    8 ######## 21  AREF
+ *                            GND    8 ######## 21  AREF ---||--- 100nF capacitor to GND
  *               XTAL1/TOSC1  PB6    9 ######## 20  AVCC
  *               XTAL2/TOSC2  PB7   10 ######## 19  PB5 (SCK)
  * 1wire-------------T1       PD5   11 ######## 18  PB4 (MISO) -------MOSFET ON/OFF
@@ -31,26 +31,27 @@
                     /*& FUSE_CKOPT*/),     /* set CKOPT disable rail-to-rail oscillation (to reduce power) */
     };
 
-#include <config.h>
 #include <avr/wdt.h>
 #include <avr/sleep.h>
 #include <util/delay.h>
+
 #include <stdio.h>
 #include <string.h>
 
+#include <config.h>
 #include <lib/hal_lcd.h>
-#include <lib/menu/menu.h>
 
 #include <key.h>
 #include <log.h>
 #include <pulsegen.h>
 #include "timer0.h"
+#include <adc.h>
 #include "rtc.h"
 #include <tools.h>
 
 #include <lib/1wire_config.h>
 #include <lib/1wire.h>
-#include "display_status.h"
+#include <app.h>
 #include <lib/nvm.h>
 
 //#include "HD44780.h"
@@ -74,7 +75,7 @@ volatile unsigned long  ulSystemTickMS = 0;         ///< local time tick counter
 volatile unsigned long  ulSystemTickS = 0;          ///< local time tick counter (increment every second)
 volatile BOOL           bBlinkState;                ///< alternating variable to control blinking characters
 volatile UCHAR          ucUIInactiveCounter;        ///< in seconds. Counts down
-volatile unsigned int   uiPumpRunningState;         ///< 0 - stop pump, autodecremented every 1S in timer
+volatile unsigned int   uiPumpSwitchOffAfter;       ///< 0 - stop pump, automatically decremented every 1S in timer
 volatile BOOL           bRefreshDisplay;            ///< flag to redraw display
 
 //
@@ -106,7 +107,10 @@ void main(void)
 	atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt = TEMP_ERROR;
 
     EventPost(SYS_1WIRE_CONVERT);
+    APP_vActivateApp(APP_STATUS);
     TIMER_vInit();
+    ADC_vInit();
+    sei();
 	do {
         wdt_reset();
 #if (INJECTOR_TESTER_MODE)
@@ -115,7 +119,7 @@ void main(void)
 		// EVENT HANDLING
 		if (TRUE == bIsEventWaiting())
 		{
-		    MENU_EVENT_DEF eEvent = EventGet();
+		    EVENT_DEF eEvent = EventGet();
 		    switch (eEvent)
 		    {
 		        case SYS_1WIRE_CONVERT:
@@ -138,31 +142,8 @@ void main(void)
 		            break;
 		    }
 
-	        if (TRUE == MENU_bIsMenuActive())
-	        {
-	            MENU_HandleEvent(eEvent);   // handle menu events if menu active
-	        }
-	        else
-	        {
-	            switch (eEvent)
-	            {
-	                case MENU_ACTION_SELECT:
-	                    MENU_Activate();                // menu not active - so activate it
-	                    break;
-
-	                case MENU_ACTION_NEXT:
-	                    DISP_vStatusScreenNext();
-	                    break;
-
-	                case SYS_UI_TIMEOUT:
-	                    LOG("UI TO");
-	                    DISP_vStatusScreenShow (STATUS_SCREEN_IDLE);
-	                    break;
-
-	                default:
-	                    break;
-	            }
-	        }
+		    // forward event to active application
+		    APP_vRouteEvent(eEvent);
 		} //   if (TRUE==bIsEventWaiting())
 		else
 		{
@@ -172,18 +153,10 @@ void main(void)
 		if (bRefreshDisplay==TRUE)
 		{
             bRefreshDisplay = FALSE;
-            // DISPLAY HANDLING
-            if (TRUE == MENU_bIsMenuActive())
-            {
-                MENU_vShow(); // redraw menu
-            }
-            else
-            {
-                DISP_vPrintStatusScreen(); // redraw status screen
-            }
+            APP_vUpdateDisplay();
 	    }
 
-        if (uiPumpRunningState>0)
+        if (uiPumpSwitchOffAfter>0)
         {
             LED_HI
         }
@@ -192,6 +165,8 @@ void main(void)
             LED_LOW
         }
 
+        LCD_vGotoXY(0,1);
+        LCD_vPrintf(" %d ", uiADC);
 //
 //		LCD_vGotoXY(0,1);
 //		LCD_vPrintf("%lu[%d %d]",ulSystemTickS, BTN_NEXT_PRESSED, BTN_OK_PRESSED);

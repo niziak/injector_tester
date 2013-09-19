@@ -8,11 +8,12 @@
 #ifndef MENU_H_
 #define MENU_H_
 
-#include <config.h>
-#include <lib/menu/menu_config.h>
-#include <types.h>
 #include <avr/pgmspace.h>
-#include <lib/menu/events.h>
+
+#include <config.h>
+#include <types.h>
+#include <lib/events.h>
+#include <app_menu_config.h>
 
 typedef enum
 {
@@ -44,6 +45,7 @@ typedef enum
 
 	MENU_FN_REBOOT,
 	MENU_FN_10MIN,
+	MENU_FN_CLOCK,
 
 	MENU_FN_SHOW_1W_ZASOBNIK,
 	MENU_FN_SET_1W_ZASOBNIK,
@@ -95,7 +97,7 @@ typedef struct
 extern MENU_DEF tdMenu;
 
 extern void MENU_vInit(void);
-extern void MENU_HandleEvent(MENU_EVENT_DEF eMenuEvent);
+extern void MENU_HandleEvent(EVENT_DEF eMenuEvent);
 extern BOOL MENU_bIsMenuActive(void);
 extern void MENU_vShow(void);
 extern void MENU_Activate(void);
@@ -103,8 +105,8 @@ extern void MENU_Deactivate(void);
 
 // internals:
 extern void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId);
-extern void MENU_ConfirmationScreenHandler(MENU_EVENT_DEF eMenuAction);
-extern void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent);
+extern void MENU_ConfirmationScreenHandler(EVENT_DEF eMenuAction);
+extern void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent);
 extern MENU_LEVEL_ID_DEF MENU_eGetCurrentItemLevel(void);
 extern UCHAR MENU_ucGetParentItem(UCHAR ucCurrentItem);
 

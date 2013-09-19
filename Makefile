@@ -62,12 +62,24 @@ OUTDIR = out
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRAINCDIRS = lib 
+EXTRAINCDIRS = 	lib \
+				app \
+				app/menu \
+				app/clock \
+				app/status
+				
 #lib/lcd_radzio lib/lcd_pfleury
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c pulsegen.c log.c timer0.c rtc.c display_status.c tools.c
+SRC = 	$(TARGET).c \
+		pulsegen.c \
+		log.c \
+		timer0.c \
+		rtc.c \
+		tools.c \
+		adc.c
+		
 SRC+= lib/key.c
 SRC+= lib/1wire_low.c lib/1wire.c 
 #SRC+= lib/lcd_radzio/HD44780.c lib/lcd_radzio/bufferedLcd.c 
@@ -75,14 +87,19 @@ SRC+= lib/lcd_pfleury/lcd.c
 SRC+= lib/hal_lcd.c
 
 SRC+= lib/nvm.c
+SRC+= lib/events.c 
 
-SRC+=	lib/menu/menu_def.c \
-		lib/menu/menu.c \
-		lib/menu/menu_fn.c \
-		lib/menu/menu_confirm.c \
-		lib/menu/menu_nav.c \
-		lib/menu/menu_display.c \
-		lib/menu/events.c 
+SRC+=	app/app.c
+
+SRC+=	app/menu/app_menu_def.c \
+		app/menu/app_menu.c \
+		app/menu/app_menu_fn.c \
+		app/menu/app_menu_confirm.c \
+		app/menu/app_menu_nav.c \
+		app/menu/app_menu_display.c
+
+SRC+=   app/status/app_status.c
+SRC+=   app/clock/app_clock.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)

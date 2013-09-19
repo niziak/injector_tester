@@ -5,27 +5,28 @@
  *      Author: nizinski_w
  */
 
-#include "config.h"
-#include "timer0.h"
-#include <lib/menu/events.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
+
+#include "config.h"
+#include "timer0.h"
+#include <events.h>
 #include "rtc.h"
 #include <lib/key.h>
 
 #define WITH_INT_OVERLAP_DETECTION      TRUE
 
-#if (WITH_INT_OVERLAPPED_DETECTION)
+#if (WITH_INT_OVERLAP_DETECTION)
 static volatile BOOL bInISR = FALSE;
 #endif
 
 ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
 {
     RESET_TIMER0_CNT;
-#if (WITH_INT_OVERLAPPED_DETECTION)
+#if (WITH_INT_OVERLAP_DETECTION)
     if (bInISR==TRUE)
     {
-        RESET("INT OVLP");
+        RESET("TIM OVLP");
     }
     bInISR = TRUE;
 #endif
@@ -45,9 +46,9 @@ ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
             }
         }
 
-        if (uiPumpRunningState>0)
+        if (uiPumpSwitchOffAfter>0)
         {
-            uiPumpRunningState--;
+            uiPumpSwitchOffAfter--;
         }
         RTC_vTickLocalTime();
         RTC_vConvertLocalTime();
@@ -71,7 +72,7 @@ ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
         EventPostFromIRQ (SYS_1WIRE_CONVERT);
     }
     EventTimerTickEveryMS();
-#if (WITH_INT_OVERLAPPED_DETECTION)
+#if (WITH_INT_OVERLAP_DETECTION)
     bInISR = FALSE;
 #endif
 }
@@ -81,5 +82,4 @@ void TIMER_vInit(void)
     TIMSK |= (1<<TOIE0);    // enable timer overflow int
     RESET_TIMER0_CNT;
     TCCR0 = (1<<CS00) | (1<<CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick co 128us * 256  = 32ms
-    sei();
 }

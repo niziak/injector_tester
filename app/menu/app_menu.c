@@ -5,12 +5,12 @@
  *      Author: nizinski_w
  */
 
+#include <string.h>
 
-#include <lib/menu/menu.h>
+#include <app_menu.h>
 #include <key.h> //temp
 #include <log.h>
-#include <string.h>
-#include <display_status.h>
+#include <app_status.h>
 
 MENU_DEF tdMenu;
 
@@ -46,7 +46,7 @@ void MENU_Deactivate(void)
 
 
 
-void MENU_HandleEvent(MENU_EVENT_DEF eMenuEvent)
+void MENU_HandleEvent(EVENT_DEF eMenuEvent)
 {
     switch (eMenuEvent)
     {

@@ -4,7 +4,7 @@
  *  Created on: Sep 11, 2013
  *      Author: nizinski_w
  */
-#include "menu.h"
+#include <app_menu.h>
 
 MENU_LEVEL_ID_DEF MENU_eGetCurrentItemLevel(void)
 {
@@ -116,7 +116,7 @@ void MENU_vLevelUp(void)
     }
 }
 
-void MENU_MenuNavigationHandler(MENU_EVENT_DEF eMenuEvent)
+void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
 {
     switch (eMenuEvent)
     {
