@@ -20,6 +20,11 @@
 static volatile BOOL bInISR = FALSE;
 #endif
 
+/**
+ *
+ * @param TIMER0_OVF_vect
+ * @param ISR_NOBLOCK
+ */
 ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
 {
     RESET_TIMER0_CNT;
@@ -52,6 +57,7 @@ ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
         }
         RTC_vTickLocalTime();
         RTC_vConvertLocalTime();
+        EventPostFromIRQ (SYS_HEARTBEAT);
     }
 
 
@@ -77,9 +83,21 @@ ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
 #endif
 }
 
+/**
+ * Initialise system timer
+ */
 void TIMER_vInit(void)
 {
-    TIMSK |= (1<<TOIE0);    // enable timer overflow int
+#if defined (__AVR_ATmega8__)
+    TIMSK |= (1<<TOIE0);    // enable timer0 overflow int
     RESET_TIMER0_CNT;
     TCCR0 = (1<<CS00) | (1<<CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick co 128us * 256  = 32ms
+#elif defined (__AVR_ATmega328P__)
+    TIMSK0 |= (1<<TOIE0);    // enable timer0 overflow int
+    RESET_TIMER0_CNT;
+    TCCR0B = (1<<CS00) | (1<<CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick co 128us * 256  = 32ms
+#else
+    #error "CPU!"
+#endif
+
 }

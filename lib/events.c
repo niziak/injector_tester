@@ -157,6 +157,7 @@ BOOL bIsEventWaiting(void)
 {
     DEBUG("IsWait?");
     BOOL bReturn;
+    (void)bReturn;
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         //bReturn = (ptdFifo->bEmpty==TRUE ? FALSE : TRUE);
@@ -168,6 +169,7 @@ BOOL bIsEventWaiting(void)
 EVENT_DEF EventGet(void)
 {
     EVENT_DEF eRet;
+    (void)eRet;
     DEBUG("Get");
     if (bIsEventWaiting()==FALSE)
     {

@@ -38,15 +38,25 @@
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
 
-# must ends with backslash
-GCC_BIN_DIR_PREFIX := n:/tools/WinAVR/bin/
+#
+# !!!  must ends with backslash and NO SPACE AND END !!!
+#
+#GCC_BIN_DIR_PREFIX := n:/tools/WinAVR/bin/
 POSIX_UTILS_DIR_PREFIX : = n:/tools/WinAVR/utils/bin/
 
 #GCC_BIN_DIR_PREFIX := n:/tools/avrgcc/bin 
 #POSIX_UTILS_DIR_PREFIX : = n:/tools/WinAVR/utils/bin/
+
+GCC_BIN_DIR_PREFIX := n:/Arduino/hardware/tools/avr/bin/
+#POSIX_UTILS_DIR_PREFIX : = n:/Arduino/hardware/tools/avr/utils/bin/
+
  
-MCU = atmega8
-F_CPU = 8000000
+ 
+#MCU = atmega8
+MCU = atmega328p
+
+#F_CPU = 8000000
+F_CPU = 16000000
 FORMAT = ihex
 
 # Target file name (without extension).
@@ -178,9 +188,11 @@ CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:%.c=$(OBJDIR)/%.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
+
 #Niziak:
 #CFLAGS += -fno-inline
 #CFLAGS += --param inline-call-cost=2 
+
 CFLAGS += -finline-limit=3
 CFLAGS += -fno-inline-small-functions
 CFLAGS += -ffunction-sections
@@ -299,10 +311,12 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = usbasp
+#AVRDUDE_PROGRAMMER = usbasp
+AVRDUDE_PROGRAMMER = arduino
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = usb
+#AVRDUDE_PORT = usb
+AVRDUDE_PORT = COM25
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(OUTDIR)/$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -322,9 +336,13 @@ AVRDUDE_ERASE_COUNTER = -y
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-#AVRDUDE_NO_AUTOERASE = -D
+# needed for arduino
+AVRDUDE_NO_AUTOERASE = -D
 
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_CONF  = tools_win32\avrdude.conf
+
+AVRDUDE_FLAGS = $(AVRDUDE_CONF)  
+AVRDUDE_FLAGS += -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
 AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)

@@ -88,7 +88,9 @@ ISR(ADC_vect, ISR_NOBLOCK)
 }
 
 
-
+/**
+ * Initialize ADC in free running mode
+ */
 void ADC_vInit(void)
 {
     ADMUX = (   (1<<ADLAR)                            // ADC Left adjust
@@ -96,12 +98,27 @@ void ADC_vInit(void)
               /*| (1<<MUX3)  | (1<<MUX2)  | (1<<MUX2) */      // 1110 - 1,30V Vbg     0000-ADC0
             );
 
+#if defined (__AVR_ATmega8__)
     ADCSRA = (   (1<<ADFR)             // free running mode
                | (1<<ADIE)             // ADC int enable
                | (1<<ADPS2)            // prescaler 111 - divide by 128
                | (1<<ADPS1)
                | (1<<ADPS0)
              );
+#elif defined (__AVR_ATmega328P__)
+    ADCSRA = (   (1<<ADATE)            // auto trigger enable
+               | (1<<ADIE)             // ADC int enable
+               | (1<<ADPS2)            // prescaler 111 - divide by 128
+               | (1<<ADPS1)
+               | (1<<ADPS0)
+             );
+//    ADCSRB = (                        // 0 = free running mode
+//
+//             );
+#else
+    #error "CPU!"
+#endif
+
 
     ADCSRA |= (   (1<<ADEN)                // ADC enable
                 | (1<<ADSC)                // start first conversion

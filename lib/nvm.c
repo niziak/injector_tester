@@ -61,7 +61,13 @@ void NVM_vSaveSettings(void)
     unsigned char aucMagic[NVM_MAGIC_LEN];
     unsigned int uiVersion = NVM_VERSION;
     memset (&aucMagic[0], NVM_MAGIC_BYTE, sizeof (aucMagic));
+#if (AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN)
     eeprom_update_block ( &(uiVersion),               &(NVM_uiVersion),                sizeof(uiVersion)          );
     eeprom_update_block ( &(aucMagic[0]),             &(NVM_aucMagic[0]),              sizeof(aucMagic)           );
     eeprom_update_block ( &(atdKnownTempSensors[0]),  &(NVM_atdKnownTempSensors[0]),   sizeof(atdKnownTempSensors));
+#else
+    eeprom_write_block ( &(uiVersion),               &(NVM_uiVersion),                sizeof(uiVersion)          );
+    eeprom_write_block ( &(aucMagic[0]),             &(NVM_aucMagic[0]),              sizeof(aucMagic)           );
+    eeprom_write_block ( &(atdKnownTempSensors[0]),  &(NVM_atdKnownTempSensors[0]),   sizeof(atdKnownTempSensors));
+#endif
 }

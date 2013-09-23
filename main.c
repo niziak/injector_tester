@@ -1,16 +1,15 @@
-/* "led.c" - programik do testowania środowiska WinAVR */
-/* układ ATmega 1MHz */
-/* PB0,PB1 - diody LED; PD0 - przycisk */
 /*
+ *                                     ATMEGA 8
+ *
  *                 RESETn     PC6    1 ###  ### 28  PC5 ADC5/SCL-----LCD RW
  *                   RXD      PD0    2 ######## 27  PC4 ADC4/SDA-----LCD EN
  *                   TXD      PD1    3 ######## 26  PC3 ADC3---------LCD D4
- * LCD RS-----------INT0      PD2    4 ######## 25  PC2 ADC2---------LCD D5
- *                  INT1      PD3    5 ######## 24  PC1 ADC1---------LCD D6
- *                 XCK T0     PD4    6 ######## 23  PC0 ADC0---------LCD D7
- *                            VCC    7 ######## 22  GND
- *                            GND    8 ######## 21  AREF ---||--- 100nF capacitor to GND
- *               XTAL1/TOSC1  PB6    9 ######## 20  AVCC
+ * LCD RS-----------INT0      PD2    4 ###M#### 25  PC2 ADC2---------LCD D5
+ *                  INT1      PD3    5 ###E#### 24  PC1 ADC1---------LCD D6
+ *                 XCK T0     PD4    6 ###G#### 23  PC0 ADC0---------LCD D7
+ *                            VCC    7 ###A#### 22  GND
+ *                            GND    8 ### #### 21  AREF ---||--- 100nF capacitor to GND
+ *               XTAL1/TOSC1  PB6    9 ###8#### 20  AVCC
  *               XTAL2/TOSC2  PB7   10 ######## 19  PB5 (SCK)
  * 1wire-------------T1       PD5   11 ######## 18  PB4 (MISO) -------MOSFET ON/OFF
  *                  AIN0      PD6   12 ######## 17  PB3 (MOSI) OC2----MOSFET PWM
@@ -18,7 +17,30 @@
  *                  ICP1      PB0   14 ######## 15  PB1        OC1A---BTN OK/MENU
 */
 
+
+
+/*
+ *                                                ATMEGA 328p
+ *
+ *                PCINT14 / RESETn        PC6    1 ###    ### 28  PC5 ADC5 /SCL / PCINT13
+ *                PCINT16 / RXD           PD0    2 ###    ### 27  PC4 ADC4 /SDA / PCINT12
+ * LCD D7---------PCINT17 / TXD           PD1    3 ########## 26  PC3 ADC3 / PCINT11
+ * LCD D6---------PCINT18 / INT0          PD2    4 ####M##### 25  PC2 ADC2 / PCINT10
+ * LCD D5---------PCINT19 / OC2B / INT1   PD3    5 ####E##### 24  PC1 ADC1 / PCINT9
+ * LCD D4---------PCINT20 / XCK  / T0     PD4    6 ####G##### 23  PC0 ADC0 / PCINT8----------------KEYBOARD
+ *                                        VCC    7 ####A##### 22  GND
+ *                                        GND    8 #### ##### 21  AREF ---||--- 100nF capacitor to GND
+ *                PCINT6  / XTAL1 / TOSC1 PB6    9 ####3##### 20  AVCC
+ *                PCINT7  / XTAL2 / TOSC2 PB7   10 ####2##### 19  PB5 SCK  / PCINT5----------------Yellow LED arduino
+ * 1wire----------PCINT21 / OC0B  / T1    PD5   11 ####8##### 18  PB4 MISO / PCINT4
+ *                PCINT22 / OC0A  / AIN0  PD6   12 ####p##### 17  PB3 MOSI / OC2A / PCINT3
+ *                PCINT23 / AIN1          PD7   13 ########## 16  PB2 SSn  / OC1B / PCINT2
+ * LCD RS---------PCINT0  / CLK0  / ICP1  PB0   14 ########## 15  PB1        OC1A / PCINT1---------LCD E
+*/
+
 #include <avr/io.h>
+
+#if defined (__AVR_ATmega8__)
 /* should be 2F d1 */
     FUSES =
     {
@@ -30,6 +52,12 @@
                     & FUSE_EESAVE       /* preserve eeprom during flashing */
                     /*& FUSE_CKOPT*/),     /* set CKOPT disable rail-to-rail oscillation (to reduce power) */
     };
+#elif defined (__AVR_ATmega328P__)
+
+#else
+    #error "Please suse correct CPU!"
+#endif
+
 
 #include <avr/wdt.h>
 #include <avr/sleep.h>
@@ -57,17 +85,6 @@
 //#include "HD44780.h"
 
 
-
-#define LED_PORT	PORTB
-#define LED_DDR		DDRB
-#define LED_PIN		PINB4
-
-#define LED_LOW		{	LED_PORT &=~ _BV(LED_PIN); }
-#define LED_HI	 	{	LED_PORT |=  _BV(LED_PIN); }
-#define LED_SETUP	{   LED_DDR  |=  _BV(LED_PIN); }
-
-
-
 OW_NEW_DEVICE_DEF			atdNewTempSensors  [NUM_OF_TEMP_SENSORS];
 TEMP_SENSOR_PARAMS_DEF		atdKnownTempSensors[NUM_OF_TEMP_SENSORS];
 
@@ -83,8 +100,11 @@ void main(void) __attribute__ ((noreturn));
 void main(void)
 {
 	// LOW level setup
-	LED_SETUP
-	LED_LOW
+    LCD_BL_SETUP
+    LCD_BL_LOW
+
+    HB_LED_SETUP
+    HB_LED_LOW
 
 	// LCD first to display potential error messages
     LCD_vInit();
@@ -138,6 +158,15 @@ void main(void)
 		             ucUIInactiveCounter = UI_INACTIVE_TIMEOUT; // Reinitialize timeout conter with every keypres
 		             break;
 
+                case SYS_UI_TIMEOUT:
+                    LOG("UI TO");
+                    break;
+
+                case SYS_HEARTBEAT:
+                    LCD_BL_ALTER
+                    HB_LED_ALTER
+                    break;
+
 		        default:
 		            break;
 		    }
@@ -158,14 +187,14 @@ void main(void)
 
         if (uiPumpSwitchOffAfter>0)
         {
-            LED_HI
+            HB_LED_HI
         }
         else
         {
-            LED_LOW
+            HB_LED_LOW
         }
 
-        LCD_vGotoXY(0,1);
+        LCD_vGotoXY(12,1);
         LCD_vPrintf(" %d ", uiADC);
 //
 //		LCD_vGotoXY(0,1);

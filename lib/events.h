@@ -24,8 +24,11 @@ typedef enum
 {
     SYS_EVENT_NONE =0,
 
+    SYS_HEARTBEAT,
+
     SYS_1WIRE_CONVERT,
     SYS_1WIRE_READ,
+
 
     SYS_UI_TIMEOUT,            ///< no user action - timeout from last keypress
 
