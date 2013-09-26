@@ -39,22 +39,22 @@ Version:   1.11
 #define LCD_BUSY                7    // DB7: LCD is busy
 
 
-void lcd_init();
-void lcd_command(uint8_t cmd);
+extern void lcd_init(void);
+extern void lcd_command(uint8_t cmd);
 
-void lcd_clrscr();
-void lcd_home();
-void lcd_goto(uint8_t pos);
+extern void lcd_clrscr(void);
+extern void lcd_home(void);
+extern void lcd_goto(uint8_t pos);
 
 #if RW_LINE_IMPLEMENTED==1
-uint8_t lcd_getc();
+extern uint8_t lcd_getc(void);
 #endif
 
-void lcd_putc(char c);
-void lcd_puts(const char *s);
-void lcd_puts_P(const char *progmem_s);
+extern void lcd_putc(char c);
+extern void lcd_puts(const char *s);
+extern void lcd_puts_P(const char *progmem_s);
 #if (LCD_DISPLAYS>1)
-void lcd_use_display(int ADisplay);
+extern void lcd_use_display(int ADisplay);
 #endif
 
 #endif
