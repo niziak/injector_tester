@@ -5,6 +5,8 @@
  *      Author: nizinski_w
  */
 
+#include <avr/pgmspace.h>
+
 #include <config.h>
 #include <lib/hal_lcd.h>
 #include <string.h>
@@ -20,6 +22,7 @@ static BOOL bShowScreenTitle;
 
 static void vDisplayScreenTitle(void)
 {
+    DEBUG_P(PSTR("vDisplayScreenTitle\n"));
     switch (eCurrentScreenId)
     {
         case STATUS_SCREEN_IDLE:
@@ -39,15 +42,15 @@ static void vDisplayScreenTitle(void)
             break;
 
         case STATUS_SCREEN_NEW_SENSORS:
-            LCD_vPuts_P ("Nowe sensory:");
+            LCD_vPuts_P (PSTR("Nowe sensory:"));
             break;
 
         case STATUS_SCREEN_KNOWN_SENSORS:
-            LCD_vPuts_P ("Zapisane sensory:");
+            LCD_vPuts_P (PSTR("Zapisane sensory:"));
             break;
 
         case STATUS_SCREEN_TEMP:
-            LCD_vPuts_P ("Temp:");
+            LCD_vPuts_P (PSTR("Temp:"));
             break;
 
     }
@@ -59,17 +62,21 @@ static void vDisplayScreenTitle(void)
  */
 void DISP_vStatusScreenNext(void)
 {
-    bRefreshDisplay = TRUE;
+    bRefreshDisplay  = TRUE;
     bShowScreenTitle = TRUE;
     eCurrentScreenId++;
     if (eCurrentScreenId==STATUS_SCREEN_LAST)
         eCurrentScreenId=0;
 }
 
-void DISP_vStatusScreenShow(STATUS_SCREEEN_ID_DEF eNewScreenId)
+/**
+ * Immediatelly set new status screen
+ * @param eNewScreenId
+ */
+void DISP_vStatusScreenSetNew(STATUS_SCREEEN_ID_DEF eNewScreenId)
 {
     bShowScreenTitle = TRUE;
-    bRefreshDisplay = TRUE;
+    bRefreshDisplay  = TRUE;
     eCurrentScreenId = eNewScreenId;
 }
 
@@ -82,12 +89,12 @@ static void vPrintTemp (UCHAR ucOneWireIdx)
     if (TEMP_ERROR == atdKnownTempSensors[ucOneWireIdx].iTempInt)
     {
         //           23.3'
-        LCD_vPuts_P("error");
+        LCD_vPuts_P(PSTR("error"));
     }
     else
     {
-        LCD_vPrintf_P("%02d,%01d%c",        atdKnownTempSensors[ucOneWireIdx].iTempInt,
-                                            atdKnownTempSensors[ucOneWireIdx].iTempFrac/1000, (unsigned char)223);
+        LCD_vPrintf_P(PSTR("%02d,%01d%c"), atdKnownTempSensors[ucOneWireIdx].iTempInt,
+                                           atdKnownTempSensors[ucOneWireIdx].iTempFrac/1000, (unsigned char)223);
     }
 }
 
@@ -99,11 +106,12 @@ static void vPrintOneWireSerial(UCHAR *pucROM)
 {
     UCHAR a;
     for (a=0; a<OW_ADDRESS_LEN; ++a)
-        LCD_vPrintf_P("%02X", pucROM[a]);
+        LCD_vPrintf_P(PSTR("%02X"), pucROM[a]);
 }
 
 void DISP_vPrintStatusScreen(void)
 {
+    DEBUG_P(PSTR("DISP_vPrintStatusScreen\n"));
     if (bShowScreenTitle)
     {
         vDisplayScreenTitle();
@@ -125,17 +133,17 @@ void DISP_vPrintStatusScreen(void)
             if ((uiPumpSwitchOffAfter>0))
             {
                 LCD_vGotoXY(10,1);
-                LCD_vPrintf_P("%4d", uiPumpSwitchOffAfter);
+                LCD_vPrintf_P(PSTR("%4d"), uiPumpSwitchOffAfter);
             }
             LCD_vGotoXY(0,1);
-            LCD_vPrintf_P("%02d:%02d:%02d", ptdLocalTime->tm_hour,
-                                            ptdLocalTime->tm_min,
-                                            ptdLocalTime->tm_sec);
+            LCD_vPrintf_P(PSTR("%02d:%02d:%02d"),   ptdLocalTime->tm_hour,
+                                                    ptdLocalTime->tm_min,
+                                                    ptdLocalTime->tm_sec);
             return;
             break;
 
         default:
-            RESET("No st scr");
+            RESET("app st No scr");
             break;
 
         case STATUS_SCREEN_NEW_SENSORS:
@@ -151,10 +159,10 @@ void DISP_vPrintStatusScreen(void)
             break;
 
         case STATUS_SCREEN_TEMP:
-            LCD_vPuts_P("Zasobnik: ");
+            LCD_vPuts_P(PSTR("Zasobnik: "));
             vPrintTemp(ONEWIRE_ZASO_IDX);
             LCD_vGotoXY(0,1);
-            LCD_vPuts_P("Kran:     ");
+            LCD_vPuts_P(PSTR("Kran:     "));
             vPrintTemp(ONEWIRE_KRAN_IDX);
             break;
     }

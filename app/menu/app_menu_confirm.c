@@ -11,7 +11,7 @@
 void MENU_ConfirmationScreenHandler(EVENT_DEF eMenuAction)
 {
     if (FALSE==PTDMENU->bConfirmationScreenActive)
-        RESET("cfmna");
+        RESET("app mn cfmna");
 
     switch (eMenuAction)
     {

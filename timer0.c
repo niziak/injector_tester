@@ -8,13 +8,13 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-#include "config.h"
-#include "timer0.h"
+#include <config.h>
+#include <timer0.h>
 #include <events.h>
-#include "rtc.h"
-#include <lib/key.h>
+#include <rtc.h>
+#include <key.h>
 
-#define WITH_INT_OVERLAP_DETECTION      TRUE
+#define WITH_INT_OVERLAP_DETECTION      FALSE
 
 #if (WITH_INT_OVERLAP_DETECTION)
 static volatile BOOL bInISR = FALSE;
@@ -25,7 +25,11 @@ static volatile BOOL bInISR = FALSE;
  * @param TIMER0_OVF_vect
  * @param ISR_NOBLOCK
  */
+#if (WITH_INT_OVERLAP_DETECTION)
 ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
+#else
+ISR(TIMER0_OVF_vect)
+#endif
 {
     RESET_TIMER0_CNT;
 #if (WITH_INT_OVERLAP_DETECTION)
@@ -57,23 +61,32 @@ ISR(TIMER0_OVF_vect, ISR_NOBLOCK)
         }
         RTC_vTickLocalTime();
         RTC_vConvertLocalTime();
-        EventPostFromIRQ (SYS_HEARTBEAT);
-    }
 
-
-    if (ulSystemTickMS % 300 == 0)
-    {
-        bBlinkState = (bBlinkState==0 ? 1 : 0);
         bRefreshDisplay = TRUE;
-        //EventPostFromIRQ (DISP_UPDATE); // do not enable, it is too fast for main loop to handle
+#if (WITH_HB_EVENT)
+        EventPostFromIRQ (SYS_HEARTBEAT);
+#endif
     }
 
-    if (ulSystemTickMS % 10 == 0)
+
+    if (TRUE == bNeedsBlinking)
+    {
+        if (ulSystemTickMS % 300 == 0)
+        {
+            bBlinkState = (bBlinkState==0 ? 1 : 0);
+            bRefreshDisplay = TRUE;
+            //EventPostFromIRQ (DISP_UPDATE); // do not enable, it is too fast for main loop to handle
+        }
+    }
+
+#if (KEY_USE_TIMER_TICK)
+    if (ulSystemTickMS % (KEY_TIMER_TICK_EVERY_MS) == 0)
     {
         KEY_vKeyIsr();
     }
+#endif
 
-    if (ulSystemTickMS % 5000 == 0)    // do not use seconds counter because it will run 1000 times per second
+    if (ulSystemTickMS % (ONEWIRE_MEASURE_INTERVAL_MS) == 0)    // do not use seconds counter because it will run 1000 times per second
     {
         EventPostFromIRQ (SYS_1WIRE_CONVERT);
     }

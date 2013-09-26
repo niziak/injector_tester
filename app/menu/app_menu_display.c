@@ -9,11 +9,11 @@
 static void vDrawConfirmationScreen(void)
 {
     MENU_DISP_vGotoXY(2,0);
-    MENU_DISP_vPuts_P("Czy na pewno?");
+    MENU_DISP_vPuts_P(PSTR("Czy na pewno?"));
 #define YES_NO_POS 2
     MENU_DISP_vGotoXY(YES_NO_POS,1);
     //              01234567890
-    MENU_DISP_vPuts_P(" Tak   Nie");
+    MENU_DISP_vPuts_P(PSTR(" Tak   Nie"));
     //bBlinkState
     if (FALSE==PTDMENU->bConfirmationStateIsNo)
     {
@@ -25,14 +25,14 @@ static void vDrawConfirmationScreen(void)
     }
     if (bBlinkState==TRUE)
     {
-        MENU_DISP_vPuts_P(">");
+        MENU_DISP_vPuts_P(PSTR(">"));
     }
 }
 
 void MENU_vShow(void)
 {
     if (PTDMENU->bMenuActive==FALSE)
-        RESET("shna");
+        RESET("app mn shna");
 
     MENU_DISP_vClrScr();
     //MENU_DISP_vHome();
@@ -58,16 +58,16 @@ void MENU_vShow(void)
         MENU_DISP_vGotoXY(0,1);
         if (bBlinkState==TRUE)
         {
-            MENU_DISP_vPuts_P("> ");
+            MENU_DISP_vPuts_P(PSTR("> "));
         }
         else
         {
-            MENU_DISP_vPuts_P("  ");
+            MENU_DISP_vPuts_P(PSTR("  "));
         }
 
         if (PTDMENU->bEndMarkerSelected)
         {
-            MENU_DISP_vPuts_P(MENU_END_MARKER_TEXT);
+            MENU_DISP_vPuts_P(PSTR(MENU_END_MARKER_TEXT));
         }
         else
         {

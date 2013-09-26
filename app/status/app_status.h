@@ -20,7 +20,7 @@ typedef enum
 
 extern void DISP_vStatusScreenNext(void);
 extern void DISP_vPrintStatusScreen(void);
-extern void DISP_vStatusScreenShow(STATUS_SCREEEN_ID_DEF eNewScreenId);
+extern void DISP_vStatusScreenSetNew(STATUS_SCREEEN_ID_DEF eNewScreenId);
 
 
 #endif /* DISPLAY_STATUS_H_ */

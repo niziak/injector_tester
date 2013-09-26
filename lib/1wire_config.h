@@ -24,7 +24,7 @@
 #define OW_PORT		PORTD
 #define OW_PINS		PIND
 #define OW_DDR		DDRD
-#define OW_PIN		PIND5
+#define OW_PIN		PIND2
 
 #define OW_1    {OW_PORT |=  _BV(OW_PIN);  }
 #define OW_0    {OW_PORT &=~ _BV(OW_PIN);  }
@@ -43,7 +43,13 @@
 #define OW_SLEEP_MS(a)					_delay_ms(a)
 //#define OW_SLEEP_MS(a)					NutSleep(a)
 
-#define PRINTF_T(a...)
+#include <stdio.h>
+#include <avr/pgmspace.h>
+#define PRINTF(a...)                    printf(a)
+#define PRINTF_P(a...)                  printf_P(a)
+#define PRINTF_T(a...)                  printf(a)
+#define PRINTF_T_P(...)                 printf_P(a)
+
 
 typedef struct
 {
@@ -76,6 +82,7 @@ extern TEMP_SENSOR_PARAMS_DEF		atdKnownTempSensors[NUM_OF_TEMP_SENSORS];
 #define OW_KNOWN_TEMP_SENSOR_TEMP_FRAC(sensoridx)			atdKnownTempSensors[ucSensIdx].iTempFrac
 #define OW_KNOWN_TEMP_SENSOR_TEMP_ADJ(sensoridx)			atdKnownTempSensors[ucSensIdx].cTempAdj
 #define OW_KNOWN_TEMP_SENSOR_STATUS(ucSensIdx)				atdKnownTempSensors[ucSensIdx].ucStatus
+#define OW_KNOWN_TEMP_SENSOR_NAME(ucSensIdx)                atdKnownTempSensors[ucSensIdx].acName
 #define OW_NEW_DEVICE_ARRAY(num)							atdNewTempSensors[num]
 #define OW_NEW_DEVICE_ARRAY_SIZE							sizeof(atdNewTempSensors)
 #define OW_NEW_DEVICE_ARRAY_ELEM(num,idx)					atdNewTempSensors[num].aucROM[idx]
@@ -89,6 +96,7 @@ extern TEMP_SENSOR_PARAMS_DEF		atdKnownTempSensors[NUM_OF_TEMP_SENSORS];
 #define OW_KNOWN_TEMP_SENSOR_TEMP_FRAC(sensoridx)			stSettings.atdTempSensor[ucSensIdx].iTempFrac
 #define OW_KNOWN_TEMP_SENSOR_TEMP_ADJ(ucSensIdx)			stSettings.atdTempSensor[ucSensIdx].cTempAdj
 #define OW_KNOWN_TEMP_SENSOR_STATUS(ucSensIdx)				stSettings.atdTempSensor[ucSensIdx].ucStatus
+#define OW_KNOWN_TEMP_SENSOR_NAME(ucSensIdx)                stSettings.atdTempSensor[ucSensIdx].acName
 #define OW_NEW_DEVICE_ARRAY(num)							atdOWNewDevices[num]
 #define OW_NEW_DEVICE_ARRAY_SIZE							sizeof(atdOWNewDevices)
 #define OW_NEW_DEVICE_ARRAY_ELEM(num,idx)					atdOWNewDevices[num].aucROM[idx]

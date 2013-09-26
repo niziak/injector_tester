@@ -85,7 +85,7 @@ UCHAR MENU_ucGetParentItem(UCHAR ucCurrentItem)
         }
     }
 //    return ucI; // LVL0 wrap around, so back to first menu item
-    RESET ("gpit");
+    RESET ("app mn gpit");
     return MENU_ITEM_ID_NOT_FOUND;
 }
 

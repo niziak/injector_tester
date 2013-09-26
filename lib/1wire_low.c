@@ -10,12 +10,12 @@
 #define OW_MAX_DEVIES 2
 //#define OW_CALIBRATION_TEST
 
-#define OW_DEBUG 1
-//#define OW_DEBUG_BITS_ON_WIRE
-//#define OW_DEBUG_BYTES_ON_WIRE
-//#define OW_DEBUG_SEARCH_ROM
+#define OW_LOW_LOW_DEBUG 0
+#define OW_LOW_LOW_DEBUG_BITS_ON_WIRE 0
+#define OW_LOW_LOW_DEBUG_BYTES_ON_WIRE    0
+#define OW_LOW_LOW_DEBUG_SEARCH_ROM   0
 
-#ifdef OW_DEBUG
+#if (OW_LOW_LOW_DEBUG)
   #define OW_PRINTF(f,s...) PRINTF(f, ##s)
 #else
   #define OW_PRINTF(x,s...)
@@ -143,7 +143,7 @@ uint8_t OWInit(void)
 void OWWriteBit (uint8_t bit) OW_GCC_OPT2;
 void OWWriteBit (uint8_t bit)
 {
-#if ((defined OW_DEBUG) && (defined OW_DEBUG_BITS_ON_WIRE))
+#if ((OW_LOW_LOW_DEBUG) && (OW_LOW_LOW_DEBUG_BITS_ON_WIRE))
   //OW_PRINTF ((" W%d ", bit));
 #endif
 	OW_CRITICAL_ENTER
@@ -181,7 +181,7 @@ uint8_t OWReadBit(void)
       r = 1;
   DELAY_F
   OW_CRITICAL_EXIT
-#if ((defined OW_DEBUG) && (defined OW_DEBUG_BITS_ON_WIRE))
+#if ((defined OW_LOW_DEBUG) && (defined OW_LOW_DEBUG_BITS_ON_WIRE))
   OW_PRINTF (" r%d ", r);
 #endif
   return r;
@@ -196,7 +196,7 @@ void OWWriteByte(uint8_t b) OW_GCC_OPT2;
 void OWWriteByte(uint8_t b)
 {
   uint8_t i;
-#if ((defined OW_DEBUG) && (defined OW_DEBUG_BYTES_ON_WIRE))
+#if ((defined OW_LOW_DEBUG) && (defined OW_LOW_DEBUG_BYTES_ON_WIRE))
   OW_PRINTF (" wb%02X ", b);
 #endif
   //OW_CRITICAL_ENTER
@@ -227,7 +227,7 @@ uint8_t OWReadByte(void)
     }
   }
   //OW_CRITICAL_EXIT
-#if ((defined OW_DEBUG) && (defined OW_DEBUG_BYTES_ON_WIRE))
+#if ((defined OW_LOW_DEBUG) && (defined OW_LOW_DEBUG_BYTES_ON_WIRE))
   OW_PRINTF (" rb%02X ", b);
 #endif
   return b;
@@ -260,7 +260,7 @@ int OWSearchRom(uint8_t *ROM)
     u_char bits;
     u_char index;
 
-    #ifdef OW_DEBUG_SEARCH_ROM
+    #ifdef OW_LOW_DEBUG_SEARCH_ROM
       OW_PRINTF(" ");
     #endif
     /// - send reset signal
@@ -278,7 +278,7 @@ int OWSearchRom(uint8_t *ROM)
     {
         if ((index - 1) % 8 == 0)
         {
-            #ifdef OW_DEBUG_SEARCH_ROM
+            #ifdef OW_LOW_DEBUG_SEARCH_ROM
               OW_PRINTF(".");
             #endif
             ROM++;
@@ -293,7 +293,7 @@ int OWSearchRom(uint8_t *ROM)
         if (bits == 0x03) // two ones means, no more devices
         {
             lastDis = 0;
-            #ifdef OW_DEBUG_SEARCH_ROM
+            #ifdef OW_LOW_DEBUG_SEARCH_ROM
               OW_PRINTF("x")
             #endif
             return 0;
@@ -301,7 +301,7 @@ int OWSearchRom(uint8_t *ROM)
 
         if (bits == 0)    // two zeros, more devices conflict on this bit
         {
-            #ifdef OW_DEBUG_SEARCH_ROM
+            #ifdef OW_LOW_DEBUG_SEARCH_ROM
               OW_PRINTF("c")
             #endif
             if (lastDis == index)
@@ -326,7 +326,7 @@ int OWSearchRom(uint8_t *ROM)
         else
         {
             bits &= 0x01;
-            #ifdef OW_DEBUG_SEARCH_ROM
+            #ifdef OW_LOW_DEBUG_SEARCH_ROM
               OW_PRINTF("%d", bits);
             #endif
         }
@@ -341,7 +341,7 @@ int OWSearchRom(uint8_t *ROM)
     }
     lastDis = disMarker;
     OW_CRITICAL_EXIT
-    #ifdef OW_DEBUG_SEARCH_ROM
+    #ifdef OW_LOW_DEBUG_SEARCH_ROM
         OW_PRINTF(" ");
     #endif
 

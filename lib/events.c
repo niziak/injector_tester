@@ -7,16 +7,17 @@
 
 #include <util/atomic.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <config.h>
 #include <app_menu.h>
 #include <log.h>
 #include <tools.h>
 
-#if 0
-    #define DEBUG(a)	LOG(a)
+#if 1
+    #define EV_DEBUG_P(a...)	DEBUG_P(a)
 #else
-    #define DEBUG(a)
+    #define EV_DEBUG_P(a...)
 #endif
 
 
@@ -33,7 +34,7 @@ static EVENT_DELAYED_TIMER_DEF  atdTimers[EVENT_TIMER_LAST];    ///< array index
 #define EVENT_QUEUE_REAL_LEN (EVENT_QUEUE_LEN)+1
 typedef struct
 {
-    EVENT_DEF      aeCurrentEvent[EVENT_QUEUE_REAL_LEN];
+    EVENT_DEF           aeCurrentEvent[EVENT_QUEUE_REAL_LEN];
     UCHAR               ucReadPtr;
     UCHAR               ucWritePtr;
     BOOL                bFull;
@@ -72,13 +73,11 @@ static FIFO_DEF tdFifo;
 
 static void vDumpState(void)
 {
-    LCD_vClrScr();
     for (UCHAR a=0; a<sizeof(ptdFifo->aeCurrentEvent); a++ )
     {
-        LCD_vPrintf("%X", (unsigned char)ptdFifo->aeCurrentEvent[a]);
+        printf_P(PSTR("%X"), (unsigned char)ptdFifo->aeCurrentEvent[a]);
     }
-    LCD_vGotoXY(0,1);
-    LCD_vPrintf("r%Xw%X", ptdFifo->ucReadPtr, ptdFifo->ucWritePtr);
+    printf_P(PSTR("\nr=%X w=%X\n"), ptdFifo->ucReadPtr, ptdFifo->ucWritePtr);
 }
 
 //TODO make it real mutually exclusive
@@ -92,11 +91,11 @@ void EventPostFromIRQ (EVENT_DEF eEvent)
         if ((ptdFifo->ucWritePtr == ptdFifo->ucReadPtr) && (ptdFifo->bFull))
         {
             vDumpState();
-            LCD_vPuts_P("Ffull ");
+            EV_DEBUG_P(PSTR("Ffull\n"));
             int_delay_ms(300);
-            return;
+//            return;
 //            for (;;);
-//            RESET("Fifo full");
+            RESET("Fifo full");
         }
 
         ptdFifo->aeCurrentEvent[ptdFifo->ucWritePtr] = eEvent;
@@ -115,7 +114,7 @@ void EventPostFromIRQ (EVENT_DEF eEvent)
 
 void EventPost (EVENT_DEF eEvent)
 {
-    DEBUG("Post");
+    EV_DEBUG_P(PSTR("Post\n"));
     EventPostFromIRQ(eEvent);
 }
 
@@ -130,6 +129,7 @@ void EventPost (EVENT_DEF eEvent)
  */
 void EventTimerPostAFter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms)
 {
+    EV_DEBUG_P(PSTR("post ev %02X after %d ms\n"), eEvent, delayms);
     atdTimers[eTimerId].delayms = delayms;
     atdTimers[eTimerId].eEvent = eEvent;
 }
@@ -155,8 +155,8 @@ void EventTimerTickEveryMS(void)
 
 BOOL bIsEventWaiting(void)
 {
-    DEBUG("IsWait?");
-    BOOL bReturn;
+    //EV_DEBUG_P(PSTR("IsWait?\n"));
+    BOOL bReturn=FALSE;
     (void)bReturn;
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
@@ -168,9 +168,9 @@ BOOL bIsEventWaiting(void)
 
 EVENT_DEF EventGet(void)
 {
-    EVENT_DEF eRet;
-    (void)eRet;
-    DEBUG("Get");
+    EVENT_DEF eRet=SYS_EVENT_NONE;
+
+    EV_DEBUG_P(PSTR("Get\n"));
     if (bIsEventWaiting()==FALSE)
     {
         RESET("GET but no ev");

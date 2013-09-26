@@ -12,15 +12,19 @@
 #define OW_MAX_DEVICES   (NUM_OF_TEMP_SENSORS)
 //#define OW_CALIBRATION_TEST
 
-//#define OW_DEBUG
+#define OW_DEBUG   1
 
-#ifdef OW_DEBUG
-  #define OW_PRINTF(f,s...) PRINTF(f, ##s)
+#if (OW_DEBUG)
+  #define OW_PRINTF(f,s...)     PRINTF(f, ##s)
+  #define OW_PRINTF_P(f,s...)   PRINTF_P(f, ##s)
+  #define OW_PRINTF_T_P(f,s...) PRINTF_P(f, ##s)
 #else
   #define OW_PRINTF(x,s...)
+  #define OW_PRINTF_P(x,s...)
+  #define OW_PRINTF_T_P(x,s...)
 #endif
 
-#if OW_CALIBRATION_TEST
+#if (OW_CALIBRATION_TEST)
   #define UDELAY(x)    {NutMicroDelay(x*test/100);}
 #else
   #define UDELAY(x)    {NutMicroDelay(x);}
@@ -30,19 +34,19 @@
 //#define UDELAY(x)  {}
 
 
-#if OW_CALIBRATION_TEST
+#if (OW_CALIBRATION_TEST)
 static uint8_t test = 1;
 #endif
 
 
-#if OW_CALIBRATION_TEST
+#if (OW_CALIBRATION_TEST)
 /*
  *
  */
 void OWCalibrateDelays(void)
 {
   // Reset wykrywa dla mnoznika od 50/100 do 185/100
-  PRINTF_T("\nTest for %d\n", test);
+  OW_PRINTF_T("\nTest for %d\n", test);
   OWDetectDevices(stdout);
   test+=1;
   if (test>20)
@@ -102,7 +106,7 @@ void OWDetectDevices(void)
   uint8_t i,num,a;
   int result = 1;
   BOOL bStored;
-  OW_PRINTF("\t1W bus answer: %d\n", OWInit());
+  OW_PRINTF_P(PSTR("\t1W bus answer: %d\n"), OWInit());
 
   // clear all detected sensors
   memset (&OW_NEW_DEVICE_ARRAY(0), 0, OW_NEW_DEVICE_ARRAY_SIZE);
@@ -119,10 +123,10 @@ void OWDetectDevices(void)
   {
     result = OWSearchRom(&(aucROM[0]));
 
-    OW_PRINTF ("\t%d\t", num);
+    OW_PRINTF_P (PSTR("\t%d\t"), num);
     for (i=0; i<sizeof(aucROM); ++i)
     {
-      OW_PRINTF ("%02X ", aucROM[i]);
+      OW_PRINTF_P (PSTR("%02X "), aucROM[i]);
     }
 
     // find device and set status
@@ -133,16 +137,16 @@ void OWDetectDevices(void)
       {
         bStored = TRUE;
         OW_KNOWN_TEMP_SENSOR_STATUS(a) = 1;
-        OW_PRINTF(" stored as '%s'", stSettings.atdTempSensor[a].acName);
+        OW_PRINTF_P(PSTR(" stored as '%s'"), OW_KNOWN_TEMP_SENSOR_NAME(a));
       }
     }
     if (!bStored)
     {
         // store not known ID to atdOWNewDevices[] array
         memcpy (&OW_NEW_DEVICE_ARRAY_ELEM(num,0), &(aucROM[0]), OW_NEW_DEVICE_ARRAY_ELEM_SIZE(num));
-        OW_PRINTF(" new");
+        OW_PRINTF_P(PSTR(" new"));
     }
-    OW_PRINTF ("\n");
+    OW_PRINTF_P (PSTR("\n"));
     num++;
   }
 }
@@ -189,8 +193,8 @@ void OWDetectDevices(void)
 
 void TM_Convert_temperature(UCHAR idx, UINT *temp, UINT *frac)
 {
-#if OW_DEBUG
-  PRINTF(PSTR("TM_Convert_temperature(%d, %d, %d)\n"), idx, *temp, *frac);
+#if (OW_DEBUG)
+  OW_PRINTF_P(PSTR("TM_Convert_temperature(%d, %d, %d)\n"), idx, *temp, *frac);
 #endif
 
   switch(OW_KNOWN_TEMP_SENSOR_ROM(idx,0))
@@ -212,8 +216,8 @@ void TM_Convert_temperature(UCHAR idx, UINT *temp, UINT *frac)
       *temp >>= 4;
        break;
     default:
-#if OW_DEBUG
-        PRINTF(PSTR("\n\rUnknown family code - %02X.\n\r"), stSettings.atdTempSensor[idx].aucROM[0]);
+#if (OW_DEBUG)
+        OW_PRINTF_P(PSTR("\n\rUnknown family code - %02X.\n\r"), OW_KNOWN_TEMP_SENSOR_ROM(idx,0));
 #endif
        *temp = 85;
        *frac = 0;
@@ -236,8 +240,8 @@ void TM_Convert_temperature(UCHAR idx, UINT *temp, UINT *frac)
 void vOWConfigDevices(void) OW_GCC_OPT2;
 void vOWConfigDevices(void)
 {
-#ifdef OW_DEBUG
-  PRINTF("vOWConfigDevices()\n");
+#if (OW_DEBUG)
+  OW_PRINTF_P(PSTR("vOWConfigDevices()\n"));
 #endif
   UCHAR ucSensIdx;
   //unsigned char aucBuf[9] = { 0, 0, 0x4B, 0x46, 0x7F, 0, 0, 0, 0xFF };
@@ -268,8 +272,8 @@ void vOWConfigDevices(void)
 void OW_vStartConversion(void) OW_GCC_OPT2;
 void OW_vStartConversion(void)
 {
-#ifdef OW_DEBUG
-  PRINTF("vOWStartConversion()\n");
+#if (OW_DEBUG)
+  OW_PRINTF_P(PSTR("vOWStartConversion()\n"));
 #endif
   OWInit();
   OWWriteByte(DS1W_SKIP_ROM); // skip rom, starts conversion on ALL 1-wire devices. TODO match rom and set rom address
@@ -290,11 +294,11 @@ UINT uiOWGetTemp(UCHAR *pucROM)
 
   OWInit();
   OWWriteByte(DS1W_MATCH_ROM);
-  #ifdef OW_DEBUG
-    PRINTF("\n\nGet temp for\t");
+  #if OW_DEBUG
+    OW_PRINTF_P(PSTR("\n\nGet temp for\t"));
     for (i=0; i<OW_ADDRESS_LEN; i++)
-      PRINTF("%02X ", pucROM[i]);
-    PRINTF("\n");
+      OW_PRINTF_P(PSTR("%02X "), pucROM[i]);
+    OW_PRINTF_P(PSTR("\n"));
   #endif
   OWWriteBuf (pucROM, OW_ADDRESS_LEN);
   OWWriteByte(DS1W_READ_SCRATCHPAD);
@@ -309,15 +313,15 @@ UINT uiOWGetTemp(UCHAR *pucROM)
   if (crc)
   {
     temper = OW_TEMP_ERROR; /* return error (conversion can be pending) */
-    PRINTF_T("\n 1-wire CRC err: %04X (%02X != %02X)\n", temper, crc, crc_read);
+    OW_PRINTF_T_P(PSTR("\n 1-wire CRC err: %04X (%02X != %02X)\n"), temper, crc, crc_read);
   }
-  #ifdef OW_DEBUG
-    PRINTF("1W data:\t");
+  #if OW_DEBUG
+    OW_PRINTF_P(PSTR("1W data:\t"));
     for (i=0; i<sizeof(aucBuf); i++)
     {
-      PRINTF ("%02X ", aucBuf[i]);
+      OW_PRINTF_P (PSTR("%02X "), aucBuf[i]);
     }
-    PRINTF ("\nraw temp=%d 0x%04X\n", temper, temper);
+    OS_PRINTF_P (PSTR("\nraw temp=%d 0x%04X\n"), temper, temper);
   #endif
   //return 0xFFFC;
   return temper;
@@ -354,8 +358,8 @@ void OW_vWorker()
     TM_Convert_temperature(ucSensIdx, (UINT*)&OW_KNOWN_TEMP_SENSOR_TEMP_INT(ucSensIdx), (UINT*)&OW_KNOWN_TEMP_SENSOR_TEMP_FRAC(ucSensIdx));
     OW_KNOWN_TEMP_SENSOR_TEMP_INT(ucSensIdx) += (INT)OW_KNOWN_TEMP_SENSOR_TEMP_ADJ(ucSensIdx);
     //iTempInt*= -1; // TEMP add minus
-    #ifdef OW_DEBUG
-      PRINTF(" #%d human temp=\"%d.%01d\" \n", ucSensIdx, stSettings.atdTempSensor[ucSensIdx].iTempInt, stSettings.atdTempSensor[ucSensIdx].iTempFrac/1000); /* precision 0.1 degree centigrade */
+    #if OW_DEBUG
+      OW_PRINTF_P(PSTR(" #%d human temp=\"%d.%01d\" \n"), ucSensIdx, OW_KNOWN_TEMP_SENSOR_TEMP_INT(ucSensIdx), OW_KNOWN_TEMP_SENSOR_TEMP_FRAC(ucSensIdx)/1000); /* precision 0.1 degree centigrade */
     #endif
   }
 #if 0 /* conversion tests */

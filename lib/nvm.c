@@ -50,7 +50,7 @@ void NVM_vLoadSettings(void)
 
     if (bError == TRUE)
     {
-        LOG("No NVM");
+        LOG("No NVM\n");
         return;
     }
     eeprom_read_block ( &(atdKnownTempSensors[0]),    &(NVM_atdKnownTempSensors[0]),   sizeof(atdKnownTempSensors));

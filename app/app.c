@@ -7,14 +7,18 @@
 
 #include <app.h>
 
-static APP_ID_DEF   eActiveApp;
+static APP_ID_DEF   eActiveApp;     ///< active application ID
 
+/**
+ * Redraw display of active application
+ */
 void APP_vUpdateDisplay(void)
 {
+    DEBUG_T_P(PSTR("APP_vUpdateDisplay\n"));
     switch (eActiveApp)
     {
         default:
-            RESET("No act appd");
+            RESET("app No act appd");
             break;
 
         case APP_MENU:
@@ -27,12 +31,19 @@ void APP_vUpdateDisplay(void)
     }
 }
 
+/**
+ * Route event to active application
+ * @param eEvent
+ */
 void APP_vRouteEvent(EVENT_DEF eEvent)
 {
+    DEBUG_P(PSTR("APP_vRouteEvent(%d) to %d app\n"), eEvent, eActiveApp);
+
     switch (eActiveApp)
     {
+        DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
         default:
-            RESET("No act app");
+            RESET("app No act app");
             break;
 
         case APP_MENU:
@@ -52,7 +63,7 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
                         break;
 
                     case SYS_UI_TIMEOUT:
-                        DISP_vStatusScreenShow (STATUS_SCREEN_IDLE);
+                        DISP_vStatusScreenSetNew (STATUS_SCREEN_IDLE);
                         break;
 
                     default:
@@ -60,6 +71,20 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
                 }
             break;
     }
+
+    //TODO make app stack to back from menu automatically to APP_STATUS
+    switch (eEvent)
+    {
+        case SYS_UI_TIMEOUT:
+            //DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
+            APP_vActivateApp(APP_STATUS);
+            break;
+
+        default:
+            break;
+    }
+
+
 }
 
 void APP_vActivateApp(APP_ID_DEF   eNewActiveAppId)

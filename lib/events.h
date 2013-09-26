@@ -24,21 +24,24 @@ typedef enum
 {
     SYS_EVENT_NONE =0,
 
-    SYS_HEARTBEAT,
-
     SYS_1WIRE_CONVERT,
     SYS_1WIRE_READ,
 
-
     SYS_UI_TIMEOUT,            ///< no user action - timeout from last keypress
 
+    MENU_ACTION_PREV,           ///< navigagte to previous element
     MENU_ACTION_NEXT,           ///< navigagte to next element
     MENU_ACTION_SELECT,         ///< make action on selected element
+
     MENU_ACTION_CONFIRMED,
 //    MENU_ACTION_PAUSE,          ///< disable menu, but don't clear internal structure
 //    MENU_ACTION_RESUME,         ///< enable menu, but don't reset internal structures
 
     DISP_UPDATE,                ///< redraw display
+
+#if WITH_HB_EVENT
+    SYS_HEARTBEAT,
+#endif
 
 } EVENT_DEF;
 
