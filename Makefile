@@ -42,15 +42,21 @@
 # !!!  must ends with backslash and NO SPACE AND END !!!
 #
 #GCC_BIN_DIR_PREFIX := n:/tools/WinAVR/bin/
-POSIX_UTILS_DIR_PREFIX : = n:/tools/WinAVR/utils/bin/
-
-#GCC_BIN_DIR_PREFIX := n:/tools/avrgcc/bin 
 #POSIX_UTILS_DIR_PREFIX : = n:/tools/WinAVR/utils/bin/
 
-GCC_BIN_DIR_PREFIX := n:/Arduino/hardware/tools/avr/bin/
+#GCC_BIN_DIR_PREFIX := n:/tools/avrgcc/bin/
+#POSIX_UTILS_DIR_PREFIX : = n:/tools/WinAVR/utils/bin/
+
+#GCC_BIN_DIR_PREFIX := n:/Arduino/hardware/tools/avr/bin/
 #POSIX_UTILS_DIR_PREFIX : = n:/Arduino/hardware/tools/avr/utils/bin/
 
+GCC_BIN_DIR_PREFIX := n:/tools/avr-gcc-4.8_2013-03-06_mingw32/bin/
+POSIX_UTILS_DIR_PREFIX : = n:/tools/avr-gcc-4.8_2013-03-06_mingw32/utils/bin/
+
+  
  
+GCC_AVR_SIZE_DIR_PREFIX := tools_win32/
+
  
 #MCU = atmega8
 MCU = atmega328p
@@ -73,6 +79,7 @@ OUTDIR = out
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
 EXTRAINCDIRS = 	lib \
+				lib/key \
 				app \
 				app/menu \
 				app/clock \
@@ -88,12 +95,19 @@ SRC = 	$(TARGET).c \
 		timer0.c \
 		rtc.c \
 		tools.c \
-		adc.c
+		usart0.c
 		
-SRC+= lib/key.c
-SRC+= lib/1wire_low.c lib/1wire.c 
+SRC+=	lib/key/key_adc.c \
+		lib/key/key_buttons.c
+
+SRC+=	lib/1wire_low.c \
+		lib/1wire.c 
+
 #SRC+= lib/lcd_radzio/HD44780.c lib/lcd_radzio/bufferedLcd.c 
-SRC+= lib/lcd_pfleury/lcd.c
+#SRC+= lib/lcd_pfleury/lcd.c
+SRC+= lib/lcd_alank2/hd44780.c
+
+
 SRC+= lib/hal_lcd.c
 
 SRC+= lib/nvm.c
@@ -294,8 +308,15 @@ EXTMEMOPTS =
 #    -Map:      create map file
 #    --cref:    add cross reference to  map file
 LDFLAGS = -Wl,-Map=$(OUTDIR)/$(TARGET).map,--cref
+
 #Niziak: GCC to optimize RCALL/RET to RJMP
-LDFLAGS += -Wl,--relax
+#Crashes during link:
+#LDFLAGS += -Wl,--relax
+
+#Niziak:
+LDFLAGS += -Wl,--gc-sections
+
+
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(patsubst %,-L%,$(EXTRALIBDIRS))
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
@@ -387,7 +408,7 @@ SHELL = $(POSIX_UTILS_DIR_PREFIX)sh
 CC = $(GCC_BIN_DIR_PREFIX)avr-gcc
 OBJCOPY = $(GCC_BIN_DIR_PREFIX)avr-objcopy
 OBJDUMP = $(GCC_BIN_DIR_PREFIX)avr-objdump
-SIZE = $(GCC_BIN_DIR_PREFIX)avr-size
+SIZE = $(GCC_AVR_SIZE_DIR_PREFIX)avr-size
 AR = $(GCC_BIN_DIR_PREFIX)avr-ar rcs
 NM = $(GCC_BIN_DIR_PREFIX)avr-nm
 AVRDUDE = tools_win32/avrdude.exe
@@ -442,7 +463,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter end
+all: begin gccversion sizebefore build sizeafter end objdump
 #all: begin build sizeafter end
 
 # Change the build target to build a HEX file or a library.
@@ -490,7 +511,7 @@ sizeafter:
 #	2>/dev/null; echo; fi
 	if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(OBJSIZE); $(ELFSIZE); \
 	echo; fi
-	$(OBJDUMP) -s -j .fuse $(OUTDIR)/$(TARGET).elf
+#	$(OBJDUMP) -s -j .fuse $(OUTDIR)/$(TARGET).elf
 
 
 # Display compiler version information.
@@ -498,12 +519,13 @@ gccversion :
 	@$(CC) --version
 
 
+objdump:
+	$(OBJDUMP) -d $(OUTDIR)/$(TARGET).elf > $(OUTDIR)/$(TARGET).dump
 
 # Program the device.  
 #program: $(OUTDIR)/$(TARGET).hex $(OUTDIR)/$(TARGET).eep
 program:
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
-
 
 # Generate avr-gdb config/init file which does the following:
 #     define the reset signal, load the target file, connect to target, and set 
