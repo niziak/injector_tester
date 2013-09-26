@@ -8,14 +8,17 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include <config.h>
 #include <key.h>
 #include <app.h>
 #include <log.h>
 #include <tools.h>
 
-volatile unsigned char ucKeyOkState;      ///< 0 if key released. Incremented if key pressed
-volatile unsigned char ucKeyNextState;        ///< 0 if key released. Incremented if key pressed
+#if (USE_SINGLE_PIN_BUTTONS)
+volatile unsigned char ucKeyOkState;        ///< 0 if key released. Incremented if key pressed
+volatile unsigned char ucKeyNextState;      ///< 0 if key released. Incremented if key pressed
 volatile unsigned char ucKeyBlocked;        ///< 0 - unblocked, automatically decremented
+
 /**
  * Keyscan routine, must be called from IRQ, i.e. every 10 ms
  */
@@ -36,7 +39,7 @@ void KEY_vKeyIsr(void)
         {
             EventPostFromIRQ(MENU_ACTION_NEXT);
             ucKeyBlocked = KEY_INTERVAL;
-            int_delay_break();
+            ADC_KEY_PRESSED_TRIGGER_FN;
         }
         ucKeyNextState = 0;
     }
@@ -51,7 +54,7 @@ void KEY_vKeyIsr(void)
         {
             EventPostFromIRQ(MENU_ACTION_SELECT);
             ucKeyBlocked = KEY_INTERVAL;
-            int_delay_break();
+            ADC_KEY_PRESSED_TRIGGER_FN;
         }
         ucKeyOkState = 0;
     }
@@ -105,3 +108,5 @@ void KEY_vInit(void)
 	ucKeyBlocked    = 0;
 
 }
+
+#endif //(USE_SINGLE_PIN_BUTTONS)

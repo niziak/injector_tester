@@ -5,8 +5,10 @@
  *      Author: nizinski_w
  */
 
-#ifndef KEY_H_
-#define KEY_H_
+#ifndef KEY_BUTTONS_H_
+#define KEY_BUTTONS_H_
+
+#if (USE_SINGLE_PIN_BUTTONS)
 
 #define BTN_OK_PORT		PORTB
 #define BTN_OK_DDR		DDRB
@@ -22,8 +24,7 @@
 #define BTN_NEXT_PRESSED     ( BTN_NEXT_GETSTATE == 0 )
 #define BTN_OK_PRESSED       ( BTN_OK_GETSTATE   == 0 )
 
-#define KEY_DEBOUNCE        2       ///< n*10ms     how many cycles wait for key unchanged state
-#define KEY_INTERVAL        5       ///< n*10ms     how long block keyboard reading after keypress
+
 
 extern void KEY_ReadKeyboard(void);
 extern void KEY_vInit(void);
@@ -33,4 +34,6 @@ extern volatile unsigned char ucKeyOkState;
 extern volatile unsigned char ucKeyNextState;
 extern volatile unsigned char ucKeyBlocked;
 
-#endif /* KEY_H_ */
+#endif
+
+#endif /* KEY_BUTTONS_H_ */
