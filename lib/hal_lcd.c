@@ -5,11 +5,12 @@
  *      Author: nizinski_w
  */
 
+#include <config.h>
 #include <hal_lcd.h>
 #include <stdarg.h>
 #include <stdio.h>
 
-void LCD_vPrintf(const char *format, ...)
+void LCD_vPrintf(const char *format, ...) __attribute__ ((format (printf, 1, 2)))
 {
 	char acLineBuf[LCD_COLS+1];
 
@@ -20,7 +21,7 @@ void LCD_vPrintf(const char *format, ...)
 	LCD_vPuts (&acLineBuf[0]);
 }
 
-void LCD_vPrintf_p(const char *format, ...)
+void LCD_vPrintf_P(const char *format, ...) __attribute__ ((format (printf, 1, 2)))
 {
     char acLineBuf[LCD_COLS+1];
 
