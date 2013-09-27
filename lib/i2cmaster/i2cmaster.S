@@ -40,10 +40,10 @@
 
 ;***** Adapt these SCA and SCL port and pin definition to your target !!
 ;
-#define SDA     	4		// SDA Port D, Pin 4   
-#define SCL		5		// SCL Port D, Pin 5
-#define SDA_PORT        PORTD           // SDA Port D
-#define SCL_PORT        PORTD           // SCL Port D         
+#define SDA     	    4		// SDA Port D, Pin 4
+#define SCL		        5		// SCL Port D, Pin 5
+#define SDA_PORT        PORTC           // SDA Port D
+#define SCL_PORT        PORTC           // SCL Port D
 
 ;******
 
@@ -68,17 +68,50 @@
 ; For I2C in normal mode (100kHz), use T/2 > 5us
 ; For I2C in fast mode (400kHz),   use T/2 > 1.3us
 ;*************************************************************************
+    .stabs  "",100,0,0,i2c_delay_T
+    .stabs  "i2cmaster.S",100,0,0,i2c_delay_T
+    .func i2c_delay_T  ; delay 10.0 microsec with 4 Mhz crystal
+i2c_delay_T:        ; 4 cycles
+    rjmp 1f      ; 2   "
+1:  rjmp 2f      ; 2   "
+2:  rjmp 3f      ; 2   "
+3:  rjmp 4f      ; 2   "
+4:  rjmp 5f      ; 2   "
+5:  rjmp 6f      ; 2   "
+
+6:  rjmp 7f
+7:  rjmp 8f
+8:  rjmp 9f
+9:  rjmp 10f
+10: rjmp 11f
+11: rjmp 66f
+
+66:  nop          ; 1   "
+    ret          ; 3   "
+    .endfunc     ; total 20 cyles = 5.0 microsec with 4 Mhz crystal
+
+
+
+rcall   i2c_delay_T2
+;*************************************************************************
+; delay half period
+; For I2C in normal mode (100kHz), use T/2 > 5us
+; For I2C in fast mode (400kHz),   use T/2 > 1.3us
+;*************************************************************************
 	.stabs	"",100,0,0,i2c_delay_T2
 	.stabs	"i2cmaster.S",100,0,0,i2c_delay_T2
-	.func i2c_delay_T2	; delay 5.0 microsec with 4 Mhz crystal	
+	.func i2c_delay_T2	; delay ??? microsec with 4 Mhz crystal
 i2c_delay_T2:        ; 4 cycles
-	rjmp 1f      ; 2   "
-1:	rjmp 2f      ; 2   "
-2:	rjmp 3f      ; 2   "
-3:	rjmp 4f      ; 2   "
-4:	rjmp 5f      ; 2   "
-5: 	rjmp 6f      ; 2   "
-6:	nop          ; 1   "
+    rcall   i2c_delay_T
+    rcall   i2c_delay_T
+    rcall   i2c_delay_T
+    rcall   i2c_delay_T
+
+//    rcall   i2c_delay_T
+//    rcall   i2c_delay_T
+//    rcall   i2c_delay_T
+//    rcall   i2c_delay_T
+
 	ret          ; 3   "
 	.endfunc     ; total 20 cyles = 5.0 microsec with 4 Mhz crystal 
 
