@@ -8,40 +8,47 @@
 
 #define OW_MULTI_DEVICE 1   ///< support more than 1 sensor
 #define OW_MAX_DEVIES 2
-//#define OW_CALIBRATION_TEST
+#define OW_CALIBRATION_TEST     0
 
-#define OW_LOW_LOW_DEBUG 0
-#define OW_LOW_LOW_DEBUG_BITS_ON_WIRE 0
-#define OW_LOW_LOW_DEBUG_BYTES_ON_WIRE    0
-#define OW_LOW_LOW_DEBUG_SEARCH_ROM   0
+#define OW_LOW_DEBUG                    0
+#define OW_LOW_DEBUG_BITS_ON_WIRE       0
+#define OW_LOW_DEBUG_BYTES_ON_WIRE      0
+#define OW_LOW_DEBUG_SEARCH_ROM         0
 
-#if (OW_LOW_LOW_DEBUG)
-  #define OW_PRINTF(f,s...) PRINTF(f, ##s)
+#if (OW_LOW_DEBUG)
+  #define OW_PRINTF(f,s...)     PRINTF(f, ##s)
+  #define OW_PRINTF_P(f,s...)   PRINTF_P(f, ##s)
+  #define OW_PRINTF_T_P(f,s...) PRINTF_P(f, ##s)
 #else
   #define OW_PRINTF(x,s...)
+  #define OW_PRINTF_P(x,s...)
+  #define OW_PRINTF_T_P(x,s...)
 #endif
 
 #if 1
-// ATmega8 8MHz
+// ATmega328 16MHz
 /********************/
 /* standard timings */      // write slot minimum 60us with 1us recovery
 /********************/
-  #define DA    6     /* read / write "1" pulse */            // must be released within 15us
-  #define DB    64   /* recovery to complete time slot */     //
+  #define DA    6    ///< write 1 pulse (6us) / also read pulse (master samples in 6+9=15us)
+  #define DB    64   ///< write 1 - recovery to complete time slot 60us (6+54) + recovery time @ref DD between each slot
 
-  #define DC    60   /* write "0" pulse */                   // // keep for full time slot (at least 60us)
-  #define DD    10    /* recovery to complete time slot  */
+  #define DC    60   ///< write "0" pulse at least 60us  (keep for full time slot (at least 60us))
 
-  #define DE    9         /* read - sample */                 // redefined below to nothing
-  #define DF    550     /* read - recovery */
+  #define DD    10   ///< recovery time between each slot
 
-  #define DG    0        /* reset - inital wait */
-  #define DH    480   /* reset - pulse */                  //-20
-  #define DI    70       /* reset - wait for presence */      //
-  #define DJ    410   /* reset - recovery */               //-20
+  #define DE    9    ///< master should read after 15us from start of read pulse, so after 9 us from previous pulse
+  #define DF    55   ///< complete read slot to 60us + @ref DD 10us delay between slots (60-9-6=45us)
+
+  #define DG    0     ///< reset - inital wait - ignored
+  #define DH    480   ///< reset - pulse min 480us
+  #define DI    70    ///< reset - wait for presence (after 550us)
+  #define DJ    410   ///< reset - recovery (after 960us)
 #endif
 
+
 #if 0
+// ARM SAM7X
 /********************/
 /* standard timings */      // write slot minimum 60us with 1us recovery
 /********************/
@@ -77,8 +84,9 @@
   #define DIo    8       /* reset - wait for presence */
   #define DJo    40      /* reset - recovery */
 
-#if OW_CALIBRATION_TEST
-  #define UDELAY(x)    {OW_MICRO_DELAY(x*test/100);}
+#if (OW_CALIBRATION_TEST)
+  #include <1wire.h>
+  #define UDELAY(x)    {OW_MICRO_DELAY( (unsigned int)x * (unsigned int)CalibrationDelayAdjust / 100);}
 #else
   #define UDELAY(x)    {OW_MICRO_DELAY(x);}
 #endif
@@ -90,9 +98,9 @@
 #define DELAY_B   UDELAY(DB)
 #define DELAY_C   UDELAY(DC)
 #define DELAY_D   UDELAY(DD)
-#define DELAY_E   /*UDELAY(DE)*/
+#define DELAY_E   UDELAY(DE)    // disabled on ARM
 #define DELAY_F   UDELAY(DF)
-#define DELAY_G   /*UDELAY(DG)*/
+#define DELAY_G   /*UDELAY(DG)*/    /* reset - inital wait - ignored */
 #define DELAY_H   UDELAY(DH)
 #define DELAY_I   UDELAY(DI)
 #define DELAY_J   UDELAY(DJ)
@@ -101,8 +109,11 @@
 #define DRIVE_BUS     {OW_0;OW_out;}
 #define RELEASE_BUS   {OW_in;OW_1;}
 
-#if OW_CALIBRATION_TEST
-static uint8_t test = 1;
+#if (OW_CALIBRATION_TEST)
+#define CALIBRATION_DELAY_ADJUST_MIN 20
+#define CALIBRATION_DELAY_ADJUST_MAX 120
+static uint8_t CalibrationDelayAdjust = CALIBRATION_DELAY_ADJUST_MIN;      ///< each delay will be multiplied by @ref CalibrationDelayAdjust/100
+
 #endif
 
 
@@ -143,25 +154,28 @@ uint8_t OWInit(void)
 void OWWriteBit (uint8_t bit) OW_GCC_OPT2;
 void OWWriteBit (uint8_t bit)
 {
-#if ((OW_LOW_LOW_DEBUG) && (OW_LOW_LOW_DEBUG_BITS_ON_WIRE))
+#if ((OW_LOW_DEBUG) && (OW_LOW_DEBUG_BITS_ON_WIRE))
   //OW_PRINTF ((" W%d ", bit));
 #endif
-	OW_CRITICAL_ENTER
+  OW_CRITICAL_ENTER
   if (bit)
   {
-    DRIVE_BUS
-    DELAY_A
-    RELEASE_BUS
-    DELAY_B
+    // write 1
+    DRIVE_BUS       // low
+    DELAY_A         // for 6us
+    RELEASE_BUS     // release
+    DELAY_B         // 54 recovery delay to reach 60us window
+                    // + wait 10us between slots
   }
   else
   {
-    DRIVE_BUS
-    DELAY_C
-    RELEASE_BUS
-    DELAY_D
+    //write 0
+    DRIVE_BUS       // low
+    DELAY_C         // wait 60us
+    RELEASE_BUS     // release
+    DELAY_D         // wait 10us between slots
   }
-	OW_CRITICAL_EXIT
+  OW_CRITICAL_EXIT
 }
 
 /**
@@ -173,15 +187,16 @@ uint8_t OWReadBit(void)
 {
   uint8_t r = 0;
   OW_CRITICAL_ENTER
-  DRIVE_BUS
-  DELAY_A
-  RELEASE_BUS
-  DELAY_E
-    if (OW_get==1)
+  DRIVE_BUS     // low pulse
+  DELAY_A       // for 6us
+  RELEASE_BUS   // release - master should read after next 9 us (to fit into 15us window)
+  DELAY_E       // wait 9us for slave pulse
+    if (OW_get==1)  // read slave pulse
       r = 1;
-  DELAY_F
+  DELAY_F       // fill time to end of 60us slot, so 60-15=45us
+                // plus 10us between slots
   OW_CRITICAL_EXIT
-#if ((defined OW_LOW_DEBUG) && (defined OW_LOW_DEBUG_BITS_ON_WIRE))
+#if ((OW_LOW_DEBUG) && (OW_LOW_DEBUG_BITS_ON_WIRE))
   OW_PRINTF (" r%d ", r);
 #endif
   return r;
@@ -196,7 +211,7 @@ void OWWriteByte(uint8_t b) OW_GCC_OPT2;
 void OWWriteByte(uint8_t b)
 {
   uint8_t i;
-#if ((defined OW_LOW_DEBUG) && (defined OW_LOW_DEBUG_BYTES_ON_WIRE))
+#if ((OW_LOW_DEBUG) && (OW_LOW_DEBUG_BYTES_ON_WIRE))
   OW_PRINTF (" wb%02X ", b);
 #endif
   //OW_CRITICAL_ENTER
@@ -227,8 +242,8 @@ uint8_t OWReadByte(void)
     }
   }
   //OW_CRITICAL_EXIT
-#if ((defined OW_LOW_DEBUG) && (defined OW_LOW_DEBUG_BYTES_ON_WIRE))
-  OW_PRINTF (" rb%02X ", b);
+#if ((OW_LOW_DEBUG) && (OW_LOW_DEBUG_BYTES_ON_WIRE))
+  OW_PRINTF_P (PSTR(" rb%02X "), b);
 #endif
   return b;
 }
@@ -260,7 +275,7 @@ int OWSearchRom(uint8_t *ROM)
     u_char bits;
     u_char index;
 
-    #ifdef OW_LOW_DEBUG_SEARCH_ROM
+    #if (OW_LOW_DEBUG_SEARCH_ROM)
       OW_PRINTF(" ");
     #endif
     /// - send reset signal
@@ -278,7 +293,7 @@ int OWSearchRom(uint8_t *ROM)
     {
         if ((index - 1) % 8 == 0)
         {
-            #ifdef OW_LOW_DEBUG_SEARCH_ROM
+            #if (OW_LOW_DEBUG_SEARCH_ROM)
               OW_PRINTF(".");
             #endif
             ROM++;
@@ -293,16 +308,16 @@ int OWSearchRom(uint8_t *ROM)
         if (bits == 0x03) // two ones means, no more devices
         {
             lastDis = 0;
-            #ifdef OW_LOW_DEBUG_SEARCH_ROM
-              OW_PRINTF("x")
+            #if (OW_LOW_DEBUG_SEARCH_ROM)
+              OW_PRINTF("x");
             #endif
             return 0;
         }
 
         if (bits == 0)    // two zeros, more devices conflict on this bit
         {
-            #ifdef OW_LOW_DEBUG_SEARCH_ROM
-              OW_PRINTF("c")
+            #if (OW_LOW_DEBUG_SEARCH_ROM)
+              OW_PRINTF("c");
             #endif
             if (lastDis == index)
             {
@@ -326,7 +341,7 @@ int OWSearchRom(uint8_t *ROM)
         else
         {
             bits &= 0x01;
-            #ifdef OW_LOW_DEBUG_SEARCH_ROM
+            #if (OW_LOW_DEBUG_SEARCH_ROM)
               OW_PRINTF("%d", bits);
             #endif
         }
@@ -341,7 +356,7 @@ int OWSearchRom(uint8_t *ROM)
     }
     lastDis = disMarker;
     OW_CRITICAL_EXIT
-    #ifdef OW_LOW_DEBUG_SEARCH_ROM
+    #if (OW_LOW_DEBUG_SEARCH_ROM)
         OW_PRINTF(" ");
     #endif
 
@@ -351,18 +366,18 @@ int OWSearchRom(uint8_t *ROM)
         return 0;
 }
 
-#if OW_CALIBRATION_TEST
+#if (OW_CALIBRATION_TEST)
 /*
  *
  */
 void OWCalibrateDelays(void)
 {
   // Reset wykrywa dla mnoznika od 50/100 do 185/100
-  PRINTF_T("\nTest for %d\n", test);
-  OWDetectDevices(stdout);
-  test+=1;
-  if (test>20)
-    test = 1;
+  OW_PRINTF_T_P(PSTR("\nTest for delay * %d/100\n"), CalibrationDelayAdjust);
+  OWDetectDevices();
+  CalibrationDelayAdjust += 1;
+  if (CalibrationDelayAdjust > CALIBRATION_DELAY_ADJUST_MAX)
+    CalibrationDelayAdjust = CALIBRATION_DELAY_ADJUST_MIN;
 }
 #endif
 

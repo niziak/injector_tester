@@ -321,7 +321,7 @@ UINT uiOWGetTemp(UCHAR *pucROM)
     {
       OW_PRINTF_P (PSTR("%02X "), aucBuf[i]);
     }
-    OS_PRINTF_P (PSTR("\nraw temp=%d 0x%04X\n"), temper, temper);
+    OW_PRINTF_P (PSTR("\nraw temp=%d 0x%04X\n"), temper, temper);
   #endif
   //return 0xFFFC;
   return temper;
@@ -333,6 +333,7 @@ UINT uiOWGetTemp(UCHAR *pucROM)
 void OW_vWorker()
 {
   UCHAR ucSensIdx;
+
   OWDetectDevices(); // detect and print devices to console TODO maybe mutex to access from http ?
   vOWConfigDevices(); // set resultion etc...
 

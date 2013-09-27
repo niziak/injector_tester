@@ -213,6 +213,8 @@ CFLAGS += -ffunction-sections
 CFLAGS += -fdata-sections
 CFLAGS += -ffreestanding
 CFLAGS += -mcall-prologues
+CFLAGS += -mstrict-X
+###CFLAGS += -maccumulate-args 
 
 #---------------- Compiler Options C++ ----------------
 #  -g*:          generate debugging information
@@ -661,7 +663,7 @@ $(OBJDIR)/%.o : %.S
 
 
 # Target: clean project.
-clean: begin clean_list end
+clean: begin sizebefore clean_list end
 
 clean_list :
 	@echo
