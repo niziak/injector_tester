@@ -21,10 +21,10 @@
 
 #define  ALIGN2
 
-#define OW_PORT		PORTD
-#define OW_PINS		PIND
-#define OW_DDR		DDRD
-#define OW_PIN		PIND2
+#define OW_PORT		PORTC
+#define OW_PINS		PINC
+#define OW_DDR		DDRC
+#define OW_PIN		PINC3
 
 #define OW_1    {OW_PORT |=  _BV(OW_PIN);  }
 #define OW_0    {OW_PORT &=~ _BV(OW_PIN);  }

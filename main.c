@@ -24,13 +24,13 @@
  * |                                                  ATMEGA 328p
  * |
  * |                 PCINT14 / RESETn        PC6    1 ###    ### 28  PC5 ADC5 /SCL / PCINT13----------RTC I2C SCL
- * D0                PCINT16 / RXD           PD0    2 ###    ### 27  PC4 ADC4 /SDA / PCINT12----------RTC I2C SDA
- * D1                PCINT17 / TXD           PD1    3 ########## 26  PC3 ADC3 / PCINT11
- * D2 1wire----------PCINT18 / INT0          PD2    4 ####M##### 25  PC2 ADC2 / PCINT10
+ * D0             ---PCINT16 / RXD           PD0    2 ###    ### 27  PC4 ADC4 /SDA / PCINT12----------RTC I2C SDA
+ * D1             ---PCINT17 / TXD           PD1    3 ########## 26  PC3 ADC3 / PCINT11---------------DS 1wire
+ * D2                PCINT18 / INT0          PD2    4 ####M##### 25  PC2 ADC2 / PCINT10---------------PK Pompa
  * D3                PCINT19 / OC2B / INT1   PD3    5 ####E##### 24  PC1 ADC1 / PCINT9
  * D4 LCD D4---------PCINT20 / XCK  / T0     PD4    6 ####G##### 23  PC0 ADC0 / PCINT8----------------ADC KEYBOARD
  *                                           VCC    7 ####A##### 22  GND
- *                                           GND    8 #### ##### 21  AREF ---||--- 100nF
+ *                                           GND    8 #### ##### 21  AREF --||-- 100nF
  *                   PCINT6  / XTAL1 / TOSC1 PB6    9 ####3##### 20  AVCC
  *                   PCINT7  / XTAL2 / TOSC2 PB7   10 ####2##### 19  PB5 SCK  / PCINT5----------------LED Yellow on arduino board      D13
  * D5 LCD D5---------PCINT21 / OC0B  / T1    PD5   11 ####8##### 18  PB4 MISO / PCINT4                                                 D12
@@ -138,7 +138,7 @@ void main(void)
     EventPost(SYS_1WIRE_CONVERT);
     APP_vActivateApp(APP_STATUS);
     TIMER_vInit();
-    sei();
+    sei(); //TODO
 
 	do {
         wdt_reset();
@@ -165,7 +165,7 @@ void main(void)
 		            OW_vWorker();
 		            break;
 
-		        case MENU_ACTION_NEXT:
+		        case MENU_ACTION_DOWN:
 		        case MENU_ACTION_SELECT:
 		             LCD_BL_HI // turn on LCD backlight
 		             ucUIInactiveCounter = UI_INACTIVE_TIMEOUT; // Reinitialize timeout counter with every keypress
@@ -201,15 +201,17 @@ void main(void)
 		{
             bRefreshDisplay = FALSE;
             APP_vUpdateDisplay();
+            RTC_vShowTime();
+
 	    }
 
         if (uiPumpSwitchOffAfter>0)
         {
-            HB_LED_HI
+            PUMP_LED_HI
         }
         else
         {
-            HB_LED_LO
+            PUMP_LED_LO
         }
 
 //        printf(" [%02X] ADCH=%02X ADCL=%02X  ADC=%3d\n", ucChannel, ADCH, ADCL, ucADC); _delay_ms(100);

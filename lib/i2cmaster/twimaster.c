@@ -14,13 +14,21 @@
 
 /* define CPU frequency in Mhz here if not defined in Makefile */
 #ifndef F_CPU
-#error "F_CPU!"
-#define F_CPU 4000000UL
+    #error "Please define F_CPU!"
+    //#define F_CPU 4000000UL
 #endif
 
 /* I2C clock in Hz */
 //#define SCL_CLOCK  100000L
 #define SCL_CLOCK  30000L
+
+#define TWBR_CALC(scl_clock,prescaler)          ((((F_CPU)/(scl_clock))/(prescaler)-16)/2)
+#define SCL_CLOCK_CALC(twbr,prescaler)          ((F_CPU)/(16 + 2*(twbr)*(prescaler)))
+
+#define TWSR_PRESCALER_BY_1                     0
+#define TWSR_PRESCALER_BY_4                     1
+#define TWSR_PRESCALER_BY_16                    2
+#define TWSR_PRESCALER_BY_64                    3
 
 /*
  * 10us period =100kHz
@@ -33,19 +41,25 @@
 *************************************************************************/
 void i2c_init(void)
 {
-  /* initialize TWI clock: 100 kHz clock, TWPS = 0 => prescaler = 1 */
-  /* TWSR    PRESCALER
-   *  0        /1
-   *  1        /4
-   *  2        /16
-   *  3        /64
-   */
-  #define TWI_PRESCALER   4
-  TWSR = 1;
-  TWBR = ((F_CPU/SCL_CLOCK)/(TWI_PRESCALER)-16)/2;  /* must be > 10 for stable operation */
-  //TWSR = 1;
-  //TWBR=255;
+#if (TWBR_CALC(SCL_CLOCK,1) < 255)
+    #define TWI_PRESCALER   1
+    TWSR = TWSR_PRESCALER_BY_1;
+#elif (TWBR_CALC(SCL_CLOCK,4) < 255)
+    #define TWI_PRESCALER   4
+    TWSR = TWSR_PRESCALER_BY_4;
+#elif (TWBR_CALC(SCL_CLOCK,16) < 255)
+    #define TWI_PRESCALER   16
+    TWSR = TWSR_PRESCALER_BY_16;
+#elif (TWBR_CALC(SCL_CLOCK,64) < 255)
+    #define TWI_PRESCALER   64
+    TWSR = TWSR_PRESCALER_BY_64;
+#endif
 
+#if (TWBR_CALC(SCL_CLOCK,TWI_PRESCALER) < 10)
+    #error "TWBR must be >10 for stable operation!"
+#endif
+
+  TWBR = TWBR_CALC(SCL_CLOCK,TWI_PRESCALER);
 }/* i2c_init */
 
 
