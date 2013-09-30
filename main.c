@@ -165,6 +165,9 @@ void main(void)
 		            OW_vWorker();
 		            break;
 
+		        case MENU_ACTION_LEFT:
+		        case MENU_ACTION_RIGHT:
+		        case MENU_ACTION_UP:
 		        case MENU_ACTION_DOWN:
 		        case MENU_ACTION_SELECT:
 		             LCD_BL_HI // turn on LCD backlight
