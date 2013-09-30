@@ -99,7 +99,8 @@ SRC = 	$(TARGET).c \
 		usart0.c
 		
 SRC+=	lib/key/key_adc.c \
-		lib/key/key_buttons.c
+		lib/key/key_buttons.c \
+		lib/key/key_serial.c		
 
 SRC+=	lib/1wire_low.c \
 		lib/1wire.c 
