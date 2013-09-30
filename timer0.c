@@ -59,8 +59,8 @@ ISR(TIMER0_OVF_vect)
         {
             uiPumpSwitchOffAfter--;
         }
-        RTC_vTickLocalTime();
-        RTC_vConvertLocalTime();
+//        RTC_vTickLocalTime();
+//        RTC_vConvertLocalTime();
 
         bRefreshDisplay = TRUE;
 #if (WITH_HB_EVENT)
@@ -71,7 +71,7 @@ ISR(TIMER0_OVF_vect)
 
     if (TRUE == bNeedsBlinking)
     {
-        if (ulSystemTickMS % 300 == 0)
+        if (ulSystemTickMS % (BLINK_SPEED) == 0)
         {
             bBlinkState = (bBlinkState==0 ? 1 : 0);
             bRefreshDisplay = TRUE;

@@ -130,7 +130,7 @@ void main(void)
 	RTC_vInit();
 	//wdt_enable(WDTO_2S);
 	KEY_vInit();
-	MENU_vInit();
+	KEY_SERIAL_vInit();
 
 	atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempInt = TEMP_ERROR;
 	atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt = TEMP_ERROR;
@@ -200,9 +200,8 @@ void main(void)
 		if (TRUE == bRefreshDisplay)
 		{
             bRefreshDisplay = FALSE;
+            RTC_vGetTime();
             APP_vUpdateDisplay();
-            RTC_vShowTime();
-
 	    }
 
         if (uiPumpSwitchOffAfter>0)
@@ -214,27 +213,6 @@ void main(void)
             PUMP_LED_LO
         }
 
-//        printf(" [%02X] ADCH=%02X ADCL=%02X  ADC=%3d\n", ucChannel, ADCH, ADCL, ucADC); _delay_ms(100);
-
-//        ucChannel++;
-//        if (ucChannel>15)
-//        {
-//            ucChannel=0;
-//            putchar ('\n');
-//        }
-
-//        LCD_vGotoXY(0,1);
-//        LCD_vPrintf(" %d %02X %02X ", uiADC, ADCH, ADCL);
-
-//
-//		LCD_vGotoXY(0,1);
-//		LCD_vPrintf("%lu[%d %d]",ulSystemTickS, BTN_NEXT_PRESSED, BTN_OK_PRESSED);
-//		LCD_vPrintf("[%d %d]%d", ucKeyNextState, ucKeyOkState, ucKeyBlocked>0);
-//        // if still no events, sleep a while
-//        if (FALSE == bIsEventWaiting())
-//        {
-//            _delay_ms(50);
-//        }
 	} while (1); //do
 
 //	return 0;

@@ -10,7 +10,7 @@
 
 #include <app_menu.h>
 
-MENU_ITEM_DEF	atdMenuItems[NUMBER_OF_MENU_ITEMS] =
+const MENU_ITEM_DEF	atdMenuItems[NUMBER_OF_MENU_ITEMS] =
 {
 		{ LVL0, MID_SETTINGS,		"Ustawienia",              MENU_FN_CHILD_MENU,	                        NO_ASK	},
 			{ LVL1, MID_1W_ZASOBNIK,		"1W zasobnik", 	            MENU_FN_CHILD_MENU,                 NO_ASK	},

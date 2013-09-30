@@ -12,9 +12,9 @@
 
 #define RESET(string)	                LOG_Reset(string)
 #define DEBUG(format, string...)        {                                           LOG_Log(format, ##string);}
-#define DEBUG_T(format, string...)      {LOG_Log_P(PSTR("%5d "),ulSystemTickS);     LOG_Log(format, ##string);}
+#define DEBUG_T(format, string...)      {LOG_Log_P(PSTR("[%5d] "),ulSystemTickS);     LOG_Log(format, ##string);}
 #define DEBUG_P(format, string...)      {                                           LOG_Log_P(format, ##string);}
-#define DEBUG_T_P(format, string...)    {LOG_Log_P(PSTR("%5d "),ulSystemTickS);     LOG_Log_P(format, ##string);}
+#define DEBUG_T_P(format, string...)    {LOG_Log_P(PSTR("[%5d] "),ulSystemTickS);     LOG_Log_P(format, ##string);}
 #define LOG(format, string...)          LOG_Log(format, ##string)
 
 extern void LOG_Reset (char * message);

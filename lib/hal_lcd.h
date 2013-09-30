@@ -53,6 +53,7 @@ typedef enum {
 
 #endif
 
+
 extern void LCD_vPrintf(const char *format, ...);
 extern void LCD_vPrintf_P(const char *format, ...);
 //#define LCD_vPrintf_P(format, args...)      LCD_vPrintf_(PSTR(format), args)

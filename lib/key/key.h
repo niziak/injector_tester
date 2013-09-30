@@ -8,6 +8,7 @@
 #ifndef KEY_H_
 #define KEY_H_
 
+#define USE_SERIAL_EMULATED_KEYPAD      TRUE
 #define USE_ARDUINO_ADC_KEYPAD          TRUE
 #define USE_SINGLE_PIN_BUTTONS          FALSE
 
@@ -31,7 +32,7 @@
     #define  ADC_KEY_VAL_IDLE       255
 
     #define ADC_KEY_DEBOUNCE        500       ///< n*10ms     how many cycles wait for key unchanged state
-    #define ADC_KEY_INTERVAL        1000       ///< n*10ms    how long block keyboard reading after keypress (key repeat)
+    #define ADC_KEY_INTERVAL        3000       ///< n*10ms    how long block keyboard reading after keypress (key repeat)
 
     #include <tools.h>
     #define ADC_KEY_PRESSED_TRIGGER_FN      {int_delay_break();}
@@ -47,5 +48,9 @@
 
 #endif
 
+#if (USE_SERIAL_EMULATED_KEYPAD)
+    #include <key_serial.h>
+    #define SERIAL_KEY_PRESSED_TRIGGER_FN              {int_delay_break();}
+#endif
 
 #endif /* KEY_H_ */

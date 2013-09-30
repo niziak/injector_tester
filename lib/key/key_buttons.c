@@ -37,7 +37,7 @@ void KEY_vKeyIsr(void)
     {
         if (ucKeyNextState > KEY_DEBOUNCE)
         {
-            EventPostFromIRQ(MENU_ACTION_NEXT);
+            EventPostFromIRQ(MENU_ACTION_DOWN);
             ucKeyBlocked = KEY_INTERVAL;
             ADC_KEY_PRESSED_TRIGGER_FN;
         }

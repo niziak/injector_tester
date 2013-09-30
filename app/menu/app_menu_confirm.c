@@ -11,11 +11,15 @@
 void MENU_ConfirmationScreenHandler(EVENT_DEF eMenuAction)
 {
     if (FALSE==PTDMENU->bConfirmationScreenActive)
+    {
         RESET("app mn cfmna");
+    }
 
     switch (eMenuAction)
     {
-        case MENU_ACTION_NEXT:
+        case MENU_ACTION_RIGHT:
+        case MENU_ACTION_UP:
+        case MENU_ACTION_DOWN:
             if (FALSE==PTDMENU->bConfirmationStateIsNo)
             {
                 PTDMENU->bConfirmationStateIsNo = TRUE;
@@ -29,6 +33,10 @@ void MENU_ConfirmationScreenHandler(EVENT_DEF eMenuAction)
         case MENU_ACTION_SELECT:
             PTDMENU->bConfirmationScreenActive = FALSE;
             EventPost(MENU_ACTION_CONFIRMED);
+            break;
+
+        case MENU_ACTION_LEFT:
+            PTDMENU->bConfirmationScreenActive = FALSE;
             break;
 
         default:

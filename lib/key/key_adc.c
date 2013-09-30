@@ -72,10 +72,10 @@ ISR(ADC_vect)
     {
         // key was pressed for enough time
         if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_SELECT))            EventPostFromIRQ(MENU_ACTION_SELECT   );
-        if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_LEFT  ))            EventPostFromIRQ(MENU_ACTION_PREV     );
-        if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_DOWN  ))            EventPostFromIRQ(MENU_ACTION_NEXT     );
-        if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_UP    ))            EventPostFromIRQ(MENU_ACTION_PREV     );
-        if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_RIGHT ))            EventPostFromIRQ(MENU_ACTION_NEXT     );
+        if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_LEFT  ))            EventPostFromIRQ(MENU_ACTION_LEFT     );
+        if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_DOWN  ))            EventPostFromIRQ(MENU_ACTION_DOWN     );
+        if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_UP    ))            EventPostFromIRQ(MENU_ACTION_UP       );
+        if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_RIGHT ))            EventPostFromIRQ(MENU_ACTION_RIGHT    );
 
         ADC_KEY_PRESSED_TRIGGER_FN
         uiADCKeyBlockedTTL = ADC_KEY_INTERVAL;

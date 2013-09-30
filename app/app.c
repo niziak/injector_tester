@@ -14,7 +14,7 @@ static APP_ID_DEF   eActiveApp;     ///< active application ID
  */
 void APP_vUpdateDisplay(void)
 {
-    DEBUG_T_P(PSTR("APP_vUpdateDisplay\n"));
+    DEBUG_T_P(PSTR("\nAPP_vUpdateDisplay\n"));
     switch (eActiveApp)
     {
         default:
@@ -39,9 +39,20 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
 {
     DEBUG_P(PSTR("APP_vRouteEvent(%d) to %d app\n"), eEvent, eActiveApp);
 
+    // TODO make app stack?
+    switch (eEvent)
+    {
+        case APP_LOST_CONTROL:
+            APP_vActivateApp(APP_STATUS);
+            return;
+            break;
+
+        default:
+            break;
+    }
+
     switch (eActiveApp)
     {
-        DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
         default:
             RESET("app No act app");
             break;
@@ -53,13 +64,22 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
         case APP_STATUS:
             switch (eEvent)
                 {
-                    case MENU_ACTION_SELECT:
-                        APP_vActivateApp(APP_MENU);
-                        MENU_Activate();                // menu not active - so activate it
+                    case APP_ACTIVATE:
+                        DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
                         break;
 
-                    case MENU_ACTION_NEXT:
+                    case MENU_ACTION_SELECT:
+                        APP_vActivateApp(APP_MENU);
+                        break;
+
+                    case MENU_ACTION_RIGHT:
+                    case MENU_ACTION_DOWN:
                         DISP_vStatusScreenNext();
+                        break;
+
+                    case MENU_ACTION_LEFT:
+                    case MENU_ACTION_UP:
+                        DISP_vStatusScreenPrev();
                         break;
 
                     case SYS_UI_TIMEOUT:
@@ -75,9 +95,10 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
     //TODO make app stack to back from menu automatically to APP_STATUS
     switch (eEvent)
     {
+        //TODO UI_TIMEOUT is hanlded inside each app - for future make RESET to preempt application
         case SYS_UI_TIMEOUT:
             //DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
-            APP_vActivateApp(APP_STATUS);
+           // APP_vActivateApp(APP_STATUS);
             break;
 
         default:
@@ -90,4 +111,5 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
 void APP_vActivateApp(APP_ID_DEF   eNewActiveAppId)
 {
     eActiveApp = eNewActiveAppId;
+    APP_vRouteEvent(APP_ACTIVATE);
 }

@@ -31,6 +31,10 @@ BOOL MENU_bIsMenuActive(void)
 
 void MENU_Activate(void)
 {
+    if (TRUE == PTDMENU->bMenuActive)
+    {
+        RESET("mn already activ!");
+    }
     memset (PTDMENU, 0, sizeof(MENU_DEF));
     bNeedsBlinking = TRUE;
     PTDMENU->bMenuActive = TRUE;
@@ -39,9 +43,14 @@ void MENU_Activate(void)
 
 void MENU_Deactivate(void)
 {
+    if (FALSE==PTDMENU->bMenuActive)
+    {
+        RESET("mn already deactiv!");
+    }
 	PTDMENU->bMenuActive = FALSE;
 	bNeedsBlinking = FALSE;
 	MENU_DISP_vClrScr();
+    EventPost(APP_LOST_CONTROL);    // inform app handler that we are no longer servicing
 }
 
 
@@ -52,6 +61,11 @@ void MENU_HandleEvent(EVENT_DEF eMenuEvent)
 {
     switch (eMenuEvent)
     {
+        case APP_ACTIVATE:
+            MENU_vInit();
+            MENU_Activate();
+            break;
+
         case SYS_UI_TIMEOUT:
             MENU_Deactivate();
             return;

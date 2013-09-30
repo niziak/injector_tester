@@ -29,15 +29,20 @@ typedef enum
 
     SYS_UI_TIMEOUT,            ///< no user action - timeout from last keypress
 
-    MENU_ACTION_PREV,           ///< navigagte to previous element
-    MENU_ACTION_NEXT,           ///< navigagte to next element
-    MENU_ACTION_SELECT,         ///< make action on selected element
+    MENU_ACTION_UP,            ///< key up      - navigagte to previous element
+    MENU_ACTION_DOWN,          ///< key down    - navigagte to next element
+    MENU_ACTION_LEFT,          ///< key left    - escape / back to previous screen
+    MENU_ACTION_RIGHT,         ///< key right   - enter to next screen
+    MENU_ACTION_SELECT,        ///< make action on selected element
 
     MENU_ACTION_CONFIRMED,
 //    MENU_ACTION_PAUSE,          ///< disable menu, but don't clear internal structure
 //    MENU_ACTION_RESUME,         ///< enable menu, but don't reset internal structures
 
     DISP_UPDATE,                ///< redraw display
+
+    APP_ACTIVATE,               ///< initalisation event to inform app handler about initialization
+    APP_LOST_CONTROL,           ///< signal application handler, that current application is no logner running
 
 #if WITH_HB_EVENT
     SYS_HEARTBEAT,

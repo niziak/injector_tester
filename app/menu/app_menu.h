@@ -78,14 +78,17 @@ typedef struct
 
 
 #define NUMBER_OF_MENU_ITEMS		15
-extern MENU_ITEM_DEF				atdMenuItems[NUMBER_OF_MENU_ITEMS];
+extern const MENU_ITEM_DEF				atdMenuItems[NUMBER_OF_MENU_ITEMS];
 //#define NUMBER_OF_MENU_ITEMS		(sizeof(atdMenuItems)/sizeof(atdMenuItems[0]))
 
+/**
+ * Describes state of menu application instance
+ */
 typedef struct
 {
     BOOL    bMenuActive;
-    UCHAR   ucCurrentItem;      ///< currenlty selected menu item (indexed from 0). Can be used as index for atdMenuItems[]
-    BOOL    bEndMarkerSelected;
+    UCHAR   ucCurrentItem;          ///< Currently selected menu item (indexed from 0). Can be used as index for atdMenuItems[]
+    BOOL    bEndMarkerSelected;     ///< end marker should be shown instead of last entry (it covers last entry)
 
     BOOL    bConfirmationScreenActive;
     BOOL    bConfirmationStateIsNo;    ///<    From YES/NO choice, NO is currently selected

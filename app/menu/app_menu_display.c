@@ -8,7 +8,7 @@
 
 static void vDrawConfirmationScreen(void)
 {
-    MENU_DISP_vGotoXY(2,0);
+    MENU_DISP_vGotoXY(1,0);
     MENU_DISP_vPuts_P(PSTR("Czy na pewno?"));
 #define YES_NO_POS 2
     MENU_DISP_vGotoXY(YES_NO_POS,1);

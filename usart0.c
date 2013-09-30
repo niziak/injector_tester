@@ -10,9 +10,22 @@ static FILE USART0_stream = FDEV_SETUP_STREAM (USART0_iSendByteToStream, NULL, _
 
 void USART0_vInit(void)
 {
+    #undef BAUD
+    #define BAUD (USART0_BAUD)
+    #define BAUD_TOL 2       // baud tolerance in percent
+
+    #include <util/setbaud.h>
+    UBRR0H = UBRRH_VALUE;
+    UBRR0L = UBRRL_VALUE;
+
+    #if USE_2X
+        UCSR0A |= (1<<U2X0);
+    #else
+        UCSR0A &= ~(1<<U2X0);
+    #endif
     // Set baud rate
-    UBRR0H = (unsigned char) (USART0_UBBR_VAL >>8 );
-    UBRR0L = (unsigned char) (USART0_UBBR_VAL);
+    //UBRR0H = (unsigned char) (USART0_UBBR_VAL >>8 );
+    //UBRR0L = (unsigned char) (USART0_UBBR_VAL);
 
     // Enable receiver and transmitter
     UCSR0B = (
@@ -49,6 +62,13 @@ int USART0_iSendByteToStream (unsigned char ucByte, FILE *stream)
     USART0_vSendByte (ucByte);
     return 1;
 }
+
+BOOL USART0_bIsByteAvail(void)
+{
+
+    return (UCSR0A & (1<<RXC0));
+}
+
 
 /**
  * Blocking!

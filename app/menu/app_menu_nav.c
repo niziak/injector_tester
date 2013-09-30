@@ -32,13 +32,15 @@ UCHAR MENU_ucGetParentFirstItemId(void)
 #endif
 
 /**
- * Gets next item from the same menu level
- * @return index in atdMenuItems[] array
+ * Gets next item from the same menu level as ucCurrentItem
+ *
+ * @ucCurrentItem   item for which search next item from the same level
+ * @return          index in atdMenuItems[] array
  */
-UCHAR MENU_ucGetNextItem(void)
+UCHAR MENU_ucGetNextItemFromSameLevel(UCHAR ucCurrentItem)
 {
     UCHAR ucI;
-    for (ucI=PTDMENU->ucCurrentItem + 1; ucI<NUMBER_OF_MENU_ITEMS; ucI++)
+    for (ucI=ucCurrentItem + 1; ucI<NUMBER_OF_MENU_ITEMS; ucI++)
     {
         // item with parent (lower) level found, means no more item on this level
         if (MENU_eGetCurrentItemLevel() > atdMenuItems[ucI].eLevel)
@@ -55,6 +57,36 @@ UCHAR MENU_ucGetNextItem(void)
     return MENU_ITEM_ID_NOT_FOUND;
 }
 
+/**
+ * Gets previous item from the same menu level as ucCurrentItem
+ *
+ * @ucCurrentItem   item for which search previous item from the same level
+ * @return          index in atdMenuItems[] array
+ */
+UCHAR MENU_ucGetPrevItemFromSameLevel(UCHAR ucCurrentItem)
+{
+    UCHAR ucI;
+    for (ucI=ucCurrentItem; ucI-- > 0;)
+    {
+        //DEBUG_P(PSTR("ucI=%d\n"),ucI);
+        // item with parent (lower) level found, means no more item on this level
+        if (MENU_eGetCurrentItemLevel() > atdMenuItems[ucI].eLevel)
+        {
+            DEBUG_P(PSTR("ucI=MENU_ITEM_ID_NOT_FOUND\n"));
+            // next item is from parent level , so no more items - go to end marker emulation
+            return MENU_ITEM_ID_NOT_FOUND;
+        }
+        if (MENU_eGetCurrentItemLevel() == atdMenuItems[ucI].eLevel)
+        {
+            DEBUG_P(PSTR("return ucI;\n"));
+            // next item is from the same level, so return it
+            return ucI;
+        }
+    }
+
+    DEBUG_P(PSTR("!!MENU_ITEM_ID_NOT_FOUND\n"));
+    return MENU_ITEM_ID_NOT_FOUND;
+}
 
 
 /**
@@ -89,7 +121,10 @@ UCHAR MENU_ucGetParentItem(UCHAR ucCurrentItem)
     return MENU_ITEM_ID_NOT_FOUND;
 }
 
-
+/**
+ * Get menu item ID for first entry on the current level
+ * @return
+ */
 UCHAR MENU_ucGetFirstItem(void)
 {
     if (atdMenuItems[PTDMENU->ucCurrentItem].eLevel==LVL0)
@@ -97,6 +132,24 @@ UCHAR MENU_ucGetFirstItem(void)
            return MENU_ITEM_ID_FIRST;
     }
     return MENU_ucGetParentItem(PTDMENU->ucCurrentItem)+1;
+}
+
+/**
+ * Get id of last item from the same menu level (used from wrap around)
+ * @return item id
+ */
+UCHAR MENU_ucGetLastItem(void)
+{
+    UCHAR ucI;
+    for (ucI=MENU_ucGetFirstItem(); ucI<NUMBER_OF_MENU_ITEMS; ucI++)
+    {
+        if (MENU_ITEM_ID_NOT_FOUND == MENU_ucGetNextItemFromSameLevel(ucI))
+        {
+            return ucI;
+        }
+    }
+    RESET("MENU_ucGetLastItem\n");
+    return MENU_ITEM_ID_NOT_FOUND;
 }
 
 /**
@@ -128,7 +181,30 @@ void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
 //            PTDMENU->bMenuActive = TRUE;
 //            break;
 
-        case MENU_ACTION_NEXT:
+        case MENU_ACTION_UP:
+            // if end marker is shown, disable endmarker (automatically last entry will be shown)
+            if (TRUE == PTDMENU->bEndMarkerSelected)
+            {
+                PTDMENU->bEndMarkerSelected = FALSE;
+                return;
+            }
+            // if no previous items left, so make wrap around to last item and show end marker
+            if (PTDMENU->ucCurrentItem == MENU_ucGetFirstItem())
+            {
+                PTDMENU->ucCurrentItem = MENU_ucGetLastItem();
+                PTDMENU->bEndMarkerSelected = TRUE;
+                return;
+            }
+            DEBUG_P(PSTR("MENU_ACTION_UP\n"));
+
+            PTDMENU->ucCurrentItem = MENU_ucGetPrevItemFromSameLevel(PTDMENU->ucCurrentItem);
+            if (MENU_ITEM_ID_NOT_FOUND == PTDMENU->ucCurrentItem)
+            {
+                RESET("app mn scr up nf!");
+            }
+            break;
+
+        case MENU_ACTION_DOWN:
             if (TRUE==PTDMENU->bEndMarkerSelected)
             {
                 // end marker is currently selected, so wrap around menu
@@ -138,7 +214,7 @@ void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
             }
 
 
-            if (MENU_ITEM_ID_NOT_FOUND == MENU_ucGetNextItem())
+            if (MENU_ITEM_ID_NOT_FOUND == MENU_ucGetNextItemFromSameLevel(PTDMENU->ucCurrentItem))
             {
                 // next item is from parent level , so no more items - go to end marker emulation
 
@@ -148,7 +224,7 @@ void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
             else
             {
                 // next item is from the same level, so scroll to it
-                PTDMENU->ucCurrentItem = MENU_ucGetNextItem();
+                PTDMENU->ucCurrentItem = MENU_ucGetNextItemFromSameLevel(PTDMENU->ucCurrentItem);
                 return;
             }
             break;
@@ -163,13 +239,13 @@ void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
 
             if (PCURRENT_ITEM->eConfirmation==ASK)
             {
-//                LOG("Cfm ASK");
+                DEBUG_P(PSTR("Cfm ASK\n"));
                 PTDMENU->bConfirmationScreenActive = TRUE;
                 PTDMENU->bConfirmationStateIsNo = TRUE;
             }
             else
             {
-//                LOG("Cfm No ASK");
+                DEBUG_P(PSTR("Cfm No ASK\n"));
                 PTDMENU->bConfirmationStateIsNo = FALSE;
                 EventPost(MENU_ACTION_CONFIRMED);
             }
@@ -178,7 +254,7 @@ void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
         case MENU_ACTION_CONFIRMED:
             if (PTDMENU->bConfirmationStateIsNo == FALSE)
             {
-//                LOG ("Do!");
+                DEBUG_P(PSTR("Confirmed!\n"));
                 if (MENU_FN_CHILD_MENU == PCURRENT_ITEM->eMenuFnId)
                 {
                     PTDMENU->ucCurrentItem++;
@@ -191,7 +267,7 @@ void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
             }
             else
             {
-//                LOG ("Ignore!");
+                DEBUG_P (PSTR("Not confiremd - Ignore!\n"));
             }
             break;
 

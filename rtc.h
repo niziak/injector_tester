@@ -38,8 +38,8 @@ typedef struct
     UCHAR tm_isdst;
 } tm;
 
-extern time_t tSecondsUntilEpoch;             ///< actual time in seconds until 1970
-extern tm tdLocalTime;          ///< actual time in tm structure
+extern time_t tSecondsUntilEpoch;
+extern tm tdLocalTime;
 #define ptdLocalTime    (&(tdLocalTime))
 
 #define MIN_PER_HOUR    60
@@ -50,8 +50,13 @@ extern tm tdLocalTime;          ///< actual time in tm structure
 
 
 extern void RTC_vInit(void);
+
+extern BOOL RTC_bGetState(void);
+extern void RTC_vSetState(BOOL bNewState);
+extern void RTC_vStop(void);
+
 extern void RTC_vConvertLocalTime(void);
 extern void RTC_vTickLocalTime(void);
-extern void RTC_vShowTime(void);
+extern void RTC_vGetTime(void);
 
 #endif /* RTC_H_ */
