@@ -52,5 +52,6 @@ extern tm tdLocalTime;          ///< actual time in tm structure
 extern void RTC_vInit(void);
 extern void RTC_vConvertLocalTime(void);
 extern void RTC_vTickLocalTime(void);
+extern void RTC_vShowTime(void);
 
 #endif /* RTC_H_ */

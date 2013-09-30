@@ -49,3 +49,15 @@ int USART0_iSendByteToStream (unsigned char ucByte, FILE *stream)
     USART0_vSendByte (ucByte);
     return 1;
 }
+
+/**
+ * Blocking!
+ * @return
+ */
+unsigned char USART0_ucGetByte(void)
+{
+    // wait for data
+    while ( ! (UCSR0A & (1<<RXC0))) { };
+    return UDR0;
+}
+
