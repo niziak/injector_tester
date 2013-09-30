@@ -62,11 +62,26 @@ static void vDisplayScreenTitle(void)
  */
 void DISP_vStatusScreenNext(void)
 {
-    bRefreshDisplay  = TRUE;
-    bShowScreenTitle = TRUE;
     eCurrentScreenId++;
-    if (eCurrentScreenId==STATUS_SCREEN_LAST)
-        eCurrentScreenId=0;
+    if (eCurrentScreenId == STATUS_SCREEN_LAST)
+        eCurrentScreenId = STATUS_SCREEN_FIRST+1;
+    DISP_vStatusScreenSetNew(eCurrentScreenId);
+}
+
+/**
+ * Change status screen to previous
+ */
+void DISP_vStatusScreenPrev(void)
+{
+    if (eCurrentScreenId > STATUS_SCREEN_FIRST+1)
+    {
+        eCurrentScreenId--;
+    }
+    else
+    {
+        eCurrentScreenId = STATUS_SCREEN_LAST-1;
+    }
+    DISP_vStatusScreenSetNew(eCurrentScreenId);
 }
 
 /**
@@ -119,22 +134,26 @@ void DISP_vPrintStatusScreen(void)
     }
 
     LCD_vClrScr();
+    bNeedsBlinking = FALSE;
     switch (eCurrentScreenId)
     {
         case STATUS_SCREEN_IDLE:
             vPrintTemp(ONEWIRE_ZASO_IDX);
             LCD_vPutc(' ');
             vPrintTemp(ONEWIRE_KRAN_IDX);
-            if ((uiPumpSwitchOffAfter>0) && (bBlinkState==TRUE))
-            {
-                LCD_vGotoXY(15,0);
-                LCD_vPutc(255);
-            }
+
             if ((uiPumpSwitchOffAfter>0))
             {
+                bNeedsBlinking = TRUE;
+                if (bBlinkState==TRUE)
+                {
+                    LCD_vGotoXY(15,0);
+                    LCD_vPutc(255);
+                }
                 LCD_vGotoXY(10,1);
                 LCD_vPrintf_P(PSTR("%4d"), uiPumpSwitchOffAfter);
             }
+
             LCD_vGotoXY(0,1);
             LCD_vPrintf_P(PSTR("%02d:%02d:%02d"),   ptdLocalTime->tm_hour,
                                                     ptdLocalTime->tm_min,

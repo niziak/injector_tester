@@ -10,7 +10,9 @@
 
 typedef enum
 {
-    STATUS_SCREEN_IDLE=0,
+    STATUS_SCREEN_FIRST = 0,
+
+    STATUS_SCREEN_IDLE,
     STATUS_SCREEN_NEW_SENSORS,
     STATUS_SCREEN_KNOWN_SENSORS,
     STATUS_SCREEN_TEMP,
@@ -19,6 +21,7 @@ typedef enum
 } STATUS_SCREEEN_ID_DEF;
 
 extern void DISP_vStatusScreenNext(void);
+extern void DISP_vStatusScreenPrev(void);
 extern void DISP_vPrintStatusScreen(void);
 extern void DISP_vStatusScreenSetNew(STATUS_SCREEEN_ID_DEF eNewScreenId);
 
