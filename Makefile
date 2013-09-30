@@ -45,13 +45,13 @@
 #POSIX_UTILS_DIR_PREFIX : = n:/tools/WinAVR/utils/bin/
 
 #GCC_BIN_DIR_PREFIX := n:/tools/avrgcc/bin/
-#POSIX_UTILS_DIR_PREFIX : = n:/tools/WinAVR/utils/bin/
+POSIX_UTILS_DIR_PREFIX := n:/tools/WinAVR/utils/bin/
 
 #GCC_BIN_DIR_PREFIX := n:/Arduino/hardware/tools/avr/bin/
 #POSIX_UTILS_DIR_PREFIX : = n:/Arduino/hardware/tools/avr/utils/bin/
 
 GCC_BIN_DIR_PREFIX := n:/tools/avr-gcc-4.8_2013-03-06_mingw32/bin/
-POSIX_UTILS_DIR_PREFIX : = n:/tools/avr-gcc-4.8_2013-03-06_mingw32/utils/bin/
+#POSIX_UTILS_DIR_PREFIX : = n:/tools/avr-gcc-4.8_2013-03-06_mingw32/utils/bin/
 
   
  
@@ -353,7 +353,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(OUTDIR)/$(TARGET).hex
 # Uncomment the following if you want avrdude's erase cycle counter.
 # Note that this counter needs to be initialized first using -Yn,
 # see avrdude manual.
-AVRDUDE_ERASE_COUNTER = -y
+#AVRDUDE_ERASE_COUNTER = -y
 
 # Uncomment the following if you do /not/ wish a verification to be
 # performed after programming the device.
@@ -422,6 +422,7 @@ AVRDUDE = tools_win32/avrdude.exe
 REMOVE = $(POSIX_UTILS_DIR_PREFIX)rm -f
 REMOVEDIR = $(POSIX_UTILS_DIR_PREFIX)rm -rf
 COPY = $(POSIX_UTILS_DIR_PREFIX)cp
+MKDIR = $(POSIX_UTILS_DIR_PREFIX)mkdir
 WINSHELL = cmd
 
 
@@ -470,7 +471,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter end objdump
+all: begin gccversion sizebefore build sizeafter end objdump release
 #all: begin build sizeafter end
 
 # Change the build target to build a HEX file or a library.
@@ -478,7 +479,15 @@ build: elf hex
 # eep lss sym
 #build: lib
 
-	
+release:
+	@echo -n
+	@echo === MAKE RELEASE ===
+	$(MKDIR) -p release 
+	$(COPY) $(OUTDIR)/$(TARGET).hex release	
+	$(COPY) tools_win32/avrdude.exe release
+	$(COPY) tools_win32/avrdude.conf release
+	$(COPY) tools_win32/putty.exe release
+	$(POSIX_UTILS_DIR_PREFIX)tar -cvzf release.tgz release
 
 elf: $(OUTDIR)/$(TARGET).elf
 hex: $(OUTDIR)/$(TARGET).hex
@@ -690,9 +699,9 @@ clean_list :
 
 
 # Create object files directory
-$(shell mkdir $(OBJDIR) 2>/dev/null)
+$(shell mkdir -p $(OBJDIR) 2>/dev/null)
 
-$(shell mkdir $(OUTDIR) 2>/dev/null)
+$(shell mkdir -p $(OUTDIR) 2>/dev/null)
 
 
 # Include the dependency files.
@@ -702,6 +711,6 @@ $(shell mkdir $(OUTDIR) 2>/dev/null)
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion \
 build elf hex eep lss sym coff extcoff \
-clean clean_list program debug gdb-config dirs
+clean clean_list program debug gdb-config dirs release
 
 
