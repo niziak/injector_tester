@@ -8,5 +8,7 @@
 #ifndef APP_CLOCK_H_
 #define APP_CLOCK_H_
 
+extern void APP_CLOCK_vShow(void);
+extern void APP_CLOCK_vHandleEvent(EVENT_DEF eEvent);
 
 #endif /* APP_CLOCK_H_ */

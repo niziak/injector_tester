@@ -15,10 +15,6 @@
 #include "rtc.h"
 #include <i2cmaster.h>
 
-#define  DEC2BCD(dec)           (((dec)/10*16) + ((dec) %10 ))
-#define  BCD2DEC(bcd)           (((bcd)/16*10) + ((bcd) % 16))
-
-
 
 //#define DS1307_ADDR            0x68    // 104=0x68
 /**
@@ -291,4 +287,27 @@ void RTC_vGetTime(void)
     ptdLocalTime->tm_sec  = BCD2DEC(aucData[0] & REG_SECONDS_MASK);
     ptdLocalTime->tm_min  = BCD2DEC(aucData[1]);
     ptdLocalTime->tm_hour = BCD2DEC(aucData[2]);
+}
+
+/**
+ * Sets current and RTC clock
+ *
+ * @param ucSec
+ * @param ucMin
+ * @param ucHour
+ */
+void RTC_vSetTime(unsigned char ucHour, unsigned char ucMin, unsigned char ucSec)
+{
+    RTC_PRINTF_P (PSTR("RTC_vSetTime(%02d,%02d,%02d)\n"), ucHour, ucMin, ucSec);
+
+     i2c_start_wait (DS1307_ADDR+I2C_WRITE);     // set device address and write mode
+     i2c_write (DS1307_REG_SECONDS);             // write address
+     i2c_write (DEC2BCD(ucSec));
+     i2c_write (DEC2BCD(ucMin));
+     i2c_write (DEC2BCD(ucHour));
+     i2c_stop();
+
+     ptdLocalTime->tm_sec  = ucSec;
+     ptdLocalTime->tm_min  = ucMin;
+     ptdLocalTime->tm_hour = ucHour;
 }

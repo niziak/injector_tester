@@ -10,6 +10,7 @@
 #include <app_menu.h>
 #include <lib/1wire_config.h>
 #include <lib/nvm.h>
+#include <app.h>
 
 void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
 {
@@ -17,7 +18,7 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
     {
         case MENU_FN_FACTORY_DEFAULT:
             NVM_vRestoreFactory();
-            for(;;);
+            RESET("FACTORY RESET!\n");
             break;
 
         case MENU_FN_10MIN:
@@ -25,10 +26,11 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
             break;
 
         case MENU_FN_CLOCK:
+            APP_vActivateApp(APP_CLOCK);
             break;
 
         case MENU_FN_REBOOT:
-            for (;;);
+            RESET("RESTART!\n");
             break;
 
         case MENU_FN_SET_1W_ZASOBNIK:

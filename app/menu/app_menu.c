@@ -7,17 +7,15 @@
 
 #include <string.h>
 
-#include <app_menu.h>
+#include <app.h>
 #include <key.h> //temp
 #include <log.h>
-#include <app_status.h>
 
 MENU_DEF tdMenu;
 
 
 void MENU_vInit(void)
 {
-    bNeedsBlinking = FALSE;
 	PTDMENU->bMenuActive = FALSE;
 	PTDMENU->bConfirmationScreenActive = FALSE;
 }
@@ -36,7 +34,7 @@ void MENU_Activate(void)
         RESET("mn already activ!");
     }
     memset (PTDMENU, 0, sizeof(MENU_DEF));
-    bNeedsBlinking = TRUE;
+    DISP_START_BLINK_TIMER
     PTDMENU->bMenuActive = TRUE;
     MENU_DISP_vClrScr();
 }
@@ -48,9 +46,9 @@ void MENU_Deactivate(void)
         RESET("mn already deactiv!");
     }
 	PTDMENU->bMenuActive = FALSE;
-	bNeedsBlinking = FALSE;
 	MENU_DISP_vClrScr();
-    EventPost(APP_LOST_CONTROL);    // inform app handler that we are no longer servicing
+	// inform app handler that we are no longer servicing
+    APP_vReactivatePreviousApp();
 }
 
 
@@ -61,13 +59,14 @@ void MENU_HandleEvent(EVENT_DEF eMenuEvent)
 {
     switch (eMenuEvent)
     {
-        case APP_ACTIVATE:
+        case APP_REACTIVATED:
+        case APP_ACTIVATED:
             MENU_vInit();
             MENU_Activate();
             break;
 
-        case SYS_UI_TIMEOUT:
-            MENU_Deactivate();
+        case APP_KILLED:
+            PTDMENU->bMenuActive = FALSE;
             return;
             break;
 

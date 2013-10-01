@@ -61,12 +61,16 @@
 #define AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN       FALSE
 
 
-extern volatile unsigned long ulSystemTickMS;
-extern volatile unsigned long ulSystemTickS;
-extern volatile BOOL bBlinkState;
-extern volatile UCHAR ucUIInactiveCounter;
-extern volatile unsigned int uiPumpSwitchOffAfter;
-extern volatile BOOL bRefreshDisplay;
-extern volatile BOOL               bNeedsBlinking;
+extern volatile unsigned long       ulSystemTickMS;
+extern volatile unsigned long       ulSystemTickS;
+extern volatile BOOL                bBlinkState;
+extern volatile UCHAR               ucUIInactiveCounter;
+extern volatile unsigned int        uiPumpSwitchOffAfter;
+extern volatile BOOL                bRefreshDisplay;
+extern volatile BOOL                bNeedsBlinking;
+
+#define DISP_REFRESH                {bRefreshDisplay = TRUE;}
+#define DISP_START_BLINK_TIMER      {bNeedsBlinking = TRUE;}
+#define DISP_STOP_BLINK_TIMER       {bNeedsBlinking = FALSE;}
 
 #endif /* CONFIG_H_ */

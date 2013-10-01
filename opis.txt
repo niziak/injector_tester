@@ -1,0 +1,36 @@
+ - jesli przez 20 sekund jest brak nacisniec na klawiaturke, aplikacja gasi podswietlenie i pokazuje pierwszy ekran statusu
+ - na porcie szeregowym 115200 8N1 jest LOG, mo¿na z niego wyczytaæ mniej wiêcej jak wygl¹da ekranik. 
+   Mozna te¿ udawac sprzetowa klawiature z klawiatury PCta (strzalki + enter)
+
+
+Aplikacja status (domyslna po resecie)
+ - w trybie statusu mozna zmieniac kolejne ekrany klawiaturka. Bezczynnosc powoduje powrot do glownego ekranu
+ - SELECT - uruchamia aplikacje menu
+
+Aplikacja Menu:
+ - struktura menu zdefiniowana jest: https://raw.github.com/niziak/injector_tester/master/app/menu/app_menu_def.c
+
+
+Aplikacja zegar:
+ - Menu -> ustawienia - > zegar
+ - ustawia zegarek RTC. Ustawiac mozna kazda cyfre sekund i minut z osobna. Godziny ustawia sie jako calosc (00-23)
+ - Nawigacja:	góra/dól - zmiana wartosci
+  		lewo/prawo - zmiana miejsca
+ 		select - zatwierdzenie
+ - wyjscie bez zmian - poczekac 20 sekund
+
+
+
+Do zrobienia:
+ - usuniêcie migotania ekranika
+
+
+Pierwsze wlaczenie:
+ - podlaczyc dwa 1wire termometry
+ - na drugim ekranie statusu powinny sie pokazac nowe sensory (jedna linia jeden sensor). Jesli sa same zera to nie ma sensorow.
+ - trzeci ekran statusu to zapamietane sensory - dla nich mierzy temperature
+ - aby zapamietac nowe sensory w systemie trzeba wejsc do 
+	menu->ustawienia->1W zasobnik->Ustaw
+	menu->ustawienia->1W kran->Ustaw
+
+   Po tym nowe sensory powinny pokazywac same zera

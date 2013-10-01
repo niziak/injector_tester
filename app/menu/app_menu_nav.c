@@ -117,7 +117,7 @@ UCHAR MENU_ucGetParentItem(UCHAR ucCurrentItem)
         }
     }
 //    return ucI; // LVL0 wrap around, so back to first menu item
-    RESET ("app mn gpit");
+    RESET ("AppMnGPIT");
     return MENU_ITEM_ID_NOT_FOUND;
 }
 
@@ -195,12 +195,12 @@ void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
                 PTDMENU->bEndMarkerSelected = TRUE;
                 return;
             }
-            DEBUG_P(PSTR("MENU_ACTION_UP\n"));
+//            DEBUG_P(PSTR("MENU_ACTION_UP\n"));
 
             PTDMENU->ucCurrentItem = MENU_ucGetPrevItemFromSameLevel(PTDMENU->ucCurrentItem);
             if (MENU_ITEM_ID_NOT_FOUND == PTDMENU->ucCurrentItem)
             {
-                RESET("app mn scr up nf!");
+                RESET("AppMnScrNF");
             }
             break;
 

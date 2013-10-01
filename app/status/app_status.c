@@ -54,7 +54,7 @@ static void vDisplayScreenTitle(void)
             break;
 
     }
-    int_delay_ms(500);
+    breakable_delay_ms(500);
 }
 
 /**
@@ -133,8 +133,8 @@ void DISP_vPrintStatusScreen(void)
         bShowScreenTitle = FALSE;
     }
 
+    DISP_STOP_BLINK_TIMER
     LCD_vClrScr();
-    bNeedsBlinking = FALSE;
     switch (eCurrentScreenId)
     {
         case STATUS_SCREEN_IDLE:
@@ -144,7 +144,7 @@ void DISP_vPrintStatusScreen(void)
 
             if ((uiPumpSwitchOffAfter>0))
             {
-                bNeedsBlinking = TRUE;
+                DISP_START_BLINK_TIMER
                 if (bBlinkState==TRUE)
                 {
                     LCD_vGotoXY(15,0);
@@ -164,6 +164,8 @@ void DISP_vPrintStatusScreen(void)
         default:
             RESET("app st No scr");
             break;
+
+
 
         case STATUS_SCREEN_NEW_SENSORS:
             vPrintOneWireSerial (atdNewTempSensors[ONEWIRE_ZASO_IDX].aucROM);
@@ -186,4 +188,39 @@ void DISP_vPrintStatusScreen(void)
             break;
     }
     //int_delay_ms(500);
+}
+
+
+
+void APP_STATUS_vHandleEvent(EVENT_DEF eEvent)
+{
+    switch (eEvent)
+    {
+//        case SYS_CLOCK_1S:
+//        case SYS_1WIRE_READ:
+//            DISP_REFRESH;
+//            break;
+
+        case APP_REACTIVATED:
+        case APP_ACTIVATED:
+            DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
+            break;
+
+        case MENU_ACTION_SELECT:
+            APP_vActivateApp(APP_MENU);
+            break;
+
+        case MENU_ACTION_RIGHT:
+        case MENU_ACTION_DOWN:
+            DISP_vStatusScreenNext();
+            break;
+
+        case MENU_ACTION_LEFT:
+        case MENU_ACTION_UP:
+            DISP_vStatusScreenPrev();
+            break;
+
+        default:
+            break;
+    }
 }

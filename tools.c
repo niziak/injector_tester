@@ -11,7 +11,7 @@ static volatile BOOL bStop;
 /** called from ISR to stop interruptible delay
  *
  */
-void int_delay_break(void)
+void breakable_delay_break(void)
 {
     bStop = TRUE;
 }
@@ -20,7 +20,7 @@ void int_delay_break(void)
  * Interruptible delay (by keypress)
  * @param __ms
  */
-void int_delay_ms(unsigned int  __ms)
+void breakable_delay_ms(unsigned int  __ms)
 {
     bStop = FALSE;
     while ((bStop==FALSE) && (__ms-->0))

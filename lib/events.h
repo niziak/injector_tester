@@ -13,6 +13,7 @@
 typedef enum
 {
     EVENT_TIMER_1WIRE = 0,  ///< timer id, first must be zero because it is used as index in @atdTimers
+    EVENT_TIMER_POPUP,
 
     EVENT_TIMER_LAST,
 } EVENT_DELAYED_TIMER_ID;
@@ -24,6 +25,7 @@ typedef enum
 {
     SYS_EVENT_NONE =0,
 
+    SYS_CLOCK_1S,              ///< every one second
     SYS_1WIRE_CONVERT,
     SYS_1WIRE_READ,
 
@@ -39,10 +41,14 @@ typedef enum
 //    MENU_ACTION_PAUSE,          ///< disable menu, but don't clear internal structure
 //    MENU_ACTION_RESUME,         ///< enable menu, but don't reset internal structures
 
-    DISP_UPDATE,                ///< redraw display
+    //DISP_BLINK,                 ///< blink flag changed
 
-    APP_ACTIVATE,               ///< initalisation event to inform app handler about initialization
-    APP_LOST_CONTROL,           ///< signal application handler, that current application is no logner running
+    APP_POPUP_SHOWN,            ///<
+
+    APP_ACTIVATED,              ///< initalisation event to inform app handler about initialization
+    APP_REACTIVATED,            ///< initalisation event to inform app handler about initialization
+    APP_KILLED,                 ///< inform application that it was killed - to clean internal structures
+    APP_LOST_CONTROL,           ///< inform application that it is not main app
 
 #if WITH_HB_EVENT
     SYS_HEARTBEAT,
@@ -52,7 +58,7 @@ typedef enum
 
 extern void EventPost (EVENT_DEF eEvent);
 extern void EventPostFromIRQ (EVENT_DEF eEvent);
-extern void EventTimerPostAFter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms);
+extern void EventTimerPostAfter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms);
 extern void EventTimerTickEveryMS(void);
 extern BOOL bIsEventWaiting(void);
 extern EVENT_DEF EventGet(void);

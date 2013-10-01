@@ -56,7 +56,7 @@
 #elif defined (__AVR_ATmega328P__)
 
 #else
-    #error "Please suse correct CPU!"
+    #error "Please use correct CPU!"
 #endif
 
 
@@ -79,6 +79,7 @@
 #include <timer0.h>
 #include <rtc.h>
 #include <tools.h>
+#include <events.h>
 #include <app.h>
 #include <usart0.h>
 
@@ -136,7 +137,10 @@ void main(void)
 	atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt = TEMP_ERROR;
 
     EventPost(SYS_1WIRE_CONVERT);
-    APP_vActivateApp(APP_STATUS);
+
+    APP_vInit();
+    APP_vActivateApp(APP_STATUS); // system needs first application
+
     TIMER_vInit();
     sei(); //TODO
 
@@ -157,7 +161,7 @@ void main(void)
 		        case SYS_1WIRE_CONVERT:
 		            DEBUG_T_P(PSTR("1w convert\n"));
 		            OW_vStartConversion();
-		            EventTimerPostAFter(EVENT_TIMER_1WIRE, SYS_1WIRE_READ, ONEWIRE_MEASURE_WAIT_MS);
+		            EventTimerPostAfter(EVENT_TIMER_1WIRE, SYS_1WIRE_READ, ONEWIRE_MEASURE_WAIT_MS);
 		            break;
 
 		        case SYS_1WIRE_READ:
@@ -197,7 +201,7 @@ void main(void)
 		} //   if (TRUE==bIsEventWaiting())
 		else
 		{
-		    int_delay_ms(100); // no event - so sleep //TODO make real sleep
+		    breakable_delay_ms(100); // no event - so sleep //TODO make real sleep
 		}
 
 		if (TRUE == bRefreshDisplay)

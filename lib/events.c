@@ -14,7 +14,7 @@
 #include <log.h>
 #include <tools.h>
 
-#if 1
+#if 0
     #define EV_DEBUG_P(a...)	DEBUG_P(a)
 #else
     #define EV_DEBUG_P(a...)
@@ -23,7 +23,7 @@
 
 typedef struct
 {
-    EVENT_DEF eEvent;  ///< event to post when timer expires
+    EVENT_DEF eEvent;       ///< event to post when timer expires
     unsigned int delayms;   ///< countdown timer. Event is posted when reach zero
 } EVENT_DELAYED_TIMER_DEF;
 
@@ -92,7 +92,7 @@ void EventPostFromIRQ (EVENT_DEF eEvent)
         {
             vDumpState();
             EV_DEBUG_P(PSTR("Ffull\n"));
-            int_delay_ms(300);
+            breakable_delay_ms(300);
 //            return;
 //            for (;;);
             RESET("Fifo full");
@@ -114,7 +114,7 @@ void EventPostFromIRQ (EVENT_DEF eEvent)
 
 void EventPost (EVENT_DEF eEvent)
 {
-    EV_DEBUG_P(PSTR("Post\n"));
+    EV_DEBUG_P(PSTR("Post %02X\n"), eEvent);
     EventPostFromIRQ(eEvent);
 }
 
@@ -127,7 +127,7 @@ void EventPost (EVENT_DEF eEvent)
  * @param eEvent    event to post after time
  * @param delayms   delay in ms (unsidned int)
  */
-void EventTimerPostAFter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms)
+void EventTimerPostAfter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms)
 {
     EV_DEBUG_P(PSTR("post ev %02X after %d ms\n"), eEvent, delayms);
     atdTimers[eTimerId].delayms = delayms;

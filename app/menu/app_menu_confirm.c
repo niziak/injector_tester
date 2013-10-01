@@ -17,6 +17,9 @@ void MENU_ConfirmationScreenHandler(EVENT_DEF eMenuAction)
 
     switch (eMenuAction)
     {
+        case MENU_ACTION_LEFT:
+//               PTDMENU->bConfirmationScreenActive = FALSE;
+//               break;
         case MENU_ACTION_RIGHT:
         case MENU_ACTION_UP:
         case MENU_ACTION_DOWN:
@@ -35,9 +38,7 @@ void MENU_ConfirmationScreenHandler(EVENT_DEF eMenuAction)
             EventPost(MENU_ACTION_CONFIRMED);
             break;
 
-        case MENU_ACTION_LEFT:
-            PTDMENU->bConfirmationScreenActive = FALSE;
-            break;
+
 
         default:
             break;

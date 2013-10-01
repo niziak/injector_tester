@@ -6,9 +6,13 @@
  */
 
 #ifndef RTC_H_
-#define RTC_H_
+    #define RTC_H_
 
 #include <types.h>
+
+#define  DEC2BCD(dec)           (((dec)/10*16) + ((dec) % 10))
+#define  BCD2DEC(bcd)           (((bcd)/16*10) + ((bcd) % 16))
+
 
 /*
  *
@@ -57,6 +61,8 @@ extern void RTC_vStop(void);
 
 extern void RTC_vConvertLocalTime(void);
 extern void RTC_vTickLocalTime(void);
+
 extern void RTC_vGetTime(void);
+extern void RTC_vSetTime(unsigned char ucHour, unsigned char ucMin, unsigned char ucSec);
 
 #endif /* RTC_H_ */

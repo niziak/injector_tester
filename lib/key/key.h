@@ -35,7 +35,7 @@
     #define ADC_KEY_INTERVAL        3000       ///< n*10ms    how long block keyboard reading after keypress (key repeat)
 
     #include <tools.h>
-    #define ADC_KEY_PRESSED_TRIGGER_FN      {int_delay_break();}
+    #define ADC_KEY_PRESSED_TRIGGER_FN      {breakable_delay_break();}
 
 
 #elif (USE_SINGLE_PIN_BUTTONS)
@@ -50,7 +50,7 @@
 
 #if (USE_SERIAL_EMULATED_KEYPAD)
     #include <key_serial.h>
-    #define SERIAL_KEY_PRESSED_TRIGGER_FN              {int_delay_break();}
+    #define SERIAL_KEY_PRESSED_TRIGGER_FN              {breakable_delay_break();}
 #endif
 
 #endif /* KEY_H_ */

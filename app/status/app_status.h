@@ -20,6 +20,8 @@ typedef enum
     STATUS_SCREEN_LAST
 } STATUS_SCREEEN_ID_DEF;
 
+extern void APP_STATUS_vHandleEvent(EVENT_DEF eEvent);
+
 extern void DISP_vStatusScreenNext(void);
 extern void DISP_vStatusScreenPrev(void);
 extern void DISP_vPrintStatusScreen(void);

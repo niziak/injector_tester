@@ -62,20 +62,21 @@ ISR(TIMER0_OVF_vect)
 //        RTC_vTickLocalTime();
 //        RTC_vConvertLocalTime();
 
-        bRefreshDisplay = TRUE;
+        DISP_REFRESH
+        EventPostFromIRQ (SYS_CLOCK_1S); // do not enable, it is too fast for main loop to handle
 #if (WITH_HB_EVENT)
         EventPostFromIRQ (SYS_HEARTBEAT);
 #endif
     }
 
 
-    if (TRUE == bNeedsBlinking)
+//    if (TRUE == bNeedsBlinking)
     {
         if (ulSystemTickMS % (BLINK_SPEED) == 0)
         {
             bBlinkState = (bBlinkState==0 ? 1 : 0);
-            bRefreshDisplay = TRUE;
-            //EventPostFromIRQ (DISP_UPDATE); // do not enable, it is too fast for main loop to handle
+            DISP_REFRESH
+            //EventPostFromIRQ (DISP_BLINK); // do not enable, it is too fast for main loop to handle
         }
     }
 
