@@ -100,6 +100,7 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
                 case APP_POPUP_SHOWN:
                     APP_vReactivatePreviousApp();
                     APP_vRouteEvent(eEvent);
+                    DISP_REFRESH
                     break;
 
                 default:

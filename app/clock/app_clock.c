@@ -191,7 +191,7 @@ void APP_CLOCK_vHandleEvent(EVENT_DEF eEvent)
                            BCD2DEC(ptdAppClock->ucNewMin10 << 4 | ptdAppClock->ucNewMin1),
                            BCD2DEC(ptdAppClock->ucNewSec10 << 4 | ptdAppClock->ucNewSec1)
                          );
-            APP_vShowPopupMessage("Zegar ustawiony", 3000);
+            APP_vShowPopupMessage("Zegar ustawiony", UI_POS_POPUP_TIME);
             break;
 
         case MENU_ACTION_RIGHT:

@@ -137,13 +137,17 @@ void OWDetectDevices(void)
       {
         bStored = TRUE;
         OW_KNOWN_TEMP_SENSOR_STATUS(a) = 1;
+#if (OW_WITH_SENSOR_NAMES)
         OW_PRINTF_P(PSTR(" stored as '%s'"), OW_KNOWN_TEMP_SENSOR_NAME(a));
+#else
+        OW_PRINTF_P(PSTR(" stored"));
+#endif
       }
     }
     if (!bStored)
     {
         // store not known ID to atdOWNewDevices[] array
-        memcpy (&OW_NEW_DEVICE_ARRAY_ELEM(num,0), &(aucROM[0]), OW_NEW_DEVICE_ARRAY_ELEM_SIZE(num));
+        memmove (&OW_NEW_DEVICE_ARRAY_ELEM(num,0), &(aucROM[0]), OW_NEW_DEVICE_ARRAY_ELEM_SIZE(num));
         OW_PRINTF_P(PSTR(" new"));
     }
     OW_PRINTF_P (PSTR("\n"));
@@ -334,7 +338,7 @@ void OW_vWorker()
 {
   UCHAR ucSensIdx;
 
-  OWDetectDevices(); // detect and print devices to console TODO maybe mutex to access from http ?
+  //OWDetectDevices(); // detect and print devices to console TODO maybe mutex to access from http ?
   vOWConfigDevices(); // set resultion etc...
 
 //  OW_vStartConversion();

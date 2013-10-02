@@ -10,9 +10,10 @@
 
 
 
-#define NUM_OF_TEMP_SENSORS		2
-#define OW_ADDRESS_LEN			8
-#define TEMP_SENSOR_NAME_LEN	8
+#define NUM_OF_TEMP_SENSORS		        2
+#define OW_ADDRESS_LEN			        8
+#define TEMP_SENSOR_NAME_LEN	        8
+#define OW_WITH_SENSOR_NAMES            FALSE
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -51,6 +52,7 @@
 #define PRINTF_T_P(...)                 printf_P(a)
 
 
+
 typedef struct
 {
   UCHAR aucROM[OW_ADDRESS_LEN];           ///< unique 1W sensor address
@@ -62,7 +64,9 @@ typedef struct PACKED
   INT   iTempFrac ALIGN2;                 ///< current sensor temperature (fractional part)
   CHAR  cTempAdj;                         ///< temp adjustment for sensor
   UCHAR aucROM[OW_ADDRESS_LEN];           ///< unique 1W sensor address
+#if (OW_WITH_SENSOR_NAMES)
   CHAR  acName[TEMP_SENSOR_NAME_LEN+1];   ///< user friendly name of sensor
+#endif
   UCHAR ucStatus;                         ///< 1 if sensor was found in last scan
 } TEMP_SENSOR_PARAMS_DEF;
 

@@ -58,6 +58,9 @@
 #define UI_INACTIVE_TIMEOUT                 20          ///< (in seconds) go to idle mode when no keypresse in 60 seconds
 #define BLINK_SPEED                         400         ///< (in ms)
 
+#define UI_NEG_POPUP_TIME                   4000
+#define UI_POS_POPUP_TIME                   3000
+
 #define AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN       FALSE
 
 
