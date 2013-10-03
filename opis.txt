@@ -1,32 +1,8 @@
- - jesli przez 20 sekund jest brak nacisniec na klawiaturke, aplikacja gasi podswietlenie i pokazuje pierwszy ekran statusu
- - na porcie szeregowym 115200 8N1 jest LOG, mo¿na z niego wyczytaæ mniej wiêcej jak wygl¹da ekranik. 
-   Mozna te¿ udawac sprzetowa klawiature z klawiatury PCta (strzalki + enter)
+=== Pierwsze wlaczenie ===
+ - podlaczyc dwa termometry 1 wire
+ - Menu -> ustawienia -> 1 wire -> Wykryj
 
 
-Aplikacja status (domyslna po resecie)
- - w trybie statusu mozna zmieniac kolejne ekrany klawiaturka. Bezczynnosc powoduje powrot do glownego ekranu
- - SELECT - uruchamia aplikacje menu
-
-Aplikacja Menu:
- - struktura menu zdefiniowana jest: https://raw.github.com/niziak/injector_tester/master/app/menu/app_menu_def.c
-
-
-Aplikacja zegar:
- - Menu -> ustawienia - > zegar
- - ustawia zegarek RTC. Ustawiac mozna kazda cyfre sekund i minut z osobna. Godziny ustawia sie jako calosc (00-23)
- - Nawigacja:	góra/dól - zmiana wartosci
-  		lewo/prawo - zmiana miejsca
- 		select - zatwierdzenie
- - wyjscie bez zmian - poczekac 20 sekund
-
-
-
-Do zrobienia:
- - usuniêcie migotania ekranika
-
-
-Pierwsze wlaczenie:
- - podlaczyc dwa 1wire termometry
  - na drugim ekranie statusu powinny sie pokazac nowe sensory (jedna linia jeden sensor). Jesli sa same zera to nie ma sensorow.
  - trzeci ekran statusu to zapamietane sensory - dla nich mierzy temperature
  - aby zapamietac nowe sensory w systemie trzeba wejsc do 
@@ -34,3 +10,56 @@ Pierwsze wlaczenie:
 	menu->ustawienia->1W kran->Ustaw
 
    Po tym nowe sensory powinny pokazywac same zera
+
+
+
+=== 
+
+ - jesli przez 20 sekund jest brak nacisniec na klawiaturke, aplikacja gasi podswietlenie i pokazuje pierwszy ekran statusu
+ - na porcie szeregowym 115200 8N1 jest LOG, mo¿na z niego wyczytaæ mniej wiêcej jak wygl¹da ekranik. 
+   Mozna te¿ udawac sprzetowa klawiature z klawiatury PCta (strzalki + enter)
+
+=== STATUS ===
+Aplikacja status (domyslna po resecie)
+ - w trybie statusu mozna zmieniac kolejne ekrany klawiaturka. Bezczynnosc powoduje powrot do glownego ekranu
+ - SELECT - uruchamia aplikacje menu
+
+
+
+
+=== MENU ===
+Aplikacja Menu:
+ - struktura menu zdefiniowana jest: https://raw.github.com/niziak/injector_tester/master/app/menu/app_menu_def.c
+
+Aplikacja Menu -> 10 minut
+	wlacza pompe na 10 minut
+
+Aplikacja Menu -> Ustawienia -> 1 Wire
+ - -> Pokaz	- pokazuje aktualne numery sensorow 1wire
+ - -> Zamien	- zamienia zapamietane sensory miejscami - tzn Kran z Zasobnikiem
+ - -> Wykryj	- zapisuje numery podlaczonych sensorow jako sensory Kran i zasobnik. 
+                  Kolejnosc zalezy od numerow seryjnych, wiec jesli jest zla, nalezy uzyc opcji "ZAMIEN"
+ - -> Usun	- kasuje aktualnie zapamietane numery sensorow
+
+Aplikacja Menu -> Ustawienia -> Zegar
+ - ustawia zegarek RTC. Ustawiac mozna kazda cyfre sekund i minut z osobna. Godziny ustawia sie jako calosc (00-23)
+ - Nawigacja:	góra/dól - zmiana wartosci
+  		lewo/prawo - zmiana miejsca
+ 		select - zatwierdzenie
+ - wyjscie bez zmian - poczekac 20 sekund
+
+
+Aplikacja Menu -> Ustawienia -> Fabryczne
+ - kasuje zawartosc pamieci EEPROM
+
+Aplikacja Menu -> Ustawienia -> Restart
+
+
+
+
+
+Do zrobienia:
+ - usuniêcie migotania ekranika
+
+
+

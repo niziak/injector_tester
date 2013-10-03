@@ -174,47 +174,6 @@ void RTC_vInit(void)
 
 
     i2c_init();                             // initialize I2C library
-
-////    i2c_start_wait(DS1307_ADDR+I2C_WRITE);     // set device address and write mode
-////    i2c_write(DS1307_REG_SECONDS);                        // write address = 5
-////    i2c_write(0x00);
-////    i2c_write(0x00);
-////    i2c_write(0x14);
-////    i2c_stop();
-//
-//    while (1)
-//    {
-//        printf("\n\nI2C:\n");
-//
-//        i2c_start_wait(DS1307_ADDR+I2C_WRITE);     // set device address and write mode
-//        printf("write=%d\n", i2c_write(DS1307_REG_SECONDS));             // write address
-//        printf("start=%d\n", i2c_rep_start(DS1307_ADDR+I2C_READ));       // set device address and read mode
-//        printf("sec=%02X\n", i2c_readAck());
-//        printf("min=%02X\n", i2c_readAck());
-//        printf("hour=%02X\n", i2c_readNak());
-//        i2c_stop();
-//
-////        printf("start=%d\n", i2c_start(DS1307_ADDR+I2C_WRITE));       // set device address and read mode
-////        i2c_stop();
-//
-////        i2c_start_wait(DS1307_ADDR+I2C_WRITE);     // set device address and write mode
-////        i2c_write(DS1307_RAM_START);                        // write address = 5
-////        i2c_write(0x75);                        // write value 0x75 to EEPROM
-////        i2c_stop();
-////
-////        printf("I2C written.\n");
-////
-////        i2c_start_wait(DS1307_ADDR+I2C_WRITE);     // set device address and write mode
-////        printf("write=%d\n", i2c_write(DS1307_RAM_START));             // write address
-////        printf("start=%d\n", i2c_rep_start(DS1307_ADDR+I2C_READ));       // set device address and read mode
-////
-////        printf("Value=%02X\n", i2c_readNak());                    // read one byte from EEPROM
-////
-////        i2c_stop();
-////        printf("I2C read back.\n");
-//
-//        _delay_ms(1000);
-//    }
 }
 
 /**

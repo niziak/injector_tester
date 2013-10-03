@@ -34,14 +34,25 @@
 #define HB_LED_SETUP        {   HB_LED_DDR  |=  _BV(HB_LED_PIN); }
 
 
+/**
+ * Arduino LCD shield has NPN transistor with 4,7 kOhm pull-up resistor, which is responsible for keeping backlight on all time.
+ * To switch backlight off, base of transistor (connected to D10 = PINB2) needs to be pulled-down to ground.
+ * But, when D10=PINB2 goes to HI state, very high current is flowing between D10 and BE junction of transistor.
+ *
+ * To prevent this, port will be switched to input mode instead to go to HI. Additional 4,7 kOhm resistor will be responsible for turning LCD on.
+ *
+ * so simply - set port state to LOW, and then swithc only DDR from output to input
+ * TODO - cut track to D10 and put diode
+ */
 #define LCD_BL_PORT    PORTB
 #define LCD_BL_DDR     DDRB
 #define LCD_BL_PIN     PINB2
 
-#define LCD_BL_ALTER   {   LCD_BL_PORT ^=  _BV(LCD_BL_PIN); }
-#define LCD_BL_LO      {   LCD_BL_PORT &=~ _BV(LCD_BL_PIN); }
-#define LCD_BL_HI      {   LCD_BL_PORT |=  _BV(LCD_BL_PIN); }
-#define LCD_BL_SETUP   {   LCD_BL_DDR  |=  _BV(LCD_BL_PIN); }
+#define LCD_BL_ALTER   {   LCD_BL_DDR ^=  _BV(LCD_BL_PIN); }
+
+#define LCD_BL_LO      {   LCD_BL_DDR  |=   _BV(LCD_BL_PIN); }
+#define LCD_BL_HI      {   LCD_BL_DDR  &=  ~_BV(LCD_BL_PIN); }
+#define LCD_BL_SETUP   {   LCD_BL_PORT &= ~_BV(LCD_BL_PIN);  }
 
 
 
