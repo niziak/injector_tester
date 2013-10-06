@@ -483,6 +483,7 @@ release:
 	@echo -n
 	@echo === MAKE RELEASE ===
 	$(MKDIR) -p release 
+	$(COPY) opis.txt release
 	$(COPY) $(OUTDIR)/$(TARGET).hex release	
 	$(COPY) tools_win32/avrdude.exe release
 	$(COPY) tools_win32/avrdude.conf release
@@ -713,5 +714,6 @@ $(shell mkdir -p $(OUTDIR) 2>/dev/null)
 .PHONY : all begin finish end sizebefore sizeafter gccversion \
 build elf hex eep lss sym coff extcoff \
 clean clean_list program debug gdb-config dirs release
+
 
 

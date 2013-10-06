@@ -10,9 +10,13 @@
 
 #include <types.h>
 
-#define  DEC2BCD(dec)           (((dec)/10*16) + ((dec) % 10))
-#define  BCD2DEC(bcd)           (((bcd)/16*10) + ((bcd) % 16))
+//#define  DEC2BCD(dec)           ((((dec)/10) << 4) + ((dec) % 10))
+//#define  BCD2DEC(bcd)           ((((bcd)>>4) * 10) + ((bcd) & 0x0F))
+#define  DEC2BCD(dec)           ucDEC2BCD(dec)
+#define  BCD2DEC(bcd)           ucBCD2DEC(bcd)
 
+extern unsigned char ucDEC2BCD (unsigned char dec);
+extern unsigned char ucBCD2DEC (unsigned char bcd);
 
 /*
  *
