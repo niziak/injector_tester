@@ -148,7 +148,7 @@ UCHAR MENU_ucGetLastItem(void)
             return ucI;
         }
     }
-    RESET("MENU_ucGetLastItem\n");
+    RESET("MENU_ucGetLastItem");
     return MENU_ITEM_ID_NOT_FOUND;
 }
 

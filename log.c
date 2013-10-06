@@ -82,6 +82,7 @@ void LOG_Reset (char * message) __attribute__ ((format (printf, 1, 0)));
 #endif
 void LOG_Reset (char * message)
 {
+    unsigned char ucCount;
     printf_P (PSTR("RESET:\n"));
     puts (message);
 
@@ -91,10 +92,12 @@ void LOG_Reset (char * message)
 	LCD_vGotoXY(0,1);
 	LCD_vPuts (message);
 	cli(); // TODO
-	for (;;)
+	for (ucCount=100 ; ucCount>0 ; ucCount--)
 	{
+	    wdt_reset();
 	    LCD_BL_ALTER;
 	    _delay_ms(500);
 	}
+	for (;;); // real reset
 }
 

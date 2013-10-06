@@ -1,16 +1,16 @@
 === Pierwsze wlaczenie ===
  - podlaczyc dwa termometry 1 wire
  - Menu -> ustawienia -> 1 wire -> Wykryj
+ - Menu -> --- powrot ---
+ - na ekranie statusu sprawdzic poprawnosc pokazywanych temperatur (pierwsza temperatura jest zasobnika, druga jest wody w rurze).
+   Jeœli kolejnoœæ siê nie zgadza, to nale¿y j¹ zamieniæ wchodz¹c w menu:
+   Menu -> Ustawienia -> 1 wire -> Zamien
 
 
- - na drugim ekranie statusu powinny sie pokazac nowe sensory (jedna linia jeden sensor). Jesli sa same zera to nie ma sensorow.
- - trzeci ekran statusu to zapamietane sensory - dla nich mierzy temperature
- - aby zapamietac nowe sensory w systemie trzeba wejsc do 
-	menu->ustawienia->1W zasobnik->Ustaw
-	menu->ustawienia->1W kran->Ustaw
-
-   Po tym nowe sensory powinny pokazywac same zera
-
+ - po zmianie czujnikow temperatury, stare nalezy skasowac i zaprogramowac nowe:
+   Menu -> Ustawienia -> 1 wire -> Usun
+   Menu -> Ustawienia -> 1 wire -> wykryj
+	POwinien pokazac siê komunikat "2 nowe"
 
 
 === 
@@ -23,6 +23,7 @@
 Aplikacja status (domyslna po resecie)
  - w trybie statusu mozna zmieniac kolejne ekrany klawiaturka. Bezczynnosc powoduje powrot do glownego ekranu
  - SELECT - uruchamia aplikacje menu
+ - Domyslny ekran statusu: temperatura zasobnika, temperatury rury przy kranie
 
 
 
@@ -32,7 +33,8 @@ Aplikacja Menu:
  - struktura menu zdefiniowana jest: https://raw.github.com/niziak/injector_tester/master/app/menu/app_menu_def.c
 
 Aplikacja Menu -> 10 minut
-	wlacza pompe na 10 minut
+	wlacza pompe na 10 minut lub wylacza jeœli czas 10 minut jeszcze nie up³yn¹³
+
 
 Aplikacja Menu -> Ustawienia -> 1 Wire
  - -> Pokaz	- pokazuje aktualne numery sensorow 1wire
@@ -52,7 +54,9 @@ Aplikacja Menu -> Ustawienia -> Zegar
 Aplikacja Menu -> Ustawienia -> Fabryczne
  - kasuje zawartosc pamieci EEPROM
 
+
 Aplikacja Menu -> Ustawienia -> Restart
+ - watchdog restart
 
 
 

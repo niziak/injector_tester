@@ -107,9 +107,9 @@ void TIMER_vInit(void)
     RESET_TIMER0_CNT;
     TCCR0 = (1<<CS00) | (1<<CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick co 128us * 256  = 32ms
 #elif defined (__AVR_ATmega328P__)
-    TIMSK0 |= (1<<TOIE0);    // enable timer0 overflow int
+    TIMSK0 |= _BV(TOIE0);    // enable timer0 overflow int
     RESET_TIMER0_CNT;
-    TCCR0B = (1<<CS00) | (1<<CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick co 128us * 256  = 32ms
+    TCCR0B = _BV(CS00) | _BV(CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick co 128us * 256  = 32ms
 #else
     #error "CPU!"
 #endif

@@ -48,11 +48,11 @@
 #define LCD_BL_DDR     DDRB
 #define LCD_BL_PIN     PINB2
 
-#define LCD_BL_ALTER   {   LCD_BL_DDR ^=  _BV(LCD_BL_PIN); }
+#define LCD_BL_ALTER   {   LCD_BL_DDR  ^=  _BV(LCD_BL_PIN); }
 
-#define LCD_BL_LO      {   LCD_BL_DDR  |=   _BV(LCD_BL_PIN); }
-#define LCD_BL_HI      {   LCD_BL_DDR  &=  ~_BV(LCD_BL_PIN); }
-#define LCD_BL_SETUP   {   LCD_BL_PORT &= ~_BV(LCD_BL_PIN);  }
+#define LCD_BL_LO      {   LCD_BL_DDR  |=  _BV(LCD_BL_PIN); }
+#define LCD_BL_HI      {   LCD_BL_DDR  &= ~_BV(LCD_BL_PIN); }
+#define LCD_BL_SETUP   {   LCD_BL_PORT &= ~_BV(LCD_BL_PIN); }
 
 
 

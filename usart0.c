@@ -19,9 +19,9 @@ void USART0_vInit(void)
     UBRR0L = UBRRL_VALUE;
 
     #if USE_2X
-        UCSR0A |= (1<<U2X0);
+        UCSR0A |= _BV(U2X0);
     #else
-        UCSR0A &= ~(1<<U2X0);
+        UCSR0A &= _BV(U2X0);
     #endif
     // Set baud rate
     //UBRR0H = (unsigned char) (USART0_UBBR_VAL >>8 );
@@ -29,13 +29,13 @@ void USART0_vInit(void)
 
     // Enable receiver and transmitter
     UCSR0B = (
-                 (1<<RXEN0)
-               | (1<<TXEN0)
+                 _BV(RXEN0)
+               | _BV(TXEN0)
              );
 
     // set asynchronous mode, 8 bit data, NO parity, 1 bit stop
     UCSR0C = (
-                 (1<<UCSZ01) | (1<<UCSZ00)      // 8 bit
+                 _BV(UCSZ01) | _BV(UCSZ00)      // 8 bit
              );
 
     stderr = stdout = &USART0_stream;

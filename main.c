@@ -129,7 +129,11 @@ void main(void)
 
 	EventInit();
 	RTC_vInit();
-	//wdt_enable(WDTO_2S);
+#if defined (WDP3)
+    wdt_enable(WDTO_8S);
+#else
+	wdt_enable(WDTO_2S);
+#endif
 	KEY_vInit();
 	KEY_SERIAL_vInit();
 

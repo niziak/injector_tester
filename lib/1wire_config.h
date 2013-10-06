@@ -31,7 +31,7 @@
 #define OW_0    {OW_PORT &=~ _BV(OW_PIN);  }
 #define OW_out  {OW_DDR  |=  _BV(OW_PIN);  }
 #define OW_in   {OW_DDR  &= ~_BV(OW_PIN);  }
-#define OW_get  ( (OW_PINS & _BV(OW_PIN)) == _BV(OW_PIN) ? 1 : 0 )
+#define OW_get  ( bit_is_set(OW_PINS, OW_PIN) ? 1 : 0 )
 
 #include <avr/interrupt.h>
 #define OW_CRITICAL_ENTER           {cli();}  //TODO
