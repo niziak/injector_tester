@@ -19,11 +19,18 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
     {
         case MENU_FN_FACTORY_DEFAULT:
             NVM_vRestoreFactory();
-            RESET("FACTORY RESET!\n");
+            RESET("FACTORY RESET!");
             break;
 
         case MENU_FN_10MIN:
-            uiPumpSwitchOffAfter = (unsigned int)(10*60); //TODO
+            if (uiPumpSwitchOffAfter>0)
+            {
+                uiPumpSwitchOffAfter = 0;
+            }
+            else
+            {
+                uiPumpSwitchOffAfter = (unsigned int)(10*60); //TODO
+            }
             break;
 
         case MENU_FN_CLOCK:
@@ -31,7 +38,7 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
             break;
 
         case MENU_FN_REBOOT:
-            RESET("RESTART!\n");
+            RESET("RESTART!");
             break;
 
         case MENU_FN_1W_SHOW:
