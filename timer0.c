@@ -55,9 +55,17 @@ ISR(TIMER0_OVF_vect)
             }
         }
 
+        if (uiPIRTTL>0)
+        {
+            uiPIRTTL--;
+        }
         if (uiPumpSwitchOffAfter>0)
         {
             uiPumpSwitchOffAfter--;
+            if (0 == uiPumpSwitchOffAfter)  // turn off pump only once
+            {
+                bPumpIsRunning = FALSE;
+            }
         }
 //        RTC_vTickLocalTime();
 //        RTC_vConvertLocalTime();

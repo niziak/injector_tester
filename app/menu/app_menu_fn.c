@@ -25,15 +25,17 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
         case MENU_FN_10MIN:
             if (uiPumpSwitchOffAfter>0)
             {
+                bPumpIsRunning = 0;
                 uiPumpSwitchOffAfter = 0;
             }
             else
             {
-                uiPumpSwitchOffAfter = (unsigned int)(10*60); //TODO
+                bPumpIsRunning = 1;
+                uiPumpSwitchOffAfter = PUMP_MANUAL_TTL;
             }
             break;
 
-        case MENU_FN_CLOCK:
+        case MENU_FN_SET_CLOCK:
             APP_vActivateApp(APP_CLOCK);
             break;
 

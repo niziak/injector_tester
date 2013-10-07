@@ -12,6 +12,13 @@
 #include <log.h>
 #include <util/delay.h>
 
+#define PIR_PORT          PORTD
+#define PIR_DDR           DDRD
+#define PIR_PIN           PIND2
+#define PIR_PINS          PIND
+
+#define PIR_SETUP             {   PIR_DDR &= ~_BV(PIR_PIN); PIR_PORT |= _BV(PIR_PIN); }        // DDR=0 - input port, PORT=1 - pull up
+
 
 #define PUMP_LED_PORT     PORTC
 #define PUMP_LED_DDR      DDRC
@@ -71,6 +78,8 @@
 
 #define UI_NEG_POPUP_TIME                   4000
 #define UI_POS_POPUP_TIME                   3000
+#define PIR_PRESENCE_TTL                    60          ///< (in seconds) how long presence is reported after it was detected
+#define PUMP_MANUAL_TTL                     (10*60)     ///< (in seconds) how long pump should work when turned on from menu
 
 #define AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN       FALSE
 
@@ -82,6 +91,8 @@ extern volatile UCHAR               ucUIInactiveCounter;
 extern volatile unsigned int        uiPumpSwitchOffAfter;
 extern volatile BOOL                bRefreshDisplay;
 extern volatile BOOL                bNeedsBlinking;
+extern volatile unsigned int        uiPIRTTL;
+extern volatile BOOL                bPumpIsRunning;
 
 #define DISP_REFRESH                {bRefreshDisplay = TRUE;}
 #define DISP_START_BLINK_TIMER      {bNeedsBlinking = TRUE;}

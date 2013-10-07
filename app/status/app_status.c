@@ -138,16 +138,23 @@ void DISP_vPrintStatusScreen(void)
     switch (eCurrentScreenId)
     {
         case STATUS_SCREEN_IDLE:
+            LCD_vPuts_P(PSTR("Z "));
             vPrintTemp(ONEWIRE_ZASO_IDX);
-            LCD_vPutc(' ');
+            LCD_vPuts_P(PSTR("  K "));
             vPrintTemp(ONEWIRE_KRAN_IDX);
 
-            if ((uiPumpSwitchOffAfter>0))
+            if (uiPIRTTL > 0)
+            {
+                LCD_vGotoXY(15,1);
+                LCD_vPutc('P');
+            }
+
+            if (uiPumpSwitchOffAfter > 0)
             {
                 DISP_START_BLINK_TIMER
                 if (bBlinkState==TRUE)
                 {
-                    LCD_vGotoXY(15,0);
+                    LCD_vGotoXY(15,1);
                     LCD_vPutc(255);
                 }
                 LCD_vGotoXY(10,1);

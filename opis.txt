@@ -1,10 +1,23 @@
+=== OPIS OGOLNY ===  
+ - jesli przez 20 sekund jest brak nacisniec na klawiaturke, aplikacja gasi podswietlenie i pokazuje pierwszy ekran statusu
+ - gdy podswietlenie ekranu jest wylaczone, jakiekolwiek nacisniecie klawisza wl¹cza tylko podswietlenie
+ - na porcie szeregowym 115200 8N1 jest konsola, mo¿na z niej wyczytaæ mniej wiêcej jak wygl¹da ekranik. 
+   Mozna te¿ udawac sprzetowa klawiature z klawiatury PCta (strzalki + enter)
+
+=== Czujnik PIR ===
+ - wykrycie obecnoœci z czujnika PIR odbywa siê przez zwarcie wejœcie Arduino D2 do masy (3 PIN od prawej w prawym górnym rogu plytki LCD Keypad Shield)
+ - ka¿de wykrycie obecnoœci przez PIR w systemie jest zapamietane na 60 sekund (sygnalizowane literk¹ P na wyswietlaczu)
+ - ka¿de nastêpne wykrycie, przed³u¿a ten czas o kolejne 60 sekund.
+ - kazde wykrycie obecnoœci wlacza podswietlenie ekranu
+
+
 === Pierwsze wlaczenie ===
  - podlaczyc dwa termometry 1 wire
  - Menu -> ustawienia -> 1 wire -> Wykryj
  - Menu -> --- powrot ---
- - na ekranie statusu sprawdzic poprawnosc pokazywanych temperatur (pierwsza temperatura jest zasobnika, druga jest wody w rurze).
-   Jeœli kolejnoœæ siê nie zgadza, to nale¿y j¹ zamieniæ wchodz¹c w menu:
-   Menu -> Ustawienia -> 1 wire -> Zamien
+ - na ekranie statusu sprawdzic poprawnosc pokazywanych temperatur (pierwsza temperatura "Z" jest zasobnika, druga jest wody w rurze przy kranie "K").
+   Jeœli przypisanie czujnikow siê nie zgadza z ich faktyczn¹ rol¹, to nale¿y czujniki zamieniæ miêdzy sob¹ wchodz¹c w menu:
+   Menu -> Ustawienia -> 1 wire -> Zmien kolej.
 
 
  - po zmianie czujnikow temperatury, stare nalezy skasowac i zaprogramowac nowe:
@@ -13,19 +26,35 @@
 	POwinien pokazac siê komunikat "2 nowe"
 
 
-=== 
-
- - jesli przez 20 sekund jest brak nacisniec na klawiaturke, aplikacja gasi podswietlenie i pokazuje pierwszy ekran statusu
- - na porcie szeregowym 115200 8N1 jest LOG, mo¿na z niego wyczytaæ mniej wiêcej jak wygl¹da ekranik. 
-   Mozna te¿ udawac sprzetowa klawiature z klawiatury PCta (strzalki + enter)
 
 === STATUS ===
-Aplikacja status (domyslna po resecie)
+Aplikacja status (domyslna po starcie)
  - w trybie statusu mozna zmieniac kolejne ekrany klawiaturka. Bezczynnosc powoduje powrot do glownego ekranu
  - SELECT - uruchamia aplikacje menu
  - Domyslny ekran statusu: temperatura zasobnika, temperatury rury przy kranie
+     +----------------+
+     |Z 23,8'  K 23,4'|
+     |10:03:56        |
+     +----------------+
 
+ - dzia³anie pompy - migaj¹cy czarny znak w prawym dolnym rogu
+   Literka 'P' w prawym rogu oznacza wykryt¹ obecnoœæ.
+     +----------------+
+     |Z 23,8'  K 23,4'|
+     |10:03:56       #|
+     +----------------+
+     +----------------+
+     |Z 23,8'  K 23,4'|
+     |10:03:56       P|
+     +----------------+     
+ 
+ - jesli pompa zostala wlaczona recznie na czas 10 minut, to licznik w prawym dolnym rogu odlicza czas w sekundach do wylaczenia     
+     +----------------+
+     |Z 23,8'  K 23,4'|
+     |10:03:56   425 #|
+     +----------------+     
 
+  
 
 
 === MENU ===
@@ -66,4 +95,12 @@ Do zrobienia:
  - usuniêcie migotania ekranika
 
 
+     +----------------+
+     | 9:23:45        |
+     |10:03:56 12:34:56|
+     +----------------+     
 
+     +----------------+
+     |Auto 1          |
+     |10:03 - 12:34   |
+     +----------------+   

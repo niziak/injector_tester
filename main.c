@@ -26,7 +26,7 @@
  * |                 PCINT14 / RESETn        PC6    1 ###    ### 28  PC5 ADC5 /SCL / PCINT13----------RTC I2C SCL
  * D0             ---PCINT16 / RXD           PD0    2 ###    ### 27  PC4 ADC4 /SDA / PCINT12----------RTC I2C SDA
  * D1             ---PCINT17 / TXD           PD1    3 ########## 26  PC3 ADC3 / PCINT11---------------DS 1wire
- * D2                PCINT18 / INT0          PD2    4 ####M##### 25  PC2 ADC2 / PCINT10---------------PK Pompa
+ * D2 PIR (NO)-------PCINT18 / INT0          PD2    4 ####M##### 25  PC2 ADC2 / PCINT10---------------PK Pompa
  * D3                PCINT19 / OC2B / INT1   PD3    5 ####E##### 24  PC1 ADC1 / PCINT9
  * D4 LCD D4---------PCINT20 / XCK  / T0     PD4    6 ####G##### 23  PC0 ADC0 / PCINT8----------------ADC KEYBOARD
  *                                           VCC    7 ####A##### 22  GND
@@ -93,10 +93,23 @@ volatile unsigned long      ulSystemTickS = 0;          ///< local time tick cou
 volatile BOOL               bBlinkState;                ///< alternating variable to control blinking characters
 volatile UCHAR              ucUIInactiveCounter;        ///< in seconds. Counts down
 volatile unsigned int       uiPumpSwitchOffAfter;       ///< 0 - stop pump, automatically decremented every 1S in timer
+volatile BOOL               bPumpIsRunning;             ///< flag to start/stop pump
 volatile BOOL               bRefreshDisplay;            ///< flag to redraw display
 volatile BOOL               bNeedsBlinking;             ///< flag to turn on blinking flag
+volatile unsigned int       uiPIRTTL;                   ///< >0 if presence was detected (decremented every 1S in timer)
 
-
+/**
+ * ISR for PCINT18
+ * PCINT[23:16] are serviced by PCINT2_vect
+ */
+ISR(PCINT2_vect)
+{
+    if (bit_is_clear(PIR_PINS, PIR_PIN))
+    {
+        uiPIRTTL = PIR_PRESENCE_TTL;
+        ucUIInactiveCounter = UI_INACTIVE_TIMEOUT;
+    }
+}
 
 /**
  * MAIN
@@ -107,6 +120,10 @@ void main(void)
 	// LOW level setup
     LCD_BL_SETUP
     LCD_BL_HI   // turn on LCD backlight at start
+
+    PIR_SETUP
+    PCMSK2 |= _BV(PCINT18); // enable PCINT18
+    PCICR  |= _BV(PCIE2);   // Pin Change Interrupt Enable 2
 
 #if (WITH_HB_EVENT)
     HB_LED_SETUP
@@ -178,12 +195,17 @@ void main(void)
 		        case MENU_ACTION_UP:
 		        case MENU_ACTION_DOWN:
 		        case MENU_ACTION_SELECT:
-		             LCD_BL_HI // turn on LCD backlight
+//		             LCD_BL_HI // turn on LCD backlight
+		             // first keypress only turns on backlight
+		             if (0 == ucUIInactiveCounter)
+		             {
+		                 eEvent =SYS_EVENT_NONE;
+		             }
 		             ucUIInactiveCounter = UI_INACTIVE_TIMEOUT; // Reinitialize timeout counter with every keypress
 		             break;
 
                 case SYS_UI_TIMEOUT:
-                    LCD_BL_LO // turn off LCD backlight
+//                    LCD_BL_LO // turn off LCD backlight
                     DEBUG_T_P(PSTR("UI TO\n"));
                     break;
 
@@ -215,13 +237,24 @@ void main(void)
             APP_vUpdateDisplay();
 	    }
 
-        if (uiPumpSwitchOffAfter>0)
+		// LCD BL
+		if (ucUIInactiveCounter == 0)
+		{
+		    LCD_BL_LO;
+		}
+		else
+		{
+		    LCD_BL_HI;
+		}
+
+		// PUMP
+        if (bPumpIsRunning == 0)
         {
-            PUMP_LED_HI
+            PUMP_LED_LO
         }
         else
         {
-            PUMP_LED_LO
+            PUMP_LED_HI
         }
 
 	} while (1); //do
