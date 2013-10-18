@@ -9,6 +9,7 @@
 #define CONFIG_H_
 
 #include <types.h>
+#include <main.h>
 #include <log.h>
 #include <util/delay.h>
 
@@ -73,7 +74,7 @@
 #define ONEWIRE_MEASURE_INTERVAL_MS         10000
 #define ONEWIRE_MEASURE_WAIT_MS             2000
 
-#define UI_INACTIVE_TIMEOUT                 20          ///< (in seconds) go to idle mode when no keypresse in 60 seconds
+#define UI_INACTIVE_TIMEOUT                 20          ///< (in seconds) go to idle mode when no keypressed (also lcd backlight time)
 #define BLINK_SPEED                         400         ///< (in ms)
 
 #define UI_NEG_POPUP_TIME                   4000
@@ -84,18 +85,5 @@
 #define AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN       FALSE
 
 
-extern volatile unsigned long       ulSystemTickMS;
-extern volatile unsigned long       ulSystemTickS;
-extern volatile BOOL                bBlinkState;
-extern volatile UCHAR               ucUIInactiveCounter;
-extern volatile unsigned int        uiPumpSwitchOffAfter;
-extern volatile BOOL                bRefreshDisplay;
-extern volatile BOOL                bNeedsBlinking;
-extern volatile unsigned int        uiPIRTTL;
-extern volatile BOOL                bPumpIsRunning;
-
-#define DISP_REFRESH                {bRefreshDisplay = TRUE;}
-#define DISP_START_BLINK_TIMER      {bNeedsBlinking = TRUE;}
-#define DISP_STOP_BLINK_TIMER       {bNeedsBlinking = FALSE;}
 
 #endif /* CONFIG_H_ */

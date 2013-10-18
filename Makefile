@@ -53,11 +53,14 @@ POSIX_UTILS_DIR_PREFIX := n:/tools/WinAVR/utils/bin/
 GCC_BIN_DIR_PREFIX := n:/tools/avr-gcc-4.8_2013-03-06_mingw32/bin/
 #POSIX_UTILS_DIR_PREFIX : = n:/tools/avr-gcc-4.8_2013-03-06_mingw32/utils/bin/
 
-  
- 
+
 GCC_AVR_SIZE_DIR_PREFIX := tools_win32/
 
- 
+export PATH:=$(patsubst %\,%,$(POSIX_UTILS_DIR_PREFIX));$(PATH)
+
+#JOBS := 8
+JOBS ?= $(NUMBER_OF_PROCESSORS) 
+
 #MCU = atmega8
 MCU = atmega328p
 
@@ -467,9 +470,6 @@ ALL_CPPFLAGS = -mmcu=$(MCU) -I. -x c++ $(CPPFLAGS) $(GENDEPFLAGS)
 ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
-
-
-
 # Default target.
 all: begin gccversion sizebefore build sizeafter end objdump
 #all: begin build sizeafter end
@@ -479,6 +479,11 @@ build: elf hex
 # eep lss sym
 #build: lib
 
+# Niziak: to be compatible with parallel jobs
+cleanbuild:
+	$(MAKE) -j$(JOBS) clean
+	$(MAKE) -j$(JOBS) all
+	
 release:
 	@echo -n
 	@echo === MAKE RELEASE ===
@@ -519,7 +524,7 @@ ELFSIZE = $(SIZE) --mcu=$(MCU) --format=avr $(OUTDIR)/$(TARGET).elf
 OBJSIZE = $(SIZE) --mcu=$(MCU) $(OBJ)
 
 sizebefore:
-	@if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); \
+	if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); \
 	2>/dev/null; echo; fi
 
 sizeafter:
@@ -714,6 +719,4 @@ $(shell mkdir -p $(OUTDIR) 2>/dev/null)
 .PHONY : all begin finish end sizebefore sizeafter gccversion \
 build elf hex eep lss sym coff extcoff \
 clean clean_list program debug gdb-config dirs release
-
-
 

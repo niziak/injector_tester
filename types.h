@@ -16,7 +16,8 @@ typedef		unsigned int			UINT;
 typedef		unsigned int			u_int;
 typedef		int						INT;
 
-typedef unsigned char     BOOL;
+typedef     unsigned char           BOOL;
+
 #ifndef  FALSE
   #define FALSE   0
   #define TRUE    (!0)  // !0 is better than 1, because xxx==TRUE compares

@@ -20,7 +20,8 @@ typedef enum
 
 
 
-#define EVENT_QUEUE_LEN 16
+#define EVENT_QUEUE_LEN 16  ///< UCHAR!
+
 typedef enum
 {
     SYS_EVENT_NONE =0,
