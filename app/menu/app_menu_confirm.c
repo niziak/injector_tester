@@ -8,6 +8,11 @@
 #include <config.h>
 #include <app_menu.h>
 
+/**
+ * Confirmation "Yes / No" screen handler
+ *
+ * @param eMenuAction
+ */
 void MENU_ConfirmationScreenHandler(EVENT_DEF eMenuAction)
 {
     if (FALSE==PTDMENU->bConfirmationScreenActive)

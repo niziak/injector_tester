@@ -53,6 +53,7 @@ POSIX_UTILS_DIR_PREFIX := n:/tools/WinAVR/utils/bin/
 GCC_BIN_DIR_PREFIX := n:/tools/avr-gcc-4.8_2013-03-06_mingw32/bin/
 #POSIX_UTILS_DIR_PREFIX : = n:/tools/avr-gcc-4.8_2013-03-06_mingw32/utils/bin/
 
+#POSIX_UTILS_DIR_PREFIX := n:/tools/msys/bin/
 
 GCC_AVR_SIZE_DIR_PREFIX := tools_win32/
 
@@ -84,10 +85,13 @@ OUTDIR = out
 EXTRAINCDIRS = 	lib \
 				lib/key \
 				lib/i2cmaster \
+				lib/1wire \
+				lib/lcd_buff \
 				app \
 				app/menu \
 				app/clock \
-				app/status
+				app/status \
+				app/list
 				
 #lib/lcd_radzio lib/lcd_pfleury
 
@@ -105,12 +109,14 @@ SRC+=	lib/key/key_adc.c \
 		lib/key/key_buttons.c \
 		lib/key/key_serial.c		
 
-SRC+=	lib/1wire_low.c \
-		lib/1wire.c 
+SRC+=	lib/1wire/1wire_low.c \
+		lib/1wire/1wire.c 
 
 #SRC+= lib/lcd_radzio/HD44780.c lib/lcd_radzio/bufferedLcd.c 
 #SRC+= lib/lcd_pfleury/lcd.c
 SRC+= lib/lcd_alank2/hd44780.c
+
+SRC+= lib/lcd_buff/lcd_buff.c
 
 SRC+= lib/i2cmaster/twimaster.c
 #ASRC+=	lib/i2cmaster/i2cmaster.S
@@ -132,6 +138,7 @@ SRC+=	app/menu/app_menu_def.c \
 
 SRC+=   app/status/app_status.c
 SRC+=   app/clock/app_clock.c
+SRC+=   app/list/app_list.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
@@ -471,7 +478,12 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter end objdump
+all: begin gccversion 
+	$(MAKE) sizebefore 
+	$(MAKE) -j $(JOBS) build 
+	$(MAKE) sizeafter 
+	$(MAKE) end
+	$(MAKE) objdump
 #all: begin build sizeafter end
 
 # Change the build target to build a HEX file or a library.
@@ -524,7 +536,7 @@ ELFSIZE = $(SIZE) --mcu=$(MCU) --format=avr $(OUTDIR)/$(TARGET).elf
 OBJSIZE = $(SIZE) --mcu=$(MCU) $(OBJ)
 
 sizebefore:
-	if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); \
+	if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); $(ELFSIZE) > sizebefore.txt; \
 	2>/dev/null; echo; fi
 
 sizeafter:

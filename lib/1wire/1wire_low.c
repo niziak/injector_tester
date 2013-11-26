@@ -3,7 +3,7 @@
  * @brief 1-Wire pulse, bit and byte routines
  * @author  Wojciech Niziński
  */
-#include <1wire_config.h>
+#include <1wire.h>
 #include <1wire_low.h>
 
 #define OW_MULTI_DEVICE 1   ///< support more than 1 sensor

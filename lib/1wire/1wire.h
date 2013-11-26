@@ -9,6 +9,7 @@
 #define OW_H_
 
 #include <limits.h>
+#include <1wire_config.h>
 
 extern void    OWDetectDevices(void);
 extern void    OWCalibrateDelays(void);

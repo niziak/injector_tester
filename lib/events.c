@@ -129,9 +129,20 @@ void EventPost (EVENT_DEF eEvent)
  */
 void EventTimerPostAfter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms)
 {
-    EV_DEBUG_P(PSTR("post ev %02X after %d ms\n"), eEvent, delayms);
+    EV_DEBUG_P(PSTR("t %d post ev %02X after %d ms\n"), eTimerId, eEvent, delayms);
     atdTimers[eTimerId].delayms = delayms;
     atdTimers[eTimerId].eEvent = eEvent;
+}
+
+/**
+ * Clears scheduled timer event
+ * @param eTimerId
+ */
+void EventTimerClear (EVENT_DELAYED_TIMER_ID eTimerId)
+{
+    EV_DEBUG_P(PSTR("EventTimerClear t %d\n"), eTimerId);
+    atdTimers[eTimerId].delayms = 0;
+    atdTimers[eTimerId].eEvent = SYS_EVENT_NONE;
 }
 
 /**

@@ -86,11 +86,11 @@ void LOG_Reset (char * message)
     printf_P (PSTR("RESET:\n"));
     puts (message);
 
-    LCD_vInit();
-	LCD_vClrScr();
-	LCD_vPuts_P(PSTR("RESET:"));
-	LCD_vGotoXY(0,1);
-	LCD_vPuts (message);
+    LCD_LO_vInit();
+	LCD_LO_vClrScr();
+	LCD_LO_vPuts_P(PSTR("RESET:"));
+	LCD_LO_vGotoXY(0,1);
+	LCD_LO_vPuts (message);
 	cli(); // TODO
 	for (ucCount=100 ; ucCount>0 ; ucCount--)
 	{

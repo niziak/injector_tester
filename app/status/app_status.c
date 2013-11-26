@@ -46,7 +46,7 @@ static void vDisplayScreenTitle(void)
             break;
 
         case STATUS_SCREEN_KNOWN_SENSORS:
-            LCD_vPuts_P (PSTR("Zapisane sensory:"));
+            LCD_vPuts_P (PSTR("Zapisane sens.:"));
             break;
 
         case STATUS_SCREEN_TEMP:
@@ -54,6 +54,7 @@ static void vDisplayScreenTitle(void)
             break;
 
     }
+    DISP_REFRESH
     breakable_delay_ms(500);
 }
 
@@ -162,9 +163,26 @@ void DISP_vPrintStatusScreen(void)
             }
 
             LCD_vGotoXY(0,1);
-            LCD_vPrintf_P(PSTR("%02d:%02d:%02d"),   ptdLocalTime->tm_hour,
-                                                    ptdLocalTime->tm_min,
-                                                    ptdLocalTime->tm_sec);
+            LCD_vPrintf_P(PSTR("%02d:%02d:%02d "),   ptdLocalTime->tm_hour,
+                                                     ptdLocalTime->tm_min,
+                                                     ptdLocalTime->tm_sec);
+
+            switch (eAppMode)
+            {
+                default:
+                    break;
+
+                case APP_MODE_24H:
+                    LCD_vPrintf_P(PSTR("24h"));
+                    break;
+
+                case APP_MODE_AUTO_1:
+                case APP_MODE_AUTO_2:
+                case APP_MODE_AUTO_3:
+                case APP_MODE_AUTO_4:
+                    LCD_vPrintf_P(PSTR("Auto%d"), eAppMode-APP_MODE_AUTO_1+1);
+                    break;
+            }
             return;
             break;
 

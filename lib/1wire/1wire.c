@@ -3,9 +3,9 @@
  * @brief 1-Wire pulse, bit and byte routines
  * @author  Wojciech Niziński
  */
-#include <1wire_config.h>
-#include <1wire_low.h>
+
 #include <1wire.h>
+#include <1wire_low.h>
 #include <stdlib.h>
 #include <string.h>
 

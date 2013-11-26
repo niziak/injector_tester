@@ -6,6 +6,7 @@
  */
 
 #include <app.h>
+#include <events.h>
 
 #define APP_STACK_DEPTH     4
 
@@ -52,6 +53,10 @@ void APP_vUpdateDisplay(void)
             DISP_vPrintStatusScreen(); // redraw status screen
             break;
 
+        case APP_LIST:
+            APP_LIST_vShowDisplay();
+            break;
+
         case APP_CLOCK:
             APP_CLOCK_vShow();
             break;
@@ -94,10 +99,21 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
             APP_STATUS_vHandleEvent(eEvent);
             break;
 
+        case APP_LIST:
+            APP_LIST_vHandleEvent(eEvent);
+            break;
+
         case APP_POPUP:
             switch (eEvent)
             {
+                // TODO: make keypress detection easier - maybe by bitmask ?
+                case MENU_ACTION_UP:
+                case MENU_ACTION_DOWN:
+                case MENU_ACTION_LEFT:
+                case MENU_ACTION_RIGHT:
+                case MENU_ACTION_SELECT:
                 case APP_POPUP_SHOWN:
+                    EventTimerClear (EVENT_TIMER_POPUP);
                     APP_vReactivatePreviousApp();
                     APP_vRouteEvent(eEvent);
                     DISP_REFRESH
@@ -180,3 +196,10 @@ void APP_vShowPopupMessage(const char *pcMessage, unsigned int delayms)
     EventTimerPostAfter (EVENT_TIMER_POPUP, APP_POPUP_SHOWN, delayms);
 }
 
+void APP_vShowPopupMessage_P(const char *pcMessage, unsigned int delayms)
+{
+    LCD_vClrScr();
+    LCD_vPrintf_P("%s", pcMessage);
+    APP_vActivateApp(APP_POPUP);
+    EventTimerPostAfter (EVENT_TIMER_POPUP, APP_POPUP_SHOWN, delayms);
+}

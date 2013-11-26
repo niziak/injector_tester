@@ -6,6 +6,7 @@
  */
 #include <app_menu.h>
 
+
 static void vDrawConfirmationScreen(void)
 {
     MENU_DISP_vGotoXY(1,0);
@@ -50,7 +51,7 @@ void MENU_vShow(void)
                 break;
 
             default:
-                MENU_DISP_vPuts (atdMenuItems[MENU_ucGetParentItem(PTDMENU->ucCurrentItem)].pcLabel); // show parent label
+                MENU_DISP_vPuts ((char*)atdMenuItems[MENU_ucGetParentItem(PTDMENU->ucCurrentItem)].pcLabel); // show parent label
                 break;
 
         }
@@ -71,7 +72,7 @@ void MENU_vShow(void)
         }
         else
         {
-            MENU_DISP_vPuts (PCURRENT_ITEM->pcLabel);
+            MENU_DISP_vPuts ((char*)PCURRENT_ITEM->pcLabel);
         }
     }
 

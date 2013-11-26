@@ -263,13 +263,13 @@ void RTC_vTickLocalTime(void)
 
 void RTC_vSetNextAdjustmentDate(void)
 {
-    UCHAR ucNextDay, ucNextMonth, ucNextyear;
+    //UCHAR ucNextDay, ucNextMonth, ucNextyear;
 
     i2c_start_wait (DS1307_ADDR+I2C_WRITE);
     i2c_write (DS1307_RAM_ADJ_DAY);         // write address
-    i2c_write (ucNextDay);
-    i2c_write (ucNextMonth);
-    i2c_write (ucNextyear);
+    //i2c_write (ucNextDay);
+    //i2c_write (ucNextMonth);
+    //i2c_write (ucNextyear);
     i2c_stop();
 }
 

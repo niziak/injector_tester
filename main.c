@@ -70,8 +70,7 @@
 #include <config.h>
 #include <log.h>
 #include <lib/hal_lcd.h>
-#include <lib/1wire_config.h>
-#include <lib/1wire.h>
+#include <lib/1wire/1wire.h>
 #include <lib/nvm.h>
 
 #include <key.h>
@@ -97,6 +96,8 @@ volatile BOOL               bPumpIsRunning;             ///< flag to start/stop 
 volatile BOOL               bRefreshDisplay;            ///< flag to redraw display
 volatile BOOL               bNeedsBlinking;             ///< flag to turn on blinking flag
 volatile unsigned int       uiPIRTTL;                   ///< >0 if presence was detected (decremented every 1S in timer)
+APP_MODE_DEF                eAppMode;                   ///< current application mode
+
 
 /**
  * ISR for PCINT18
@@ -147,7 +148,8 @@ void main(void)
 	EventInit();
 	RTC_vInit();
 #if defined (WDP3)
-    wdt_enable(WDTO_8S);
+    //wdt_enable(WDTO_8S);
+    wdt_enable(WDTO_2S);
 #else
 	wdt_enable(WDTO_2S);
 #endif
@@ -214,6 +216,10 @@ void main(void)
                     HB_LED_ALTER
                     break;
 #endif
+                case SYS_CLOCK_1S:
+                    RTC_vGetTime();
+                    DISP_REFRESH
+                    break;
 
 		        default:
 		            break;
@@ -233,8 +239,9 @@ void main(void)
 		if (TRUE == bRefreshDisplay)
 		{
             bRefreshDisplay = FALSE;
-            RTC_vGetTime();
+
             APP_vUpdateDisplay();
+            LCD_Draw();
 	    }
 
 		// LCD BL

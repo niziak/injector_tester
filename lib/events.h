@@ -24,7 +24,7 @@ typedef enum
 
 typedef enum
 {
-    SYS_EVENT_NONE =0,
+    SYS_EVENT_NONE = 0,
 
     SYS_CLOCK_1S,              ///< every one second
     SYS_1WIRE_CONVERT,
@@ -61,6 +61,8 @@ extern void EventPost (EVENT_DEF eEvent);
 extern void EventPostFromIRQ (EVENT_DEF eEvent);
 extern void EventTimerPostAfter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms);
 extern void EventTimerTickEveryMS(void);
+extern void EventTimerClear (EVENT_DELAYED_TIMER_ID eTimerId);
+
 extern BOOL bIsEventWaiting(void);
 extern EVENT_DEF EventGet(void);
 extern void EventInit(void);

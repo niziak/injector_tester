@@ -70,7 +70,7 @@ ISR(TIMER0_OVF_vect)
 //        RTC_vTickLocalTime();
 //        RTC_vConvertLocalTime();
 
-        DISP_REFRESH
+
         EventPostFromIRQ (SYS_CLOCK_1S); // do not enable, it is too fast for main loop to handle
 #if (WITH_HB_EVENT)
         EventPostFromIRQ (SYS_HEARTBEAT);

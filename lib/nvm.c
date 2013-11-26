@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <avr/eeprom.h>
 #include "nvm.h"
-#include <lib/1wire_config.h>
+#include <1wire_config.h>
 #include <string.h>
 
 #define NVM_MAGIC_LEN       5

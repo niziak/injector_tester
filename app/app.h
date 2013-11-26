@@ -12,6 +12,7 @@
 #include <app_status.h>
 #include <app_menu.h>
 #include <app_clock.h>
+#include <app_list.h>
 
 /**
  * Application ID definitions
@@ -23,6 +24,7 @@ typedef enum
     APP_STATUS,
     APP_CLOCK,
     APP_POPUP,
+    APP_LIST,
 } APP_ID_DEF;
 
 extern void APP_vInit(void);
@@ -33,5 +35,6 @@ extern void APP_vActivateApp(APP_ID_DEF   eNewActiveAppId);
 extern void APP_vReactivatePreviousApp(void);
 
 extern void APP_vShowPopupMessage(const char *pcMessage, unsigned int delayms);
+extern void APP_vShowPopupMessage_P(const char *pcMessage, unsigned int delayms);
 
 #endif // _APP_H_

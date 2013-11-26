@@ -67,18 +67,12 @@ static void APP_CLOCK_vInit(void)
     ptdAppClock->ucNewSec1   = ptdLocalTime->tm_sec  % 10;
 
     ptdAppClock->eCurrentEditPos = AC_POS_HOUR;
-    lcd_command (      _BV(LCD_DISPLAYMODE)
-                     | _BV(LCD_DISPLAYMODE_ON)
-                     | _BV(LCD_DISPLAYMODE_CURSOR)
-                     | _BV(LCD_DISPLAYMODE_BLINK)
-                   );
+    LCD_vCursorShow();
 }
 
 static void APP_CLOCK_vCleanup(void)
 {
-    lcd_command (      _BV(LCD_DISPLAYMODE)
-                     | _BV(LCD_DISPLAYMODE_ON)
-                   );
+    LCD_vCursorHide();
 }
 /**
  * Increment *pucValue (by adding iStep) and make wrap around within range ucMin and ucMax
