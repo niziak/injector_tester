@@ -8,48 +8,34 @@
 #ifndef HAL_LCD_H_
 #define HAL_LCD_H_
 
-#define LCD_ROWS	2
-#define LCD_COLS	16
-
-typedef enum {
-	DISP_LAYER_IDLE,
-	DISP_LAYER_MENU,
-} DISP_LAYER_ID_DEF;
-
-
-//#include <lcd_pfleury/lcd.h>
-#include <lcd_alank2/hd44780.h>
-
 #include <log.h>
 #include <avr/pgmspace.h>
+#include <hal_lcd_low.h>
+
+
 #define LCD_DEBUG_P(format, args...)          { DEBUG_P(format, ##args); }
 
 #if 0
+// use directly low level LCD procedures:
 
-/* pfleury lib */
-#define LCD_vInit(a)			lcd_init(LCD_DISP_ON)
-#define LCD_vClrScr(a)			lcd_clrscr()
-#define LCD_vPutc(a)            lcd_putc(a)
-#define LCD_vPuts(string)		lcd_puts(string)
-#define LCD_vPuts_P(string)		lcd_puts_p(string)
-#define LCD_vHome(a)			lcd_home()
-#define LCD_vGotoXY(x,y)		lcd_gotoxy(x,y)
-#endif
+#define LCD_vInit(a)            { LCD_DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("init\n"));                    LCD_LO_vInit(a);                }
+#define LCD_vClrScr(a)          { LCD_DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("clrscr\n"));                  LCD_LO_vClrScr(a);              }
+#define LCD_vPutc(a)            { LCD_DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("putc(%02X '%c')\n"),a,a);     LCD_LO_vPutc(a);                }
+#define LCD_vPuts(string)       { LCD_DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("puts('%s')\n"),string);       LCD_LO_vPuts(string);           }
 
-#if 1
+#define LCD_vPuts_P(string)     { LCD_DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("puts_P('")); \
+                                                             LCD_DEBUG_P(string); \
+                                                             LCD_DEBUG_P(PSTR("')\n"));                      LCD_LO_vPuts_P(string);         }
 
-/* alank2 lib */
-#define LCD_vInit(a)            { DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("init\n"));                    lcd_init();                 }
-#define LCD_vClrScr(a)          { DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("clrscr\n"));                  lcd_clrscr();               }
-#define LCD_vPutc(a)            { DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("putc(%02X '%c')\n"),a,a);     lcd_putc(a);                }
-#define LCD_vPuts(string)       { DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("puts('%s')\n"),string);       lcd_puts(string);           }
+#define LCD_vHome(a)            { LCD_DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("home\n"));                    LCD_LO_vHome();                 }
+#define LCD_vGotoXY(x,y)        { LCD_DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("goto(%2d,%2d)\n"),x,y);       LCD_LO_vGotoXY(x,y);            }
+#define LCD_vDraw()             { LCD_DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("redraw")); }
+#define LCD_vCursorShow         { LCD_LO_vCursorShow(); }
+#define LCD_vCursorHide         { LCD_LO_vCursorHide(); }
+#else
 
-#define LCD_vPuts_P(string)     { DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("puts_P('")); \
-                                                         LCD_DEBUG_P(string); \
-                                                         LCD_DEBUG_P(PSTR("')\n"));                      lcd_puts_P(string);         }
-
-#define LCD_vHome(a)            { DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("home\n"));                    lcd_home();                 }
-#define LCD_vGotoXY(x,y)        { DEBUG_P(PSTR("lcd_")); LCD_DEBUG_P(PSTR("goto(%2d,%2d)\n"),x,y);       lcd_goto(x+((y)*0x40));     }
+// use buffered LCD
+#include <lcd_buff/lcd_buff.h>
 
 #endif
 
