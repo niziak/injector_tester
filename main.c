@@ -134,14 +134,14 @@ void main(void)
     USART0_vInit();
 
 	// LCD first to display potential error messages
-    LCD_vInit();
-    LCD_vClrScr();
-    LCD_vPuts_P(PSTR("Build " __TIME__ ));
-    LCD_vGotoXY(0,1);
-    LCD_vPuts_P(PSTR(__DATE__));
+    LCD_LO_vInit();
+    LCD_LO_vClrScr();
+    LCD_LO_vPuts_P(PSTR("Build " __TIME__ ));
+    LCD_LO_vGotoXY(0,1);
+    LCD_LO_vPuts_P(PSTR(__DATE__));
     _delay_ms(1000);
     LCD_BL_LO
-    LCD_vClrScr();
+    LCD_LO_vClrScr();
 
 	NVM_vLoadSettings();
 
@@ -218,7 +218,7 @@ void main(void)
 #endif
                 case SYS_CLOCK_1S:
                     RTC_vGetTime();
-                    DISP_REFRESH
+                    //DISP_REFRESH
                     break;
 
 		        default:
@@ -227,6 +227,9 @@ void main(void)
 
 		    // forward event to active application
 		    APP_vRouteEvent(eEvent);
+		    APP_vUpdateDisplay();
+		    DISP_REFRESH
+		    LCD_DrawDebug();
 
 		    DEBUG_P(PSTR("\n. . . . . . . . . . . . . .\n"));
 
@@ -236,13 +239,13 @@ void main(void)
 		    breakable_delay_ms(100); // no event - so sleep //TODO make real sleep
 		}
 
-		if (TRUE == bRefreshDisplay)
-		{
-            bRefreshDisplay = FALSE;
-
-            APP_vUpdateDisplay();
-            LCD_Draw();
-	    }
+//		if (TRUE == bRefreshDisplay)
+//		{
+//            bRefreshDisplay = FALSE;
+//
+//            APP_vUpdateDisplay();
+//            LCD_Draw();
+//	    }
 
 		// LCD BL
 		if (ucUIInactiveCounter == 0)

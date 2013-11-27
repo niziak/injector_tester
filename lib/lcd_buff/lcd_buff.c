@@ -67,7 +67,7 @@ void LCD_vPutc(unsigned char ucChar)
     ptdLCDBuf->ucCursorX++;
     if (ptdLCDBuf->ucCursorX > LCD_COLS)
     {
-        RESET("ucCursorX OV!");
+        RESET_P(PSTR("ucCursorX OV!"));
     }
 
 }
@@ -115,6 +115,11 @@ void LCD_vGotoXY(unsigned char x, unsigned char y)
     ptdLCDBuf->ucCursorY = y;
 }
 
+
+/**
+ * Draw whole display buffer on real LCD device
+ * Can be called from interrupt
+ */
 void LCD_Draw(void)
 {
     UCHAR ucRow, ucCol;
@@ -133,7 +138,8 @@ void LCD_Draw(void)
     }
 
     // REAL LCD (to prevent flickers, needs to be fast and simple)
-    LCD_LO_vClrScr();
+    //LCD_LO_vClrScr();
+    LCD_LO_vHome();
     for (ucRow=0; ucRow < LCD_ROWS; ucRow++)
     {
         for (ucCol=0; ucCol < LCD_COLS; ucCol++)
@@ -143,10 +149,28 @@ void LCD_Draw(void)
         }
         LCD_LO_vGotoXY (0,ucRow+1);
     }
+}
 
+extern void LCD_DrawDebug(void)
+{
+    UCHAR ucRow, ucCol;
+    UCHAR ucChar;
 
-    // DEBUG OUTPUT
 #if (LCD_BUFF_DUMP_BUFFER)
+    LCD_DEBUG_P(PSTR("LCD_Draw\n"))
+
+    // replace zero to spaces
+    for (ucRow=0; ucRow < sizeof (ptdLCDBuf->aucBuf); ucRow++)
+    {
+        switch (ptdLCDBuf->aucBuf[ucRow])
+        {
+            case 0:
+                ptdLCDBuf->aucBuf[ucRow] = ' ';
+                break;
+        }
+    }
+    // DEBUG OUTPUT
+
     LOG_Log_P(PSTR("\n+----------------+\n"));
     for (ucRow=0; ucRow < LCD_ROWS; ucRow++)
     {

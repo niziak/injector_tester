@@ -540,6 +540,8 @@ sizebefore:
 	2>/dev/null; echo; fi
 
 sizeafter:
+	@echo --- sizebefore ---
+	@cat sizebefore.txt
 	@echo --- sizeafter ---
 	
 #	@if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); \

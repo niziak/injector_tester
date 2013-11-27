@@ -78,7 +78,7 @@ ISR(TIMER0_OVF_vect)
     }
 
 
-//    if (TRUE == bNeedsBlinking)
+    if (TRUE == bNeedsBlinking)
     {
         if (ulSystemTickMS % (BLINK_SPEED) == 0)
         {
@@ -100,6 +100,13 @@ ISR(TIMER0_OVF_vect)
         EventPostFromIRQ (SYS_1WIRE_CONVERT);
     }
     EventTimerTickEveryMS();
+
+    if (TRUE == bRefreshDisplay)
+    {
+        bRefreshDisplay = FALSE;
+        LCD_Draw();
+    }
+
 #if (WITH_INT_OVERLAP_DETECTION)
     bInISR = FALSE;
 #endif
