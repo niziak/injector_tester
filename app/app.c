@@ -35,14 +35,14 @@ void APP_vUpdateDisplay(void)
     APP_ID_DEF eActiveApp = ptdApp->aeAppStack[ptdApp->ucStackTopNext-1];
     if (ptdApp->ucStackTopNext==0)
     {
-        RESET("AppNoApp");
+        RESET_P(PSTR("AppNoApp"));
         return;
     }
     DEBUG_T_P(PSTR("\nAPP_vUpdateDisplay for %d\n"), eActiveApp);
     switch (eActiveApp)
     {
         default:
-            RESET("AppNoActApp");
+            RESET_P(PSTR("AppNoActApp"));
             break;
 
         case APP_MENU:
@@ -76,7 +76,7 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
     APP_ID_DEF eActiveApp = ptdApp->aeAppStack[ptdApp->ucStackTopNext-1];
     if (ptdApp->ucStackTopNext==0)
     {
-        RESET("AppNoApp");
+        RESET_P(PSTR("AppNoApp"));
         return;
     }
     DEBUG_P(PSTR("APP_vRouteEvent(%d) to %d app\n"), eEvent, eActiveApp);
@@ -84,7 +84,7 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
     switch (eActiveApp)
     {
         default:
-            RESET("AppNoActApp");
+            RESET_P(PSTR("AppNoActApp"));
             break;
 
         case APP_CLOCK:
@@ -156,7 +156,7 @@ void APP_vActivateApp(APP_ID_DEF   eNewActiveAppId)
     DEBUG_P(PSTR("APP_vActivateApp(%d)\n"), eNewActiveAppId);
     if (ptdApp->ucStackTopNext >= APP_STACK_DEPTH)
     {
-        RESET("AppStackFull");
+        RESET_P(PSTR("AppStackFull"));
         return;
     }
     if (ptdApp->ucStackTopNext > 0)
@@ -177,7 +177,7 @@ void APP_vReactivatePreviousApp(void)
     DEBUG_P(PSTR("APP_vReactivatePreviousApp()\n"));
     if (ptdApp->ucStackTopNext==0)
     {
-        RESET("AppReaStEmp");
+        RESET_P(PSTR("AppReaStEmp"));
         return;
     }
     APP_vRouteEvent(APP_LOST_CONTROL);

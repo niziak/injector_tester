@@ -31,7 +31,7 @@ void MENU_Activate(void)
 {
     if (TRUE == PTDMENU->bMenuActive)
     {
-        RESET("mn already activ!");
+        RESET_P(PSTR("mn already activ!"));
     }
     memset (PTDMENU, 0, sizeof(MENU_DEF));
     DISP_START_BLINK_TIMER
@@ -43,7 +43,7 @@ void MENU_Deactivate(void)
 {
     if (FALSE==PTDMENU->bMenuActive)
     {
-        RESET("mn already deactiv!");
+        RESET_P(PSTR("mn already deactiv!"));
     }
 	PTDMENU->bMenuActive = FALSE;
 	MENU_DISP_vClrScr();

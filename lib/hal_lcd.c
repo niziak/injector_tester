@@ -35,7 +35,7 @@ void LCD_vPrintf(const char *format, ...)
 	va_start (args, format);
 	if (vsprintf (&acLineBuf[0], format, args) > sizeof(acLineBuf))
 	{
-	    RESET("vsprintf OV!");
+	    RESET_P(PSTR("vsprintf OV!"));
 	}
 	va_end (args);
 	LCD_vPuts (&acLineBuf[0]);
@@ -51,7 +51,7 @@ void LCD_vPrintf_P(const char *format, ...)
     va_start (args, format);
     if (vsprintf_P (&acLineBuf[0], format, args) > sizeof(acLineBuf))
     {
-        RESET("vsprintf_P OV!");
+        RESET_P(PSTR("vsprintf_P OV!"));
     }
     va_end (args);
     LCD_vPuts (&acLineBuf[0]);

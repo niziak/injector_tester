@@ -187,7 +187,7 @@ void DISP_vPrintStatusScreen(void)
             break;
 
         default:
-            RESET("app st No scr");
+            RESET_P(PSTR("app st No scr"));
             break;
 
 

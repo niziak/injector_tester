@@ -78,9 +78,9 @@ extern void LOG_Log   (const char *format, ...)
 }
 
 #ifdef __GNUC__
-void LOG_Reset (char * message) __attribute__ ((format (printf, 1, 0)));
+void LOG_Reset (const char * message) __attribute__ ((format (printf, 1, 0)));
 #endif
-void LOG_Reset (char * message)
+void LOG_Reset (const char * message)
 {
     unsigned char ucCount;
     printf_P (PSTR("RESET:\n"));
@@ -101,3 +101,26 @@ void LOG_Reset (char * message)
 	for (;;); // real reset
 }
 
+#ifdef __GNUC__
+void LOG_Reset_P (const char * message) __attribute__ ((format (printf, 1, 0)));
+#endif
+void LOG_Reset_P (const char * message)
+{
+    unsigned char ucCount;
+    printf_P (PSTR("RESET:\n"));
+    puts (message);
+
+    LCD_LO_vInit();
+    LCD_LO_vClrScr();
+    LCD_LO_vPuts_P(PSTR("RESET:"));
+    LCD_LO_vGotoXY(0,1);
+    LCD_LO_vPuts_P (message);
+    cli(); // TODO
+    for (ucCount=100 ; ucCount>0 ; ucCount--)
+    {
+        wdt_reset();
+        LCD_BL_ALTER;
+        _delay_ms(500);
+    }
+    for (;;); // real reset
+}

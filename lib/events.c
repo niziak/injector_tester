@@ -95,7 +95,7 @@ void EventPostFromIRQ (EVENT_DEF eEvent)
             breakable_delay_ms(300);
 //            return;
 //            for (;;);
-            RESET("Fifo full");
+            RESET_P(PSTR("Fifo full"));
         }
 
         ptdFifo->aeCurrentEvent[ptdFifo->ucWritePtr] = eEvent;
@@ -184,7 +184,7 @@ EVENT_DEF EventGet(void)
     EV_DEBUG_P(PSTR("Get\n"));
     if (bIsEventWaiting()==FALSE)
     {
-        RESET("GET but no ev");
+        RESET_P(PSTR("GET but no ev"));
         return SYS_EVENT_NONE;
     }
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)

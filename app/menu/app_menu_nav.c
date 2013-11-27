@@ -117,7 +117,7 @@ UCHAR MENU_ucGetParentItem(UCHAR ucCurrentItem)
         }
     }
 //    return ucI; // LVL0 wrap around, so back to first menu item
-    RESET ("AppMnGPIT");
+    RESET_P (PSTR("AppMnGPIT"));
     return MENU_ITEM_ID_NOT_FOUND;
 }
 
@@ -148,7 +148,7 @@ UCHAR MENU_ucGetLastItem(void)
             return ucI;
         }
     }
-    RESET("MENU_ucGetLastItem");
+    RESET_P(PSTR("MENU_ucGetLastItem"));
     return MENU_ITEM_ID_NOT_FOUND;
 }
 
@@ -200,7 +200,7 @@ void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
             PTDMENU->ucCurrentItem = MENU_ucGetPrevItemFromSameLevel(PTDMENU->ucCurrentItem);
             if (MENU_ITEM_ID_NOT_FOUND == PTDMENU->ucCurrentItem)
             {
-                RESET("AppMnScrNF");
+                RESET_P(PSTR("AppMnScrNF"));
             }
             break;
 

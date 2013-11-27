@@ -33,7 +33,9 @@ static void vDrawConfirmationScreen(void)
 void MENU_vShow(void)
 {
     if (PTDMENU->bMenuActive==FALSE)
-        RESET("app mn shna");
+    {
+        RESET_P(PSTR("app mn shna"));
+    }
 
     MENU_DISP_vClrScr();
     //MENU_DISP_vHome();

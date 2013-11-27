@@ -40,7 +40,7 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
 
         case MENU_FN_FACTORY_DEFAULT:
             NVM_vRestoreFactory();
-            RESET("FACTORY RESET!");
+            RESET_P(PSTR("FACTORY RESET!"));
             break;
 
         case MENU_FN_10MIN:
@@ -61,7 +61,7 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
             break;
 
         case MENU_FN_REBOOT:
-            RESET("RESTART!");
+            RESET_P(PSTR("RESTART!"));
             break;
 
         case MENU_FN_1W_SHOW:
