@@ -31,8 +31,11 @@
 
     #define  ADC_KEY_VAL_IDLE       255
 
-    #define ADC_KEY_DEBOUNCE        500       ///< n*10ms     how many cycles wait for key unchanged state
-    #define ADC_KEY_INTERVAL        3000       ///< n*10ms    how long block keyboard reading after keypress (key repeat)
+    // ADC prescaler is /128, with 16MHz clock, gives 16000/128 = 125kHz, 8 uS / tick
+    // Conversion in auto triggered mode takes ~13,5 ticks, so ADC INT comes every 108 uS = 0,1 ms
+    #define ADC_TICK_MS             11             ///< (us) how many ADC tick takes 1 ms
+    #define ADC_KEY_DEBOUNCE        50             ///< n* ms     how many cycles wait for key unchanged state
+    #define ADC_KEY_INTERVAL        200            ///< n* ms    how long block keyboard reading after keypress (key repeat)
 
     #include <tools.h>
     #define ADC_KEY_PRESSED_TRIGGER_FN      {breakable_delay_break();}

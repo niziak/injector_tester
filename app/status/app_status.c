@@ -110,7 +110,7 @@ static void vPrintTemp (UCHAR ucOneWireIdx)
     else
     {
         LCD_vPrintf_P(PSTR("%02d,%01d%c"), atdKnownTempSensors[ucOneWireIdx].iTempInt,
-                                           atdKnownTempSensors[ucOneWireIdx].iTempFrac/1000, (unsigned char)223);
+                                           atdKnownTempSensors[ucOneWireIdx].iTempFrac/1000, LCD_CHAR_CELSIUS);
     }
 }
 
@@ -134,7 +134,6 @@ void DISP_vPrintStatusScreen(void)
         bShowScreenTitle = FALSE;
     }
 
-    DISP_STOP_BLINK_TIMER
     LCD_vClrScr();
     switch (eCurrentScreenId)
     {
@@ -150,6 +149,7 @@ void DISP_vPrintStatusScreen(void)
                 LCD_vPutc('P');
             }
 
+            DISP_STOP_BLINK_TIMER
             if (uiPumpSwitchOffAfter > 0)
             {
                 DISP_START_BLINK_TIMER
@@ -158,7 +158,7 @@ void DISP_vPrintStatusScreen(void)
                     LCD_vGotoXY(15,1);
                     LCD_vPutc(255);
                 }
-                LCD_vGotoXY(10,1);
+                LCD_vGotoXY(11,1);
                 LCD_vPrintf_P(PSTR("%4d"), uiPumpSwitchOffAfter);
             }
 
@@ -245,6 +245,8 @@ void APP_STATUS_vHandleEvent(EVENT_DEF eEvent)
             DISP_vStatusScreenPrev();
             break;
 
+        case APP_LOST_CONTROL:
+        case APP_KILLED:
         default:
             break;
     }

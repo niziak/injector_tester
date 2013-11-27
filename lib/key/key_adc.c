@@ -68,7 +68,7 @@ ISR(ADC_vect)
         uiADCKeyPressedCounter=0;
         // no key pressed
     }
-    else if (uiADCKeyPressedCounter > ADC_KEY_DEBOUNCE)
+    else if (uiADCKeyPressedCounter > ADC_KEY_DEBOUNCE * ADC_TICK_MS)
     {
         // key was pressed for enough time
         if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_SELECT))            EventPostFromIRQ(MENU_ACTION_SELECT   );
@@ -78,7 +78,7 @@ ISR(ADC_vect)
         if  (TRUE == bFuzzyCompare(ucADC, ADC_KEY_VAL_RIGHT ))            EventPostFromIRQ(MENU_ACTION_RIGHT    );
 
         ADC_KEY_PRESSED_TRIGGER_FN
-        uiADCKeyBlockedTTL = ADC_KEY_INTERVAL;
+        uiADCKeyBlockedTTL = ADC_KEY_INTERVAL * ADC_TICK_MS;
         uiADCKeyPressedCounter = 0;
     }
 

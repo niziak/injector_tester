@@ -201,7 +201,7 @@ void main(void)
 		             // first keypress only turns on backlight
 		             if (0 == ucUIInactiveCounter)
 		             {
-		                 eEvent =SYS_EVENT_NONE;
+		                 eEvent = SYS_EVENT_NONE;
 		             }
 		             ucUIInactiveCounter = UI_INACTIVE_TIMEOUT; // Reinitialize timeout counter with every keypress
 		             break;
@@ -219,6 +219,12 @@ void main(void)
                 case SYS_CLOCK_1S:
                     RTC_vGetTime();
                     //DISP_REFRESH
+                    break;
+
+                case DISP_BLINK:
+                    //DEBUG_T_P(PSTR("DISP_BLINK\n"));
+                    APP_vUpdateDisplay();
+                    DISP_REFRESH
                     break;
 
 		        default:

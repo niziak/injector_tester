@@ -168,7 +168,6 @@ void APP_vActivateApp(APP_ID_DEF   eNewActiveAppId)
     ptdApp->ucStackTopNext++;
 
     APP_vRouteEvent(APP_ACTIVATED);
-    DISP_STOP_BLINK_TIMER
 }
 
 
@@ -185,7 +184,6 @@ void APP_vReactivatePreviousApp(void)
     ptdApp->ucStackTopNext--;
 
     APP_vRouteEvent(APP_REACTIVATED);
-    DISP_STOP_BLINK_TIMER
 }
 
 void APP_vShowPopupMessage(const char *pcMessage, unsigned int delayms)

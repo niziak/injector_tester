@@ -18,7 +18,7 @@ typedef struct
     UCHAR aucBuf[LCD_COLS*LCD_ROWS];
     UCHAR ucCursorX;
     UCHAR ucCursorY;
-    UCHAR ucCursorType;
+    UCHAR ucCursorType; // 0 - hidden, 1 - visible
 #if LCD_ROWS>2
     #error "Maximum LCD_ROWS=2 implemented"
     UCHAR aucRow3[LCD_COLS];
@@ -149,6 +149,13 @@ void LCD_Draw(void)
         }
         LCD_LO_vGotoXY (0,ucRow+1);
     }
+
+    // show real cursor if needed
+    if (ptdLCDBuf->ucCursorType == 1)
+    {
+        LCD_LO_vGotoXY (ptdLCDBuf->ucCursorX, ptdLCDBuf->ucCursorY);
+    }
+
 }
 
 extern void LCD_DrawDebug(void)
@@ -190,11 +197,13 @@ extern void LCD_DrawDebug(void)
 
 void LCD_vCursorShow(void)
 {
-    LCD_LO_vGotoXY (ptdLCDBuf->ucCursorX, ptdLCDBuf->ucCursorY);
+//    LCD_LO_vGotoXY (ptdLCDBuf->ucCursorX, ptdLCDBuf->ucCursorY);
+    ptdLCDBuf->ucCursorType = 1;
     LCD_LO_vCursorShow();
 }
 
 void LCD_vCursorHide(void)
 {
+    ptdLCDBuf->ucCursorType = 0;
     LCD_LO_vCursorHide();
 }

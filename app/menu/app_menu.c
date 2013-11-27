@@ -34,7 +34,6 @@ void MENU_Activate(void)
         RESET_P(PSTR("mn already activ!"));
     }
     memset (PTDMENU, 0, sizeof(MENU_DEF));
-    DISP_START_BLINK_TIMER
     PTDMENU->bMenuActive = TRUE;
     MENU_DISP_vClrScr();
 }
@@ -60,13 +59,16 @@ void MENU_HandleEvent(EVENT_DEF eMenuEvent)
     switch (eMenuEvent)
     {
         case APP_REACTIVATED:
-        case APP_ACTIVATED:
+        case APP_ACTIVATED:     // received from APP hanlder when menu gets focus
             MENU_vInit();
             MENU_Activate();
+            DISP_START_BLINK_TIMER
             break;
 
+        case APP_LOST_CONTROL:
         case APP_KILLED:
             PTDMENU->bMenuActive = FALSE;
+            DISP_STOP_BLINK_TIMER
             return;
             break;
 

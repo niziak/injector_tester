@@ -84,6 +84,6 @@
 
 #define AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN       FALSE
 
-
+#define LCD_CHAR_CELSIUS               ((unsigned char)223)
 
 #endif /* CONFIG_H_ */

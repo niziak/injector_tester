@@ -42,14 +42,14 @@ typedef enum
 //    MENU_ACTION_PAUSE,          ///< disable menu, but don't clear internal structure
 //    MENU_ACTION_RESUME,         ///< enable menu, but don't reset internal structures
 
-    //DISP_BLINK,                 ///< blink flag changed
+    DISP_BLINK,                 ///< blink flag changed
 
     APP_POPUP_SHOWN,            ///<
 
-    APP_ACTIVATED,              ///< initalisation event to inform app handler about initialization
-    APP_REACTIVATED,            ///< initalisation event to inform app handler about initialization
+    APP_ACTIVATED,              ///< initalisation event to inform app handler about initialization (getting focus)
+    APP_REACTIVATED,            ///< initalisation event to inform app handler about initialization (getting focus)
     APP_KILLED,                 ///< inform application that it was killed - to clean internal structures
-    APP_LOST_CONTROL,           ///< inform application that it is not main app
+    APP_LOST_CONTROL,           ///< inform application that it is not anymore foreground application (loosing focus)
 
 #if WITH_HB_EVENT
     SYS_HEARTBEAT,

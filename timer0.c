@@ -83,8 +83,8 @@ ISR(TIMER0_OVF_vect)
         if (ulSystemTickMS % (BLINK_SPEED) == 0)
         {
             bBlinkState = (bBlinkState==0 ? 1 : 0);
-            DISP_REFRESH
-            //EventPostFromIRQ (DISP_BLINK); // do not enable, it is too fast for main loop to handle
+            //DISP_REFRESH
+            EventPostFromIRQ (DISP_BLINK); // do not enable, it is too fast for main loop to handle
         }
     }
 
