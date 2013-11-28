@@ -32,6 +32,11 @@
  */
 extern void LOG_Log_P   (const char *format, ...) __attribute__ ((format (printf, 1, 2)));
 #endif
+/**
+ * Log printf like message with format string from PROGRAM MEMORY
+ * NOTE: only format string (argument one) is taken from PGMEM
+ * @param format
+ */
 extern void LOG_Log_P   (const char *format, ...)
 {
     va_list args;
@@ -56,6 +61,10 @@ extern void LOG_Log_P   (const char *format, ...)
 #ifdef __GNUC__
 extern void LOG_Log   (const char *format, ...) __attribute__ ((format (printf, 1, 2)));
 #endif
+/**
+ * Log printf like message with format string from normal RAM
+ * @param format
+ */
 extern void LOG_Log   (const char *format, ...)
 {
     va_list args;
@@ -84,7 +93,7 @@ void LOG_Reset (const char * message)
 {
     unsigned char ucCount;
     printf_P (PSTR("RESET:\n"));
-    puts (message);
+    puts(message);
 
     LCD_LO_vInit();
 	LCD_LO_vClrScr();
@@ -108,7 +117,7 @@ void LOG_Reset_P (const char * message)
 {
     unsigned char ucCount;
     printf_P (PSTR("RESET:\n"));
-    puts (message);
+    puts_P (message);
 
     LCD_LO_vInit();
     LCD_LO_vClrScr();
@@ -123,4 +132,31 @@ void LOG_Reset_P (const char * message)
         _delay_ms(500);
     }
     for (;;); // real reset
+}
+
+/**
+ * Print content of memory block in HEX block
+ * @param ptr
+ * @param size
+ */
+void LOG_vMemDump(void *ptr, UCHAR size)
+{
+    UCHAR ucCol=0;
+    while (size--)
+    {
+        LOG_Log_P(PSTR("%02X "), *((unsigned char*)ptr++) );
+        ucCol++;
+        if (ucCol > 7)
+        {
+            ucCol=0;
+            LOG_NL
+        }
+    }
+    LOG_NL
+    LOG_NL
+}
+
+void LOG_vNL (void)
+{
+    LOG_Log_P(PSTR("\n"));
 }

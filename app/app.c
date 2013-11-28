@@ -38,7 +38,7 @@ void APP_vUpdateDisplay(void)
         RESET_P(PSTR("AppNoApp"));
         return;
     }
-    DEBUG_T_P(PSTR("\nAPP_vUpdateDisplay for %d\n"), eActiveApp);
+    DEBUG_P(PSTR("APP_vUpdateDisplay for %d\n"), eActiveApp);
     switch (eActiveApp)
     {
         default:
@@ -189,7 +189,7 @@ void APP_vReactivatePreviousApp(void)
 void APP_vShowPopupMessage(const char *pcMessage, unsigned int delayms)
 {
     LCD_vClrScr();
-    LCD_vPrintf("%s", pcMessage);
+    LCD_vPuts(pcMessage);
     APP_vActivateApp(APP_POPUP);
     EventTimerPostAfter (EVENT_TIMER_POPUP, APP_POPUP_SHOWN, delayms);
 }
@@ -197,7 +197,7 @@ void APP_vShowPopupMessage(const char *pcMessage, unsigned int delayms)
 void APP_vShowPopupMessage_P(const char *pcMessage, unsigned int delayms)
 {
     LCD_vClrScr();
-    LCD_vPrintf_P("%s", pcMessage);
+    LCD_vPuts_P(pcMessage);
     APP_vActivateApp(APP_POPUP);
     EventTimerPostAfter (EVENT_TIMER_POPUP, APP_POPUP_SHOWN, delayms);
 }

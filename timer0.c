@@ -13,6 +13,7 @@
 #include <events.h>
 #include <rtc.h>
 #include <key.h>
+#include <hal_lcd.h>
 
 #define WITH_INT_OVERLAP_DETECTION      FALSE
 
