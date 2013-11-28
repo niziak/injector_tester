@@ -103,7 +103,8 @@ SRC = 	$(TARGET).c \
 		timer0.c \
 		rtc.c \
 		tools.c \
-		usart0.c
+		usart0.c \
+		texts.c
 		
 SRC+=	lib/key/key_adc.c \
 		lib/key/key_buttons.c \
@@ -134,7 +135,8 @@ SRC+=	app/menu/app_menu_def.c \
 		app/menu/app_menu_fn.c \
 		app/menu/app_menu_confirm.c \
 		app/menu/app_menu_nav.c \
-		app/menu/app_menu_display.c
+		app/menu/app_menu_display.c \
+		app/menu/app_menu_special.c
 
 SRC+=   app/status/app_status.c
 SRC+=   app/clock/app_clock.c
@@ -203,12 +205,13 @@ CPPDEFS = -DF_CPU=$(F_CPU)UL
 CFLAGS = -g$(DEBUG)
 CFLAGS += $(CDEFS)
 CFLAGS += -O$(OPT)
-CFLAGS += -funsigned-char
+#CFLAGS += -funsigned-char
 CFLAGS += -funsigned-bitfields
 CFLAGS += -fpack-struct
 CFLAGS += -fshort-enums
 CFLAGS += -Wall
-CFLAGS += -Wstrict-prototypes
+CFLAGS += -Wstrict-prototypes -Wpointer-arith
+#CFLAGS += -pedantic-errors
 #CFLAGS += -mshort-calls
 #CFLAGS += -fno-unit-at-a-time
 #CFLAGS += -Wundef

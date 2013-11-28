@@ -1,14 +1,60 @@
+﻿=== WYTYCZNE ===
+Powinna byś możliwość zaprogramowania:
+
+1. Czujnik temperatury wody w zasobniku zakres (1 - 99°C) - jeżeli spadnie ponizej wartości zaprogramowanej np. 38°C nie będzie możliwości włączenia pompy obiegowej.
+
+2. Czujnik temperatury wody w rurze blisko karanu zakres (1 - 99°C) - jeżeli spadnie poniżej wartości zaprogramowanej np. 30°C włącza się pompa obiegowa i pracuje do czasu aż (no własnie do kiedy ? Jest zwłoka w nagrzewaniu. Może koniec pracy kiedy osiągnie temperaturę np. 2°C niższą niż temperatura wody w zasobniku ?)
+
+3. Praca pompy w trybie manual (Test) (1 - 10 minut) - włączana przyciskiem z panela sterownika
+
+4. Praca w trybie:
+	a) przez 24/h
+	b) Auto_1 (auto_1 = np 6.00 - 8.00 , 13.00 - 16.00 , 19.00 - 22.00) - możliwość zaprogramowania
+	   do 5 przedziałów czasowych.
+	c) Auto_2 (auto_2 = podłączony czujnik ruchu do uaktywnienia pompy obiegowej.
+	d) Auto_3 (auto_1 = np 6.00 - 8.00 , 13.00 - 16.00 , 19.00 - 22.00) - możliwość zaprogramowania
+	   do 5 przedziałów czasowych + dodatkowa praca pompy po wykryciu obecności.
+
+
+Wyświetlane wartości na LCD:
+
+1 Linia: Aktualna temperatura wody w zasobniku			Aktualna temperatura wody w rurze blisko kranu
+2 Linia: Tryb pracy: 24/h, Auto1, Auto2, Auto3, Manual (Test)	Informacja o pracy pompy (Pompa:ON, OFF)
+
+
+
+
+Sterowanie 1 przekaźnikiem, 2 wejścia niezależne pod termometry żeby nie bawić się z numerami DS18B20.
+1 wejście np: do wykrycia obecności w domu (jeżeli stan niski) to znaczy że ktoś jest i pompa ma pracować
+
+Przyciski ze np: 4 sztuki do wykożystania 1 - menu 2..... 3..... 4..... + praca Manual (Test)
+
+=== DO WYJAŚNIENIA  ===
+ Ad 1: Minimalna temperatura wody w zasobniku jest wartością świętą i nie da się włączyć pompy gdy jest za niska (chyba, ze tryb manual np na 10 minut)
+ Ad 2: Za niska temp w kranie, włączy pompę ale tylko w trybie 24h ?
+ Ad 4c: 
+
+ dorobić:
+  edytor min temp wody w kranie
+  edytor min temp wody w zasobniku
+  ustawianie czasu manual
+  ustawiania czasu działania pompy po wykryciu czujnikiem PIR
+  edytor 5 przedzialow czasowych
+  edytor korekcji zegara
+  
+
 === OPIS OGOLNY ===  
  - jesli przez 20 sekund jest brak nacisniec na klawiaturke, aplikacja gasi podswietlenie i pokazuje pierwszy ekran statusu
- - gdy podswietlenie ekranu jest wylaczone, jakiekolwiek nacisniecie klawisza wl�cza tylko podswietlenie
- - na porcie szeregowym 115200 8N1 jest konsola, mo�na z niej wyczyta� mniej wi�cej jak wygl�da ekranik. 
-   Mozna te� udawac sprzetowa klawiature z klawiatury PCta (strzalki + enter)
+ - gdy podswietlenie ekranu jest wylaczone, jakiekolwiek nacisniecie klawisza wlącza tylko podswietlenie
+ - na porcie szeregowym 115200 8N1 jest konsola, można z niej wyczytać mniej więcej jak wygląda ekranik. 
+   Można też udawac sprzetowa klawiature z klawiatury PCta (strzalki + enter). Dodatkowo klawisz spacji zawiesza urządzenie,
+   aby można było w spokoju analizować log z konsolii.
 
 === Czujnik PIR ===
- - wykrycie obecno�ci z czujnika PIR odbywa si� przez zwarcie wej�cie Arduino D2 do masy (3 PIN od prawej w prawym g�rnym rogu plytki LCD Keypad Shield)
- - ka�de wykrycie obecno�ci przez PIR w systemie jest zapamietane na 60 sekund (sygnalizowane literk� P na wyswietlaczu)
- - ka�de nast�pne wykrycie, przed�u�a ten czas o kolejne 60 sekund.
- - kazde wykrycie obecno�ci wlacza podswietlenie ekranu
+ - wykrycie obecności z czujnika PIR odbywa się przez zwarcie wejście Arduino D2 do masy (3 PIN od prawej w prawym górnym rogu plytki LCD Keypad Shield)
+ - każde wykrycie obecności przez PIR w systemie jest zapamietane na 60 sekund (sygnalizowane literką P na wyswietlaczu)
+ - każde następne wykrycie, przedłuża ten czas o kolejne 60 sekund.
+ - kazde wykrycie obecności wlacza podswietlenie ekranu
 
 
 === Pierwsze wlaczenie ===
@@ -16,14 +62,14 @@
  - Menu -> ustawienia -> 1 wire -> Wykryj
  - Menu -> --- powrot ---
  - na ekranie statusu sprawdzic poprawnosc pokazywanych temperatur (pierwsza temperatura "Z" jest zasobnika, druga jest wody w rurze przy kranie "K").
-   Je�li przypisanie czujnikow si� nie zgadza z ich faktyczn� rol�, to nale�y czujniki zamieni� mi�dzy sob� wchodz�c w menu:
+   Jeśli przypisanie czujnikow się nie zgadza z ich faktyczną rolą, to należy czujniki zamienić między sobą wchodząc w menu:
    Menu -> Ustawienia -> 1 wire -> Zmien kolej.
 
 
  - po zmianie czujnikow temperatury, stare nalezy skasowac i zaprogramowac nowe:
    Menu -> Ustawienia -> 1 wire -> Usun
    Menu -> Ustawienia -> 1 wire -> wykryj
-	POwinien pokazac si� komunikat "2 nowe"
+	Powinien pokazac się komunikat "2 nowe"
 
 
 
@@ -37,8 +83,8 @@ Aplikacja status (domyslna po starcie)
      |10:03:56        |
      +----------------+
 
- - dzia�anie pompy - migaj�cy czarny znak w prawym dolnym rogu
-   Literka 'P' w prawym rogu oznacza wykryt� obecno��.
+ - działanie pompy - migający czarny znak w prawym dolnym rogu
+   Literka 'P' w prawym rogu oznacza wykrytą obecność.
      +----------------+
      |Z 23,8'  K 23,4'|
      |10:03:56       #|
@@ -62,7 +108,7 @@ Aplikacja Menu:
  - struktura menu zdefiniowana jest: https://raw.github.com/niziak/injector_tester/master/app/menu/app_menu_def.c
 
 Aplikacja Menu -> 10 minut
-	wlacza pompe na 10 minut lub wylacza je�li czas 10 minut jeszcze nie up�yn��
+	wlacza pompe na 10 minut lub wylacza jeśli czas 10 minut jeszcze nie upłynął
 
 
 Aplikacja Menu -> Ustawienia -> 1 Wire
@@ -74,7 +120,7 @@ Aplikacja Menu -> Ustawienia -> 1 Wire
 
 Aplikacja Menu -> Ustawienia -> Zegar
  - ustawia zegarek RTC. Ustawiac mozna kazda cyfre sekund i minut z osobna. Godziny ustawia sie jako calosc (00-23)
- - Nawigacja:	g�ra/d�l - zmiana wartosci
+ - Nawigacja:	góra/dól - zmiana wartosci
   		lewo/prawo - zmiana miejsca
  		select - zatwierdzenie
  - wyjscie bez zmian - poczekac 20 sekund
@@ -92,7 +138,7 @@ Aplikacja Menu -> Ustawienia -> Restart
 
 
 Do zrobienia:
- - usuni�cie migotania ekranika
+ - usunięcie migotania ekranika
 
 
      +----------------+

@@ -7,7 +7,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-
+#include <avr/wdt.h>
 
 #include <config.h>
 #include <key.h>
@@ -25,6 +25,10 @@ ISR(USART_RX_vect)
     //LCD_vPrintf_P ("RX %02X ", ucRXByte);
     switch (ucRXByte)
     {
+        case ' ':  // space - special action to hang device
+            for (;;) wdt_reset();
+            break;
+
         case '\r':  // enter
             EventPostFromIRQ (MENU_ACTION_SELECT);
             break;
