@@ -18,6 +18,7 @@
 static EEMEM unsigned char                  NVM_aucMagic[NVM_MAGIC_LEN];
 static EEMEM unsigned int                   NVM_uiVersion;
 static EEMEM TEMP_SENSOR_PARAMS_DEF         NVM_atdKnownTempSensors[NUM_OF_TEMP_SENSORS];
+static EEMEM NVM_SET_DEF                    NVM_stSettings;
 
 void NVM_vRestoreFactory(void)
 {
@@ -26,6 +27,9 @@ void NVM_vRestoreFactory(void)
     eeprom_write_block ( &(aucMagic[0]), &(NVM_aucMagic[0]), sizeof(aucMagic) );
 }
 
+/**
+ * Load EEPROM to NVM
+ */
 void NVM_vLoadSettings(void)
 {
     BOOL bError = FALSE;
@@ -48,26 +52,49 @@ void NVM_vLoadSettings(void)
         bError = TRUE;
     }
 
+    pstSettings->ucMinTempZasobnik  = DEFAULT_ZASO_MIN_TEMP;
+    pstSettings->ucMinTempKran      = DEFAULT_KRAN_MIN_TEMP;
+    pstSettings->uiPumpManualTime   = DEFAULT_PUMP_MANUAL_TTL;
+    pstSettings->uiPumpPIRTime      = DEFAULT_PIR_PRESENCE_TTL;
+    pstSettings->cSecondsPerDayAdj  = DEFAULT_SEC_PER_DAY_ADJ;
+
     if (bError == TRUE)
     {
         LOG("No NVM\n");
         return;
     }
     eeprom_read_block ( &(atdKnownTempSensors[0]),    &(NVM_atdKnownTempSensors[0]),   sizeof(atdKnownTempSensors));
+    eeprom_read_block ( pstSettings,                  &(NVM_stSettings),               sizeof(stSettings));
+
+    DEBUG_MEM( &(atdKnownTempSensors[0]),    sizeof(atdKnownTempSensors));
+    DEBUG_MEM( pstSettings,                  sizeof(stSettings));
 }
 
+/**
+ * Save NVM to EEPROM block
+ */
 void NVM_vSaveSettings(void)
 {
     unsigned char aucMagic[NVM_MAGIC_LEN];
     unsigned int uiVersion = NVM_VERSION;
+
+    DEBUG_MEM( &(atdKnownTempSensors[0]),    sizeof(atdKnownTempSensors));
+    DEBUG_MEM( pstSettings,                  sizeof(stSettings));
+
     memset (&aucMagic[0], NVM_MAGIC_BYTE, sizeof (aucMagic));
 #if (AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN)
     eeprom_update_block ( &(uiVersion),               &(NVM_uiVersion),                sizeof(uiVersion)          );
     eeprom_update_block ( &(aucMagic[0]),             &(NVM_aucMagic[0]),              sizeof(aucMagic)           );
     eeprom_update_block ( &(atdKnownTempSensors[0]),  &(NVM_atdKnownTempSensors[0]),   sizeof(atdKnownTempSensors));
+    eeprom_update_block ( pstSettings,                &(NVM_stSettings),               sizeof(stSettings));
 #else
     eeprom_write_block ( &(uiVersion),               &(NVM_uiVersion),                sizeof(uiVersion)          );
     eeprom_write_block ( &(aucMagic[0]),             &(NVM_aucMagic[0]),              sizeof(aucMagic)           );
     eeprom_write_block ( &(atdKnownTempSensors[0]),  &(NVM_atdKnownTempSensors[0]),   sizeof(atdKnownTempSensors));
+    eeprom_write_block ( pstSettings,                &(NVM_stSettings),               sizeof(stSettings));
 #endif
+
+    DEBUG_MEM( &(atdKnownTempSensors[0]),    sizeof(atdKnownTempSensors));
+    DEBUG_MEM( pstSettings,                  sizeof(stSettings));
+
 }

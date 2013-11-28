@@ -18,6 +18,8 @@ extern volatile BOOL                bNeedsBlinking;
 extern volatile unsigned int        uiPIRTTL;
 extern volatile BOOL                bPumpIsRunning;
 
+
+
 #define DISP_REFRESH                { bRefreshDisplay = TRUE;  }
 #define DISP_START_BLINK_TIMER      { bNeedsBlinking  = TRUE;  }
 #define DISP_STOP_BLINK_TIMER       { bNeedsBlinking  = FALSE; }
@@ -32,7 +34,19 @@ typedef enum
 
 } APP_MODE_DEF;
 
-extern APP_MODE_DEF eAppMode;
 
+typedef struct
+{
+    APP_MODE_DEF                eAppMode;                   ///< current application mode
+    UINT                        uiPumpManualTime;           ///< (in seconds) pump running time activated by user (manual mode)
+    UINT                        uiPumpPIRTime;              ///< (in seconds) pump running time activated from PIR sensor
+    UCHAR                       ucMinTempZasobnik;          ///< (in celsius) [0..99]
+    UCHAR                       ucMinTempKran;              ///< (in celsius) [0..99]
+    signed char                 cSecondsPerDayAdj;          ///< (in seconds) [-128..127] daily adjustment for RTC clock
+} NVM_SET_DEF;
+
+
+extern NVM_SET_DEF                  stSettings;
+#define pstSettings (&(stSettings))
 
 #endif /* MAIN_H_ */

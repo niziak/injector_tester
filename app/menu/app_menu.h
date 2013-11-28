@@ -24,6 +24,9 @@ typedef enum
     MID_1W_WYKRYJ,
     MID_1W_ZAMIEN,
     MID_1W_USUN,
+    MID_CLOCK_ADJ,
+    MID_MIN_TZ,
+    MID_MIN_TK,
 } MENU_ITEM_ID_DEF;
 
 typedef enum
@@ -45,6 +48,7 @@ typedef enum
 	MENU_FN_REBOOT,
 	MENU_FN_10MIN,
 	MENU_FN_SET_CLOCK,
+	MENU_FN_SET_CLOCK_ADJ,
 
 	MENU_FN_1W_SHOW,
 	MENU_FN_1W_DETECT,
@@ -72,12 +76,15 @@ typedef enum
 	NO_ASK,
 } MENU_CONFIRM_DEF;
 
-
+/**
+ * pcLabel is stored only as pointer (2 bytes on AVR).
+ * TODO: move text labels to PGMEM as separate strings. Move whole menu structure to PGMEM
+ */
 typedef struct
 {
 	MENU_LEVEL_ID_DEF		eLevel;
 	MENU_ITEM_ID_DEF		eMID;
-	PGM_P					pcLabel;
+	const char             *pcLabel;
 	MENU_FN_ID_DEF			eMenuFnId;
 	MENU_CONFIRM_DEF    	eConfirmation;
 } MENU_ITEM_DEF;
@@ -86,7 +93,7 @@ typedef struct
 #define MENU_ITEM_ID_NOT_FOUND  0xFF
 
 
-#define NUMBER_OF_MENU_ITEMS		19
+#define NUMBER_OF_MENU_ITEMS		24
 extern const MENU_ITEM_DEF				atdMenuItems[NUMBER_OF_MENU_ITEMS];
 //#define NUMBER_OF_MENU_ITEMS		(sizeof(atdMenuItems)/sizeof(atdMenuItems[0]))
 
@@ -114,6 +121,7 @@ extern BOOL MENU_bIsMenuActive(void);
 extern void MENU_vShow(void);
 extern void MENU_Activate(void);
 extern void MENU_Deactivate(void);
+extern void MENU_vLevelUp(void);
 
 // internals:
 extern void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId);
@@ -121,5 +129,8 @@ extern void MENU_ConfirmationScreenHandler(EVENT_DEF eMenuAction);
 extern void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent);
 extern MENU_LEVEL_ID_DEF MENU_eGetCurrentItemLevel(void);
 extern UCHAR MENU_ucGetParentItem(UCHAR ucCurrentItem);
+
+extern BOOL MENU_ShowSpecialElement(void);
+extern BOOL MENU_HandleSpecialElement(EVENT_DEF eMenuEvent);
 
 #endif /* MENU_H_ */

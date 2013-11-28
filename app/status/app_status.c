@@ -122,7 +122,9 @@ static void vPrintOneWireSerial(UCHAR *pucROM)
 {
     UCHAR a;
     for (a=0; a<OW_ADDRESS_LEN; ++a)
+    {
         LCD_vPrintf_P(PSTR("%02X"), pucROM[a]);
+    }
 }
 
 void DISP_vPrintStatusScreen(void)
@@ -143,13 +145,20 @@ void DISP_vPrintStatusScreen(void)
             LCD_vPuts_P(PSTR("  K "));
             vPrintTemp(ONEWIRE_KRAN_IDX);
 
+            LCD_vGotoXY(0,1);
+            LCD_vPrintf_P(PSTR("%02d:%02d:%02d"),   ptdLocalTime->tm_hour,
+                                                    ptdLocalTime->tm_min,
+                                                    ptdLocalTime->tm_sec);
+
             if (uiPIRTTL > 0)
             {
                 LCD_vGotoXY(15,1);
                 LCD_vPutc('P');
             }
 
-            DISP_STOP_BLINK_TIMER
+            // Display system mode
+            LCD_vGotoXY(9,1);
+            // manual mode is overriding automatic modes
             if (uiPumpSwitchOffAfter > 0)
             {
                 DISP_START_BLINK_TIMER
@@ -158,30 +167,28 @@ void DISP_vPrintStatusScreen(void)
                     LCD_vGotoXY(15,1);
                     LCD_vPutc(255);
                 }
-                LCD_vGotoXY(11,1);
-                LCD_vPrintf_P(PSTR("%4d"), uiPumpSwitchOffAfter);
+                LCD_vGotoXY(10,1);
+                LCD_vPrintf_P(PSTR("M %4d"), uiPumpSwitchOffAfter);
             }
-
-            LCD_vGotoXY(0,1);
-            LCD_vPrintf_P(PSTR("%02d:%02d:%02d "),   ptdLocalTime->tm_hour,
-                                                     ptdLocalTime->tm_min,
-                                                     ptdLocalTime->tm_sec);
-
-            switch (eAppMode)
+            else
             {
-                default:
-                    break;
+                DISP_STOP_BLINK_TIMER
+                switch (pstSettings->eAppMode)
+                {
+                    default:
+                        break;
 
-                case APP_MODE_24H:
-                    LCD_vPrintf_P(PSTR("24h"));
-                    break;
+                    case APP_MODE_24H:
+                        LCD_vPrintf_P(PSTR("24h"));
+                        break;
 
-                case APP_MODE_AUTO_1:
-                case APP_MODE_AUTO_2:
-                case APP_MODE_AUTO_3:
-                case APP_MODE_AUTO_4:
-                    LCD_vPrintf_P(PSTR("Auto%d"), eAppMode-APP_MODE_AUTO_1+1);
-                    break;
+                    case APP_MODE_AUTO_1:
+                    case APP_MODE_AUTO_2:
+                    case APP_MODE_AUTO_3:
+                    case APP_MODE_AUTO_4:
+                        LCD_vPrintf_P(PSTR("Auto%d"), (pstSettings->eAppMode)-APP_MODE_AUTO_1+1);
+                        break;
+                }
             }
             return;
             break;
@@ -205,11 +212,15 @@ void DISP_vPrintStatusScreen(void)
             break;
 
         case STATUS_SCREEN_TEMP:
-            LCD_vPuts_P(PSTR("Zasobnik: "));
+            LCD_vPuts_P(PSTR("Z: "));
             vPrintTemp(ONEWIRE_ZASO_IDX);
+            LCD_vPrintf_P(PSTR(" [%d]"), pstSettings->ucMinTempZasobnik);
+
             LCD_vGotoXY(0,1);
-            LCD_vPuts_P(PSTR("Kran:     "));
+
+            LCD_vPuts_P(PSTR("K: "));
             vPrintTemp(ONEWIRE_KRAN_IDX);
+            LCD_vPrintf_P(PSTR(" [%d]"), pstSettings->ucMinTempKran);
             break;
     }
     //int_delay_ms(500);

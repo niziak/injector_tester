@@ -181,6 +181,10 @@ void MENU_MenuNavigationHandler(EVENT_DEF eMenuEvent)
 //            PTDMENU->bMenuActive = TRUE;
 //            break;
 
+        case MENU_ACTION_LEFT:
+            MENU_vLevelUp();
+            break;
+
         case MENU_ACTION_UP:
             // if end marker is shown, disable endmarker (automatically last entry will be shown)
             if (TRUE == PTDMENU->bEndMarkerSelected)

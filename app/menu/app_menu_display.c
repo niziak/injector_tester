@@ -59,22 +59,27 @@ void MENU_vShow(void)
         }
 
         MENU_DISP_vGotoXY(0,1);
-        if (bBlinkState==TRUE)
+        // give change to draw second line by special element handler
+        if ( ! MENU_ShowSpecialElement())
         {
-            MENU_DISP_vPuts_P(PSTR("> "));
-        }
-        else
-        {
-            MENU_DISP_vPuts_P(PSTR("  "));
-        }
+            if (bBlinkState==TRUE)
+            {
+                MENU_DISP_vPuts_P(PSTR("> "));
+            }
+            else
+            {
+                MENU_DISP_vPuts_P(PSTR("  "));
+            }
 
-        if (PTDMENU->bEndMarkerSelected)
-        {
-            MENU_DISP_vPuts_P(PSTR(MENU_END_MARKER_TEXT));
-        }
-        else
-        {
-            MENU_DISP_vPuts ((char*)PCURRENT_ITEM->pcLabel);
+
+            if (PTDMENU->bEndMarkerSelected)
+            {
+                MENU_DISP_vPuts_P(PSTR(MENU_END_MARKER_TEXT));
+            }
+            else
+            {
+                MENU_DISP_vPuts ((char*)PCURRENT_ITEM->pcLabel);
+            }
         }
     }
 

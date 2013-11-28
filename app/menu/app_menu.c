@@ -83,8 +83,11 @@ void MENU_HandleEvent(EVENT_DEF eMenuEvent)
 	}
 	else
 	{
-//	    LOG("Menu Hndl");
-		MENU_MenuNavigationHandler(eMenuEvent);
+	    if (! MENU_HandleSpecialElement(eMenuEvent))
+	    {
+	        //	    LOG("Menu Hndl");
+	        MENU_MenuNavigationHandler(eMenuEvent);
+	    }
 	}
 
 }

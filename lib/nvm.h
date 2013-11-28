@@ -12,14 +12,6 @@
 #include <avr/eeprom.h>
 #include <config.h>
 
-typedef struct
-{
-    UCHAR   ucVersion;
-} NVM_SET_DEF;
-
-
-//static EEMEM NVM_SET_DEF        tdNVM;
-
 extern void NVM_vLoadSettings(void);
 extern void NVM_vSaveSettings(void);
 extern void NVM_vRestoreFactory(void);

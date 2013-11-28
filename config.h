@@ -79,8 +79,12 @@
 
 #define UI_NEG_POPUP_TIME                   4000
 #define UI_POS_POPUP_TIME                   3000
-#define PIR_PRESENCE_TTL                    60          ///< (in seconds) how long presence is reported after it was detected
-#define PUMP_MANUAL_TTL                     (10*60)     ///< (in seconds) how long pump should work when turned on from menu
+
+#define DEFAULT_SEC_PER_DAY_ADJ             -8
+#define DEFAULT_ZASO_MIN_TEMP               38
+#define DEFAULT_KRAN_MIN_TEMP               38
+#define DEFAULT_PIR_PRESENCE_TTL                    60          ///< (in seconds) how long presence is reported after it was detected
+#define DEFAULT_PUMP_MANUAL_TTL                     (10*60)     ///< (in seconds) how long pump should work when turned on from menu
 
 #define AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN       FALSE
 

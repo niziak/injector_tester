@@ -89,14 +89,20 @@ TEMP_SENSOR_PARAMS_DEF		atdKnownTempSensors[NUM_OF_TEMP_SENSORS];
 
 volatile unsigned long      ulSystemTickMS = 0;         ///< local time tick counter (increment every ms)
 volatile unsigned long      ulSystemTickS = 0;          ///< local time tick counter (increment every second)
+
 volatile BOOL               bBlinkState;                ///< alternating variable to control blinking characters
+volatile BOOL               bNeedsBlinking;             ///< flag to turn on blinking flag
+volatile BOOL               bRefreshDisplay;            ///< flag to redraw display
+
 volatile UCHAR              ucUIInactiveCounter;        ///< in seconds. Counts down
+
 volatile unsigned int       uiPumpSwitchOffAfter;       ///< 0 - stop pump, automatically decremented every 1S in timer
 volatile BOOL               bPumpIsRunning;             ///< flag to start/stop pump
-volatile BOOL               bRefreshDisplay;            ///< flag to redraw display
-volatile BOOL               bNeedsBlinking;             ///< flag to turn on blinking flag
+
 volatile unsigned int       uiPIRTTL;                   ///< >0 if presence was detected (decremented every 1S in timer)
-APP_MODE_DEF                eAppMode;                   ///< current application mode
+
+NVM_SET_DEF                 stSettings;
+
 
 
 /**
@@ -107,7 +113,7 @@ ISR(PCINT2_vect)
 {
     if (bit_is_clear(PIR_PINS, PIR_PIN))
     {
-        uiPIRTTL = PIR_PRESENCE_TTL;
+        uiPIRTTL = pstSettings->uiPumpPIRTime;
         ucUIInactiveCounter = UI_INACTIVE_TIMEOUT;
     }
 }
@@ -177,8 +183,8 @@ void main(void)
 		if (TRUE == bIsEventWaiting())
 		{
 		    EVENT_DEF eEvent = EventGet();
-		    DEBUG_T_P(PSTR("\n----------------------------\n"));
-		    DEBUG_P(PSTR("Event %d\n"), eEvent);
+		    DEBUG_P(PSTR("\n\n----------------------------\n"));
+		    DEBUG_T_P(PSTR("\tEvent %d\n\n"), eEvent);
 		    switch (eEvent)
 		    {
 		        case SYS_1WIRE_CONVERT:
@@ -237,7 +243,7 @@ void main(void)
 		    DISP_REFRESH
 		    LCD_DrawDebug();
 
-		    DEBUG_P(PSTR("\n. . . . . . . . . . . . . .\n"));
+		    DEBUG_P(PSTR("\n. . . . . . . . . . . . . .\n\n"));
 
 		} //   if (TRUE==bIsEventWaiting())
 		else
