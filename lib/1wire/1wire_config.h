@@ -60,14 +60,14 @@ typedef struct
 
 typedef struct PACKED
 {
+  UCHAR aucROM[OW_ADDRESS_LEN];           ///< unique 1W sensor address
   INT   iTempInt ALIGN2;                  ///< current sensor temperature (integer part)
   INT   iTempFrac ALIGN2;                 ///< current sensor temperature (fractional part)
   CHAR  cTempAdj;                         ///< temp adjustment for sensor
-  UCHAR aucROM[OW_ADDRESS_LEN];           ///< unique 1W sensor address
+  UCHAR ucStatus;                         ///< 1 if sensor was found in last scan
 #if (OW_WITH_SENSOR_NAMES)
   CHAR  acName[TEMP_SENSOR_NAME_LEN+1];   ///< user friendly name of sensor
 #endif
-  UCHAR ucStatus;                         ///< 1 if sensor was found in last scan
 } TEMP_SENSOR_PARAMS_DEF;
 
 #include <limits.h>

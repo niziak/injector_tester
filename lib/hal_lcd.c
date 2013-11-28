@@ -35,6 +35,7 @@ void LCD_vPrintf(const char *format, ...)
 	va_start (args, format);
 	if (vsprintf (&acLineBuf[0], format, args) > sizeof(acLineBuf))
 	{
+	    //LOG_Log_P(PSTR("'%s'\n"), acLineBuf);
 	    RESET_P(PSTR("vsprintf OV!"));
 	}
 	va_end (args);
@@ -51,6 +52,8 @@ void LCD_vPrintf_P(const char *format, ...)
     va_start (args, format);
     if (vsprintf_P (&acLineBuf[0], format, args) > sizeof(acLineBuf))
     {
+        //LOG_Log (format);
+        //LOG_Log_P(PSTR("'%s'\n"), acLineBuf);
         RESET_P(PSTR("vsprintf_P OV!"));
     }
     va_end (args);

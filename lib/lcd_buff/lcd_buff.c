@@ -67,6 +67,7 @@ void LCD_vPutc(unsigned char ucChar)
     ptdLCDBuf->ucCursorX++;
     if (ptdLCDBuf->ucCursorX > LCD_COLS)
     {
+        LCD_DrawDebug();
         RESET_P(PSTR("ucCursorX OV!"));
     }
 
@@ -76,7 +77,7 @@ void LCD_vPutc(unsigned char ucChar)
  *
  * @param pucString
  */
-void LCD_vPuts(char *pucString)
+void LCD_vPuts(const char *pucString)
 {
     UCHAR ucC;
     LCD_DEBUG_P(PSTR("LCD_vPuts\n"))
@@ -188,7 +189,7 @@ extern void LCD_DrawDebug(void)
             LOG_Log_P(PSTR("%c"), ucChar);
         }
         LOG_Log_P(PSTR("|"));
-        LOG_Log_P(PSTR("\n"));
+        LOG_NL
     }
     LOG_Log_P(PSTR("+----------------+\n"));
 #endif //(LCD_BUFF_DUMP_BUFFER)

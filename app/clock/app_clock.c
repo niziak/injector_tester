@@ -12,7 +12,7 @@
 #include <events.h>
 #include <config.h>
 #include <app.h>
-
+#include <texts.h>
 
 #define CLOCK_DEBUG       1
 
@@ -185,7 +185,7 @@ void APP_CLOCK_vHandleEvent(EVENT_DEF eEvent)
                            BCD2DEC(ptdAppClock->ucNewMin10 << 4 | ptdAppClock->ucNewMin1),
                            BCD2DEC(ptdAppClock->ucNewSec10 << 4 | ptdAppClock->ucNewSec1)
                          );
-            APP_vShowPopupMessage("Zegar ustawiony", UI_POS_POPUP_TIME);
+            APP_vShowPopupMessage_P(PSTR_TXT_CLOCK_SET, UI_POS_POPUP_TIME);
             break;
 
         case MENU_ACTION_RIGHT:
