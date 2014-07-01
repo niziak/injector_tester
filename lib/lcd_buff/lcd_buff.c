@@ -37,7 +37,7 @@ static LCD_VBUF_DEF     tdLCDBuf;
 #define LCD_MEM_POS(x,y)    (x+(y*LCD_COLS))
 
 /**
- * Initialise LCD hardware and also internal screen buffer
+ * Initialize LCD hardware and also internal screen buffer
  */
 void LCD_vInit(void)
 {
@@ -159,10 +159,20 @@ void LCD_Draw(void)
 
 }
 
+/**
+ * Draw content of LCD buffer on serial console in form like:
+ *
+ * +----------------+
+ * |Nowy czas:      |
+ * |[ 5:04:30]      |
+ * +----------------+
+ *
+ */
 extern void LCD_DrawDebug(void)
 {
     UCHAR ucRow, ucCol;
     UCHAR ucChar;
+    BOOL bCursorOn;
 
 #if (LCD_BUFF_DUMP_BUFFER)
     LCD_DEBUG_P(PSTR("LCD_Draw\n"))
@@ -185,8 +195,29 @@ extern void LCD_DrawDebug(void)
         LOG_Log_P(PSTR("|"));
         for (ucCol=0; ucCol < LCD_COLS; ucCol++)
         {
+            // get character to print
             ucChar = ptdLCDBuf->aucBuf[LCD_MEM_POS(ucCol,ucRow)];
-            LOG_Log_P(PSTR("%c"), ucChar);
+
+            // draw cursor - ANSI: underline attribute
+            bCursorOn = FALSE;
+            if (    (1 == ptdLCDBuf->ucCursorType)
+                 && ((ptdLCDBuf->ucCursorX == ucCol) && (ptdLCDBuf->ucCursorY == ucRow)) )
+            {
+                LOG_Log_P(PSTR("\e[4m"));
+                bCursorOn = TRUE;
+            }
+
+                // show only printable characters
+                if ((ucChar < 0x20) || (0x7E < ucChar))
+                {
+                   ucChar = '.';
+                }
+                LOG_Log_P(PSTR("%c"), ucChar);
+
+            if (bCursorOn)
+            {
+                LOG_Log_P(PSTR("\e[0m")); // ANSI: reset all attributes
+            }
         }
         LOG_Log_P(PSTR("|"));
         LOG_NL

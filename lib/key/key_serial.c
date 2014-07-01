@@ -15,6 +15,81 @@
 
 #include <stdio.h>
 #include <usart0.h>
+#include <rtc.h>
+
+typedef enum
+{
+    TIME_SET_NONE,
+    TIME_SET_WAIT_FOR_HOUR_1,
+    TIME_SET_WAIT_FOR_HOUR_2,
+
+    TIME_SET_WAIT_FOR_MIN_1,
+    TIME_SET_WAIT_FOR_MIN_2,
+
+    TIME_SET_WAIT_FOR_SEC_1,
+    TIME_SET_WAIT_FOR_SEC_2,
+    TIME_SET_WAIT_FOR_END
+} TIME_SET_STATE_DEF;
+
+volatile TIME_SET_STATE_DEF eTimeState;
+
+volatile unsigned char ucNewHour;
+volatile unsigned char ucNewMin;
+volatile unsigned char ucNewSec;
+
+//#define SET_HI_NIBBLE(var,val)  { var  = ((val) & 0x0F) << 4; }
+//#define SET_LO_NIBBLE(var,val)  { var |= ((val) & 0x0F)     ; }
+
+#define SET_HI_NIBBLE(var,val)  { var  = (val) * 10; }
+#define SET_LO_NIBBLE(var,val)  { var += (val)     ; }
+
+static void vTimeSetHandler (unsigned char ucRXByte)
+{
+    switch (eTimeState)
+    {
+        default:
+            eTimeState = TIME_SET_NONE;
+            break;
+
+        case TIME_SET_WAIT_FOR_HOUR_1:
+            eTimeState = TIME_SET_WAIT_FOR_HOUR_2;
+            SET_HI_NIBBLE (ucNewHour, ('0' - ucRXByte))
+            break;
+
+        case TIME_SET_WAIT_FOR_HOUR_2:
+            eTimeState = TIME_SET_WAIT_FOR_MIN_1;
+            SET_LO_NIBBLE (ucNewHour, ('0' - ucRXByte))
+            break;
+
+        case TIME_SET_WAIT_FOR_MIN_1:
+            eTimeState = TIME_SET_WAIT_FOR_MIN_2;
+            SET_HI_NIBBLE (ucNewMin,  ('0' - ucRXByte))
+            break;
+
+        case TIME_SET_WAIT_FOR_MIN_2:
+            eTimeState = TIME_SET_WAIT_FOR_SEC_1;
+            SET_LO_NIBBLE (ucNewMin,  ('0' - ucRXByte))
+            break;
+
+        case TIME_SET_WAIT_FOR_SEC_1:
+            eTimeState = TIME_SET_WAIT_FOR_SEC_2;
+            SET_HI_NIBBLE (ucNewSec,  ('0' - ucRXByte))
+            break;
+
+        case TIME_SET_WAIT_FOR_SEC_2:
+            eTimeState = TIME_SET_WAIT_FOR_END;
+            SET_LO_NIBBLE (ucNewSec,  ('0' - ucRXByte))
+            break;
+
+        case TIME_SET_WAIT_FOR_END:
+            eTimeState = TIME_SET_NONE;
+            if ('E' == ucRXByte)
+            {
+                RTC_vSetTime (ucNewHour, ucNewMin, ucNewSec);
+            }
+            break;
+    }
+}
 
 ISR(USART_RX_vect)
 {
@@ -23,6 +98,12 @@ ISR(USART_RX_vect)
 
     ucRXByte = USART0_ucGetByte();
     //LCD_vPrintf_P ("RX %02X ", ucRXByte);
+    if (eTimeState != TIME_SET_NONE)
+    {
+        vTimeSetHandler (ucRXByte);
+        return;
+    }
+    eTimeState = TIME_SET_NONE;
     switch (ucRXByte)
     {
         case ' ':  // space - special action to hang device
@@ -47,6 +128,10 @@ ISR(USART_RX_vect)
 
         case 0x43: // right
             EventPostFromIRQ (MENU_ACTION_RIGHT    );
+            break;
+
+        case 'T': // set time command
+            eTimeState = TIME_SET_WAIT_FOR_HOUR_1;
             break;
 
         default:

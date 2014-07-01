@@ -308,9 +308,9 @@ void RTC_vGetTime(void)
 /**
  * Sets current and RTC clock
  *
- * @param ucSec
- * @param ucMin
- * @param ucHour
+ * @param ucSec in DECimal form
+ * @param ucMin in DECimal form
+ * @param ucHour in DECimal
  */
 void RTC_vSetTime(unsigned char ucHour, unsigned char ucMin, unsigned char ucSec)
 {

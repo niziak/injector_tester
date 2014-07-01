@@ -34,7 +34,22 @@ typedef enum
 
 } APP_MODE_DEF;
 
+/** Structure typedef to represent one time range between HH:MM-HH:MM */
+typedef struct
+{
+    UCHAR   ucStartHour;
+    UCHAR   uctartMin;
+    UCHAR   ucEndHour;
+    UCHAR   ucEndMin;
+} DAYTIME_RANGE_DEF;
 
+/** Structure to represent one mode settings (currently only time ranges) */
+typedef struct
+{
+    DAYTIME_RANGE_DEF   astRange[5];
+} MODE_SETTINGS_DEF;
+
+/** Structure to keep whole system settings */
 typedef struct
 {
     APP_MODE_DEF                eAppMode;                   ///< current application mode
@@ -43,6 +58,7 @@ typedef struct
     UCHAR                       ucMinTempZasobnik;          ///< (in celsius) [0..99]
     UCHAR                       ucMinTempKran;              ///< (in celsius) [0..99]
     signed char                 cSecondsPerDayAdj;          ///< (in seconds) [-128..127] daily adjustment for RTC clock
+    MODE_SETTINGS_DEF           astModes[3];                ///< description of programmed modes settings (currently 3 modes supported)
 } NVM_SET_DEF;
 
 

@@ -186,6 +186,11 @@ void APP_vReactivatePreviousApp(void)
     APP_vRouteEvent(APP_REACTIVATED);
 }
 
+/** Show popup message
+ * Popup is shown by activating @ref APP_POPUP
+ * @param pcMessage
+ * @param delayms
+ */
 void APP_vShowPopupMessage(const char *pcMessage, unsigned int delayms)
 {
     LCD_vClrScr();
@@ -194,6 +199,11 @@ void APP_vShowPopupMessage(const char *pcMessage, unsigned int delayms)
     EventTimerPostAfter (EVENT_TIMER_POPUP, APP_POPUP_SHOWN, delayms);
 }
 
+/** Show popup message from program memory
+ * Popup is shown by activating @ref APP_POPUP
+ * @param pcMessage
+ * @param delayms
+ */
 void APP_vShowPopupMessage_P(const char *pcMessage, unsigned int delayms)
 {
     LCD_vClrScr();
