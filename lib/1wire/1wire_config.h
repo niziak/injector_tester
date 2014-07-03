@@ -75,6 +75,7 @@ typedef struct PACKED
 #define TEMP_ERROR              (OW_TEMP_ERROR)
 
 
+#define OW_MAX_TEMP             99
 
 #if 1 // AVR
 

@@ -155,7 +155,7 @@ void OWDetectDevices(void)
   }
 }
 
-/*
+/**
  *  TM_Convert_temperature()
  *
  *  This function converts value from raw into an integer data format.
@@ -183,6 +183,8 @@ void OWDetectDevices(void)
  * TODO: make CUNIT tests:
  *
    TEMPERATURE (°C)      DIGITAL OUTPUT(BINARY)      DIGITAL OUTPUT(HEX)
+                          sign| integer |frac
+    +127.9                0000 0111 1111 1111           07FFh <-- wrong value but sometimes occurs
     +125                  0000 0111 1101 0000           07D0h
     +85*                  0000 0101 0101 0000           0550h
     +25.0625              0000 0001 1001 0001           0191h
@@ -362,6 +364,10 @@ void OW_vWorker()
     }
     TM_Convert_temperature(ucSensIdx, (UINT*)&OW_KNOWN_TEMP_SENSOR_TEMP_INT(ucSensIdx), (UINT*)&OW_KNOWN_TEMP_SENSOR_TEMP_FRAC(ucSensIdx));
     OW_KNOWN_TEMP_SENSOR_TEMP_INT(ucSensIdx) += (INT)OW_KNOWN_TEMP_SENSOR_TEMP_ADJ(ucSensIdx);
+    #ifdef OW_MAX_TEMP
+        if ( OW_KNOWN_TEMP_SENSOR_TEMP_INT(ucSensIdx) > OW_MAX_TEMP)
+            OW_KNOWN_TEMP_SENSOR_TEMP_INT(ucSensIdx) = OW_MAX_TEMP;
+    #endif
     //iTempInt*= -1; // TEMP add minus
     #if OW_DEBUG
       OW_PRINTF_P(PSTR(" #%d human temp=\"%d.%01d\" \n"), ucSensIdx, OW_KNOWN_TEMP_SENSOR_TEMP_INT(ucSensIdx), OW_KNOWN_TEMP_SENSOR_TEMP_FRAC(ucSensIdx)/1000); /* precision 0.1 degree centigrade */
