@@ -16,8 +16,8 @@
 typedef struct
 {
     UCHAR aucBuf[LCD_COLS*LCD_ROWS];
-    UCHAR ucCursorX;
-    UCHAR ucCursorY;
+    UCHAR ucCursorX;    // column from 0
+    UCHAR ucCursorY;    // row from 0
     UCHAR ucCursorType; // 0 - hidden, 1 - visible
 #if LCD_ROWS>2
     #error "Maximum LCD_ROWS=2 implemented"
@@ -109,6 +109,9 @@ void LCD_vHome(void)
     ptdLCDBuf->ucCursorY = 0;
 }
 
+/*
+ * Put cursor on position x,y (from 0)
+ */
 void LCD_vGotoXY(unsigned char x, unsigned char y)
 {
     LCD_DEBUG_P(PSTR("LCD_vGotoXY\n"))

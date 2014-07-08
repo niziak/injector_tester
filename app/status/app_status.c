@@ -127,6 +127,9 @@ static void vPrintOneWireSerial(UCHAR *pucROM)
     }
 }
 
+/**
+ * Main status screen
+ */
 void DISP_vPrintStatusScreen(void)
 {
     DEBUG_P(PSTR("DISP_vPrintStatusScreen\n"));
@@ -161,14 +164,15 @@ void DISP_vPrintStatusScreen(void)
             // manual mode is overriding automatic modes
             if (uiPumpSwitchOffAfter > 0)
             {
+                LCD_vGotoXY(10,1);
+                LCD_vPrintf_P(PSTR("M %4d"), uiPumpSwitchOffAfter);
+
                 DISP_START_BLINK_TIMER
                 if (bBlinkState==TRUE)
                 {
                     LCD_vGotoXY(15,1);
-                    LCD_vPutc(255);
+                    LCD_vPutc(255); // Put character '#'
                 }
-                LCD_vGotoXY(10,1);
-                LCD_vPrintf_P(PSTR("M %4d"), uiPumpSwitchOffAfter);
             }
             else
             {

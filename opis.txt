@@ -1,4 +1,5 @@
-﻿=== WYTYCZNE ===
+﻿
+=== WYTYCZNE ===
 Powinna byś możliwość zaprogramowania:
 
 1. Czujnik temperatury wody w zasobniku zakres (1 - 99°C) - jeżeli spadnie ponizej wartości zaprogramowanej np. 38°C nie będzie możliwości włączenia pompy obiegowej.
@@ -20,7 +21,6 @@ Wyświetlane wartości na LCD:
 
 1 Linia: Aktualna temperatura wody w zasobniku			Aktualna temperatura wody w rurze blisko kranu
 2 Linia: Tryb pracy: 24/h, Auto1, Auto2, Auto3, Manual (Test)	Informacja o pracy pompy (Pompa:ON, OFF)
-
 
 
 
@@ -52,7 +52,7 @@ Przyciski ze np: 4 sztuki do wykożystania 1 - menu 2..... 3..... 4..... + praca
 
 === Czujnik PIR ===
  - wykrycie obecności z czujnika PIR odbywa się przez zwarcie wejście Arduino D2 do masy (3 PIN od prawej w prawym górnym rogu plytki LCD Keypad Shield)
- - każde wykrycie obecności przez PIR w systemie jest zapamietane na 60 sekund (sygnalizowane literką P na wyswietlaczu)
+ - każde wykrycie obecności przez PIR w systemie jest zapamiętane na 60 sekund (sygnalizowane literką P na wyswietlaczu)
  - każde następne wykrycie, przedłuża ten czas o kolejne 60 sekund.
  - kazde wykrycie obecności wlacza podswietlenie ekranu
 
