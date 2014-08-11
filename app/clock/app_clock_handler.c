@@ -13,47 +13,11 @@
 #include <config.h>
 #include <app.h>
 #include <texts.h>
-
-#define CLOCK_DEBUG       1
-
-#if (CLOCK_DEBUG)
-  #define CLOCK_PRINTF(f,s...)     printf(f, ##s)
-  #define CLOCK_PRINTF_P(f,s...)   printf_P(f, ##s)
-  #define CLOCK_PRINTF_T_P(f,s...) printf_P(f, ##s)
-#else
-  #define CLOCK_PRINTF(x,s...)
-  #define CLOCK_PRINTF_P(x,s...)
-  #define CLOCK_PRINTF_T_P(x,s...)
-#endif
-/**
- * Position of currently edited digit
- */
-typedef enum
-{
-    AC_POS_FIRST   = 0,
-
-    AC_POS_HOUR    = 0,
-    AC_POS_MIN_10,
-    AC_POS_MIN_1,
-    AC_POS_SEC_10,
-    AC_POS_SEC_1,
-
-    AC_POS_LAST
-} APP_CLOCK_EDIT_POS_DEF;
+#include <tools.h>
 
 
-typedef struct
-{
-    unsigned char ucNewHour;        ///< tens part of hour
-    unsigned char ucNewMin10;       ///< tens part of minutes
-    unsigned char ucNewMin1;        ///< ones part of minutes
-    unsigned char ucNewSec10;       ///< tens part of seconds
-    unsigned char ucNewSec1;        ///< ones part of seconds
-    APP_CLOCK_EDIT_POS_DEF eCurrentEditPos;
-} APP_CLOCK_DEF;
 
-static APP_CLOCK_DEF    tdAppClock;
-#define ptdAppClock     (&(tdAppClock))
+APP_CLOCK_DEF    tdAppClock;
 
 
 static void APP_CLOCK_vInit(void)
@@ -73,79 +37,6 @@ static void APP_CLOCK_vInit(void)
 static void APP_CLOCK_vCleanup(void)
 {
     LCD_vCursorHide();
-}
-/**
- * Increment *pucValue (by adding iStep) and make wrap around within range ucMin and ucMax
- *
- * @param pucValue
- * @param iStep     TRUE - increment up
- * @param ucMin
- * @param ucMax
- */
-static void vIncrementWithRange (unsigned char *pucValue, int iStep, unsigned char ucMin, unsigned char ucMax)
-{
-    iStep += *pucValue;
-    CLOCK_PRINTF_P (PSTR("iStep=%d ucMax=%d ucMin=%d\n"), iStep, ucMax, ucMin);
-    if (iStep > ucMax)
-    {
-        CLOCK_PRINTF_P(PSTR("MAX\n"));
-        *pucValue = ucMin;
-    }
-    else
-    if (iStep < ucMin)
-    {
-        CLOCK_PRINTF_P(PSTR("MIN\n"));
-        *pucValue = ucMax;
-    }
-    else
-    {
-        CLOCK_PRINTF_P(PSTR("OK\n"));
-        *pucValue = iStep;
-        CLOCK_PRINTF_P(PSTR("result %d\n"), *pucValue);
-    }
-}
-
-
-void APP_CLOCK_vShow(void)
-{
-    CLOCK_PRINTF_P (PSTR("APP_CLOCK_vShow()\n"));
-    CLOCK_PRINTF_P (PSTR("edit pos=%d\n"), ptdAppClock->eCurrentEditPos);
-    LCD_vClrScr();
-
-    LCD_vPrintf_P (PSTR("Nowy czas:"));
-    LCD_vGotoXY(0,1);
-    //                   [ 2:23:45]
-    //                   0123456789
-    LCD_vPrintf_P (PSTR("[%2d:%d%d:%d%d]"),    ptdAppClock->ucNewHour,
-                                               ptdAppClock->ucNewMin10,  ptdAppClock->ucNewMin1,
-                                               ptdAppClock->ucNewSec10,  ptdAppClock->ucNewSec1 );
-
-    switch (ptdAppClock->eCurrentEditPos)
-    {
-        case AC_POS_HOUR:
-            LCD_vGotoXY(2,1);
-            break;
-
-        case AC_POS_MIN_10:
-            LCD_vGotoXY(4,1);
-            break;
-
-        case AC_POS_MIN_1:
-            LCD_vGotoXY(5,1);
-            break;
-
-        case AC_POS_SEC_10:
-            LCD_vGotoXY(7,1);
-            break;
-
-        case AC_POS_SEC_1:
-            LCD_vGotoXY(8,1);
-            break;
-
-        default:
-            break;
-    }
-
 }
 
 
