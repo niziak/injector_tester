@@ -139,8 +139,15 @@ SRC+=	app/menu/app_menu_def.c \
 		app/menu/app_menu_special.c
 
 SRC+=   app/status/app_status.c
-SRC+=   app/clock/app_clock.c
-SRC+=   app/list/app_list.c
+
+SRC+=   app/clock/app_clock_handler.c
+SRC+=   app/clock/app_clock_display.c
+
+SRC+=   app/list/app_list_handler.c
+SRC+=   app/list/app_list_display.c
+
+SRC+=   app/editor/app_edit_handler.c
+SRC+=   app/editor/app_edit_display.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)

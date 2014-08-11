@@ -38,7 +38,7 @@ typedef enum
 typedef struct
 {
     UCHAR   ucStartHour;
-    UCHAR   uctartMin;
+    UCHAR   ucStartMin;
     UCHAR   ucEndHour;
     UCHAR   ucEndMin;
 } DAYTIME_RANGE_DEF;

@@ -86,6 +86,7 @@
 
 OW_NEW_DEVICE_DEF			atdNewTempSensors  [NUM_OF_TEMP_SENSORS];
 TEMP_SENSOR_PARAMS_DEF		atdKnownTempSensors[NUM_OF_TEMP_SENSORS];
+INT                         aiPreviousTemp    [NUM_OF_TEMP_SENSORS];   ///< store integer part of previous value
 
 volatile unsigned long      ulSystemTickMS = 0;         ///< local time tick counter (increment every ms)
 volatile unsigned long      ulSystemTickS = 0;          ///< local time tick counter (increment every second)
@@ -172,13 +173,14 @@ void main(void)
 
     TIMER_vInit();
     sei(); //TODO
-
+    OW_vStartConversion();
 	do {
         wdt_reset();
 #if (INJECTOR_TESTER_MODE)
 				vPulseGenApplication();
 #endif
-
+		set_sleep_mode (SLEEP_MODE_IDLE); // wait for int
+		sleep_mode();
 		// EVENT HANDLING
 		if (TRUE == bIsEventWaiting())
 		{
@@ -196,6 +198,15 @@ void main(void)
 		        case SYS_1WIRE_READ:
 		            DEBUG_T_P(PSTR("1w read\n"));
 		            OW_vWorker();
+		            // detect temperature change
+		            for (UCHAR ucI=0; ucI<NUM_OF_TEMP_SENSORS; ucI++)
+		            {
+		                if (aiPreviousTemp[ucI] != atdKnownTempSensors[ucI].iTempInt)
+		                {
+		                    aiPreviousTemp[ucI] = atdKnownTempSensors[ucI].iTempInt;
+		                    ucUIInactiveCounter = UI_INACTIVE_TIMEOUT; // enable backlight
+		                }
+		            }
 		            break;
 
 		        case MENU_ACTION_LEFT:
@@ -278,7 +289,6 @@ void main(void)
         {
             PUMP_LED_HI
         }
-
 	} while (1); //do
 
 //	return 0;

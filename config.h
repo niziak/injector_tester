@@ -71,7 +71,7 @@
 #define ONEWIRE_ZASO_IDX        0
 #define ONEWIRE_KRAN_IDX        1
 
-#define ONEWIRE_MEASURE_INTERVAL_MS         10000
+#define ONEWIRE_MEASURE_INTERVAL_MS         20000
 #define ONEWIRE_MEASURE_WAIT_MS             2000
 
 #define UI_INACTIVE_TIMEOUT                 20          ///< (in seconds) go to idle mode when no keypressed (also lcd backlight time)

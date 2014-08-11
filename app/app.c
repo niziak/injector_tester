@@ -28,7 +28,7 @@ void APP_vInit(void)
 }
 
 /**
- * Redraw display of active application
+ * @brief Redraw display of active application
  */
 void APP_vUpdateDisplay(void)
 {
@@ -56,6 +56,11 @@ void APP_vUpdateDisplay(void)
         case APP_LIST:
             APP_LIST_vShowDisplay();
             break;
+
+        case APP_EDIT:
+//            APP_EDIT_vShowDisplay();
+            break;
+
 
         case APP_CLOCK:
             APP_CLOCK_vShow();
@@ -101,6 +106,10 @@ void APP_vRouteEvent(EVENT_DEF eEvent)
 
         case APP_LIST:
             APP_LIST_vHandleEvent(eEvent);
+            break;
+
+        case APP_EDIT:
+//            APP_EDIT_vHandleEvent(eEvent);
             break;
 
         case APP_POPUP:

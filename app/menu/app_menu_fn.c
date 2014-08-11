@@ -13,6 +13,7 @@
 #include <app.h>
 #include <1wire.h>
 #include <texts.h>
+#include <app_list.h>
 
 /**
  * Perform action on selected menu item
@@ -26,6 +27,9 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
         case MENU_FN_SETTINGS_AUTO_2:
         case MENU_FN_SETTINGS_AUTO_3:
         case MENU_FN_SETTINGS_AUTO_4:
+            ptdAppList->ucLines = 5;
+            ptdAppList->eEditedAppMode = APP_MODE_AUTO_2 /* ZERO */ + ( eFunctionId - MENU_FN_SETTINGS_AUTO_2 );
+            ptdAppList->ucCurrentLine = 0;
             APP_vActivateApp(APP_LIST);
             break;
 

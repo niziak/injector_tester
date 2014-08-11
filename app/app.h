@@ -25,6 +25,7 @@ typedef enum
     APP_CLOCK,
     APP_POPUP,
     APP_LIST,
+    APP_EDIT,
 } APP_ID_DEF;
 
 extern void APP_vInit(void);
