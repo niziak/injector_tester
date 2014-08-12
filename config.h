@@ -21,7 +21,7 @@
 
 #define PUMP_LED_PORT     PORTC
 #define PUMP_LED_DDR      DDRC
-#define PUMP_LED_PIN      PINB2
+#define PUMP_LED_PIN      PINC2
 
 #define PUMP_LED_ALTER        {   PUMP_LED_PORT ^=  _BV(PUMP_LED_PIN); }
 #define PUMP_LED_LO           {   PUMP_LED_PORT &=~ _BV(PUMP_LED_PIN); }
