@@ -1,38 +1,24 @@
 /*
- * main.h
+ * globals.h
  *
- *  Created on: Oct 8, 2013
+ *  Created on: 12 sie 2014
  *      Author: nizinski_w
  */
 
-#ifndef MAIN_H_
-#define MAIN_H_
-
-extern volatile unsigned long       ulSystemTickMS;
-extern volatile unsigned long       ulSystemTickS;
-extern volatile BOOL                bBlinkState;
-extern volatile UCHAR               ucUIInactiveCounter;
-extern volatile unsigned int        uiPumpSwitchOffAfter;
-extern volatile BOOL                bRefreshDisplay;
-extern volatile BOOL                bNeedsBlinking;
-extern volatile unsigned int        uiPIRTTL;
-extern volatile BOOL                bPumpIsRunning;
-
-
-
-#define DISP_REFRESH                { bRefreshDisplay = TRUE;  }
-#define DISP_START_BLINK_TIMER      { bNeedsBlinking  = TRUE;  }
-#define DISP_STOP_BLINK_TIMER       { bNeedsBlinking  = FALSE; }
+#ifndef GLOBALS_H_
+#define GLOBALS_H_
 
 typedef enum
 {
-    APP_MODE_24H = 0,
-    APP_MODE_AUTO_1,
-    APP_MODE_AUTO_2,
-    APP_MODE_AUTO_3,
-    APP_MODE_AUTO_4,
+    APP_MODE_24H = 0,   ///< pump is running 24h (when minimum temperature is reached)
+    APP_MODE_AUTO_1,    ///< pump is running only when PIR event
+    APP_MODE_AUTO_2,    ///< user defined mode 2
+    APP_MODE_AUTO_3,    ///< user defined mode 3
+    APP_MODE_AUTO_4,    ///< user defined mode 4
 
 } APP_MODE_DEF;
+
+
 
 /** Structure typedef to represent one time range between HH:MM-HH:MM */
 typedef struct
@@ -43,10 +29,11 @@ typedef struct
     UCHAR   ucEndMin;
 } DAYTIME_RANGE_DEF;
 
+
 /** Structure to represent one mode settings (currently only time ranges) */
 typedef struct
 {
-    DAYTIME_RANGE_DEF   astRange[5];
+    DAYTIME_RANGE_DEF   astRange[TIMERANGES_PER_USER_MODE];
 } MODE_SETTINGS_DEF;
 
 /** Structure to keep whole system settings */
@@ -65,4 +52,24 @@ typedef struct
 extern NVM_SET_DEF                  stSettings;
 #define pstSettings (&(stSettings))
 
-#endif /* MAIN_H_ */
+#include <lib/1wire/1wire.h>
+
+extern INT                          aiPreviousTemp     [NUM_OF_TEMP_SENSORS];
+
+extern volatile unsigned long       ulSystemTickMS;
+extern volatile unsigned long       ulSystemTickS;
+extern volatile BOOL                bBlinkState;
+extern volatile UCHAR               ucUIInactiveCounter;
+extern volatile unsigned int        uiPumpSwitchOffAfter;
+extern volatile BOOL                bRefreshDisplay;
+extern volatile BOOL                bNeedsBlinking;
+extern volatile unsigned int        uiPIRTTL;
+extern volatile BOOL                bPumpIsRunning;
+
+#define DISP_REFRESH                { bRefreshDisplay = TRUE;  }
+#define DISP_START_BLINK_TIMER      { bNeedsBlinking  = TRUE;  }
+#define DISP_STOP_BLINK_TIMER       { bNeedsBlinking  = FALSE; }
+
+#define ABS_DIFF(x,y)               ((x)>(y) ? (x) - (y) : (y) - (x))
+
+#endif /* GLOBALS_H_ */

@@ -12,6 +12,7 @@
 #include <hal_lcd.h>
 #include <app.h>
 #include <tools.h>
+#include <nvm.h>
 
 APP_LIST_DEF    tdAppList;
 
@@ -19,7 +20,7 @@ static void APP_LIST_vInit(void)
 {
     ptdAppList->ucCurrentLine = 0;
     ptdAppList->bEditable     = FALSE;
-    ptdAppList->stMode        = pstSettings->astModes[(ptdAppList->eEditedAppMode)];
+    ptdAppList->stMode        = pstSettings->astModes[(ptdAppList->eEditedAppMode)-APP_MODE_AUTO_2];
     //LCD_vCursorShow();
 }
 
@@ -32,6 +33,7 @@ static void vHandleEventNormalMode(EVENT_DEF eEvent)
             break;
 
         case MENU_ACTION_RIGHT:
+        case MENU_ACTION_SELECT:
            ptdAppList->bEditable = TRUE;
            break;
 
@@ -63,6 +65,15 @@ static void vHandleEventEditMode(EVENT_DEF eEvent)
     {
         default:
             break;
+
+        case MENU_ACTION_SELECT:
+            pstSettings->astModes[(ptdAppList->eEditedAppMode)-APP_MODE_AUTO_2] = ptdAppList->stMode; // copy locally modified time range into NVM settings
+            NVM_vSaveSettings();
+            ptdAppList->bEditable = FALSE;
+            ptdAppList->eCurrentEditPos = AL_POS_FIRST;
+            //APP_vShowPopupMessage_P(PSTR("Zapamietane"), UI_POS_POPUP_TIME);
+            break;
+
         case MENU_ACTION_RIGHT:
             ptdAppList->eCurrentEditPos++;
             if (ptdAppList->eCurrentEditPos == AL_POS_LAST)
@@ -160,15 +171,6 @@ void APP_LIST_vHandleEvent(EVENT_DEF eEvent)
             break;
 
         case MENU_ACTION_SELECT:
-            if (ptdAppList->bEditable)
-            {
-                pstSettings->astModes[(ptdAppList->eEditedAppMode)] = ptdAppList->stMode; // copy locally modified time range into NVM settings
-                NVM_vSaveSettings();
-                ptdAppList->bEditable = FALSE;
-                APP_vShowPopupMessage_P(PSTR("Zapamietane"), UI_POS_POPUP_TIME);
-            }
-            break;
-
         case MENU_ACTION_RIGHT:
         case MENU_ACTION_LEFT:
         case MENU_ACTION_DOWN:

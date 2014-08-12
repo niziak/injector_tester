@@ -104,7 +104,9 @@ SRC = 	$(TARGET).c \
 		rtc.c \
 		tools.c \
 		usart0.c \
-		texts.c
+		texts.c \
+		logic.c \
+		globals.c 
 		
 SRC+=	lib/key/key_adc.c \
 		lib/key/key_buttons.c \

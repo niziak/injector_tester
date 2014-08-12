@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include <config.h>
+#include <globals.h>
 #include <lib/hal_lcd.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>

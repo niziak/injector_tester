@@ -62,7 +62,7 @@ typedef struct PACKED
 {
   UCHAR aucROM[OW_ADDRESS_LEN];           ///< unique 1W sensor address
   INT   iTempInt ALIGN2;                  ///< current sensor temperature (integer part)
-  INT   iTempFrac ALIGN2;                 ///< current sensor temperature (fractional part)
+  INT   iTempFrac ALIGN2;                 ///< current sensor temperature (fractional part) (i.e 8125 means 0.8125)
   CHAR  cTempAdj;                         ///< temp adjustment for sensor
   UCHAR ucStatus;                         ///< 1 if sensor was found in last scan
 #if (OW_WITH_SENSOR_NAMES)

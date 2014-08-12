@@ -9,8 +9,6 @@
 #define CONFIG_H_
 
 #include <types.h>
-#include <main.h>
-#include <log.h>
 #include <util/delay.h>
 
 #define PIR_PORT          PORTD
@@ -71,7 +69,7 @@
 #define ONEWIRE_ZASO_IDX        0
 #define ONEWIRE_KRAN_IDX        1
 
-#define ONEWIRE_MEASURE_INTERVAL_MS         20000
+#define ONEWIRE_MEASURE_INTERVAL_MS         10000
 #define ONEWIRE_MEASURE_WAIT_MS             2000
 
 #define UI_INACTIVE_TIMEOUT                 20          ///< (in seconds) go to idle mode when no keypressed (also lcd backlight time)
@@ -88,6 +86,13 @@
 
 #define AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN       FALSE
 
-#define LCD_CHAR_CELSIUS               ((unsigned char)223)
+#define LCD_CHAR_CELSIUS                    ((unsigned char)223)
+
+#define TIMERANGES_PER_USER_MODE            5           ///< how many time ranges can be defined per user mode
+
+
+#include <globals.h>
+#include <log.h>
+
 
 #endif /* CONFIG_H_ */

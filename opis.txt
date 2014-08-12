@@ -1,10 +1,12 @@
 ﻿
 === WYTYCZNE ===
 Powinna byś możliwość zaprogramowania:
+1. Czujnik temperatury wody w zasobniku zakres (1 - 99°C) 
+	- jeżeli spadnie ponizej wartości zaprogramowanej np. 38°C nie będzie możliwości włączenia pompy obiegowej.
 
-1. Czujnik temperatury wody w zasobniku zakres (1 - 99°C) - jeżeli spadnie ponizej wartości zaprogramowanej np. 38°C nie będzie możliwości włączenia pompy obiegowej.
-
-2. Czujnik temperatury wody w rurze blisko karanu zakres (1 - 99°C) - jeżeli spadnie poniżej wartości zaprogramowanej np. 30°C włącza się pompa obiegowa i pracuje do czasu aż (no własnie do kiedy ? Jest zwłoka w nagrzewaniu. Może koniec pracy kiedy osiągnie temperaturę np. 2°C niższą niż temperatura wody w zasobniku ?)
+2. Czujnik temperatury wody w rurze blisko karanu zakres (1 - 99°C) 
+	- jeżeli spadnie poniżej wartości zaprogramowanej np. 30°C włącza się pompa obiegowa i pracuje do czasu aż 
+	(no własnie do kiedy ? Jest zwłoka w nagrzewaniu. Może koniec pracy kiedy osiągnie temperaturę np. 2°C niższą niż temperatura wody w zasobniku ?)
 
 3. Praca pompy w trybie manual (Test) (1 - 10 minut) - włączana przyciskiem z panela sterownika
 
@@ -23,11 +25,13 @@ Wyświetlane wartości na LCD:
 2 Linia: Tryb pracy: 24/h, Auto1, Auto2, Auto3, Manual (Test)	Informacja o pracy pompy (Pompa:ON, OFF)
 
 
-
 Sterowanie 1 przekaźnikiem, 2 wejścia niezależne pod termometry żeby nie bawić się z numerami DS18B20.
 1 wejście np: do wykrycia obecności w domu (jeżeli stan niski) to znaczy że ktoś jest i pompa ma pracować
 
 Przyciski ze np: 4 sztuki do wykożystania 1 - menu 2..... 3..... 4..... + praca Manual (Test)
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 === DO WYJAŚNIENIA  ===
  Ad 1: Minimalna temperatura wody w zasobniku jest wartością świętą i nie da się włączyć pompy gdy jest za niska (chyba, ze tryb manual np na 10 minut)
@@ -35,12 +39,8 @@ Przyciski ze np: 4 sztuki do wykożystania 1 - menu 2..... 3..... 4..... + praca
  Ad 4c: 
 
  dorobić:
-  edytor min temp wody w kranie
-  edytor min temp wody w zasobniku
   ustawianie czasu manual
   ustawiania czasu działania pompy po wykryciu czujnikiem PIR
-  edytor 5 przedzialow czasowych
-  edytor korekcji zegara
   
 
 === OPIS OGOLNY ===  
@@ -49,13 +49,22 @@ Przyciski ze np: 4 sztuki do wykożystania 1 - menu 2..... 3..... 4..... + praca
  - na porcie szeregowym 115200 8N1 jest konsola, można z niej wyczytać mniej więcej jak wygląda ekranik. 
    Można też udawac sprzetowa klawiature z klawiatury PCta (strzalki + enter). Dodatkowo klawisz spacji zawiesza urządzenie,
    aby można było w spokoju analizować log z konsolii.
+ - gdy temperatura ktoregos z czujnikow zmieni sie o więcej niż 1 stopień, zapala się podświetlenie
 
 === Czujnik PIR ===
  - wykrycie obecności z czujnika PIR odbywa się przez zwarcie wejście Arduino D2 do masy (3 PIN od prawej w prawym górnym rogu plytki LCD Keypad Shield)
  - każde wykrycie obecności przez PIR w systemie jest zapamiętane na 60 sekund (sygnalizowane literką P na wyswietlaczu)
  - każde następne wykrycie, przedłuża ten czas o kolejne 60 sekund.
- - kazde wykrycie obecności wlacza podswietlenie ekranu
+ - każde wykrycie obecności włącza podświetlenie ekranu
 
+=== Tryby pracy ===
+ - Tryb ręczny - 10 minut. Pompa pracuje bezwarunkowo przez 10 minut.
+ - 5 trybów automatycznych. Pompa jeśli temperatura wody jest wyższa niż minimalna ustalona oraz:
+    - Tryb 1: 24H - pompa pracuje zawsze
+	- Tryb 2: PIR - pompa pracuje tak długo jak zdarzenie z PIR-a (patrz opis "Czujnik PIR")
+	- Tryb 3: - 5 przedziałów czasowych użytkownika (przedział 00:00 - 00:00 traktowany jest jako niezdefiniowany)
+	- Tryb 4: - 5 przedziałów czasowych użytkownika
+	- Tryb 5: - 5 przedziałów czasowych użytkownika
 
 === Pierwsze wlaczenie ===
  - podlaczyc dwa termometry 1 wire
@@ -110,6 +119,18 @@ Aplikacja Menu:
 Aplikacja Menu -> 10 minut
 	wlacza pompe na 10 minut lub wylacza jeśli czas 10 minut jeszcze nie upłynął
 
+
+Aplikacja Menu -> Ustawienia -> Auto 2,3,4
+	Pokaże się lista zakresów czasów zdefiniowanych przez użytkownika
+		+----------------+
+		|Auto2 Zakres: 1 |
+		|02:01 - 05:10   |
+		+----------------+
+	Przycikami góra/dół można przewijać pomiędzy kolejnymi zakresami czasu
+	W lewo wychodzi się. 
+	Select - edycja zakresu czasu. Podczas edycji góra/dól zmienia wartość liczby, lewo/prawo przemieszcza kursor między liczbami.
+	Kolejne nacisniecie select konczy edycje.
+	
 
 Aplikacja Menu -> Ustawienia -> 1 Wire
  - -> Pokaz	- pokazuje aktualne numery sensorow 1wire

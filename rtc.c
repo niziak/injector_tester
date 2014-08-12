@@ -81,7 +81,7 @@
 
 #define DS1307_RAM_END              0x3F    ///< last avail user RAM addres
 
-#define RTC_DEBUG       1
+#define RTC_DEBUG       0
 
 #if (RTC_DEBUG)
   #define RTC_PRINTF(f,s...)     printf(f, ##s)

@@ -166,17 +166,9 @@ void DISP_vPrintStatusScreen(void)
             {
                 LCD_vGotoXY(10,1);
                 LCD_vPrintf_P(PSTR("M %4d"), uiPumpSwitchOffAfter);
-
-                DISP_START_BLINK_TIMER
-                if (bBlinkState==TRUE)
-                {
-                    LCD_vGotoXY(15,1);
-                    LCD_vPutc(255); // Put character '#'
-                }
             }
             else
             {
-                DISP_STOP_BLINK_TIMER
                 switch (pstSettings->eAppMode)
                 {
                     default:
@@ -193,6 +185,21 @@ void DISP_vPrintStatusScreen(void)
                         LCD_vPrintf_P(PSTR("Auto%d"), (pstSettings->eAppMode)-APP_MODE_AUTO_1+1);
                         break;
                 }
+            }
+
+            // print blinking rectangle if pump is running
+            if (bPumpIsRunning)
+            {
+                DISP_START_BLINK_TIMER
+                if (bBlinkState==TRUE)
+                {
+                    LCD_vGotoXY(15,1);
+                    LCD_vPutc(255); // Put character '#'
+                }
+            }
+            else
+            {
+                DISP_STOP_BLINK_TIMER
             }
             return;
             break;
@@ -218,13 +225,13 @@ void DISP_vPrintStatusScreen(void)
         case STATUS_SCREEN_TEMP:
             LCD_vPuts_P(PSTR("Z: "));
             vPrintTemp(ONEWIRE_ZASO_IDX);
-            LCD_vPrintf_P(PSTR(" [%d]"), pstSettings->ucMinTempZasobnik);
+            LCD_vPrintf_P(PSTR(" min %d"), pstSettings->ucMinTempZasobnik);
 
             LCD_vGotoXY(0,1);
 
             LCD_vPuts_P(PSTR("K: "));
             vPrintTemp(ONEWIRE_KRAN_IDX);
-            LCD_vPrintf_P(PSTR(" [%d]"), pstSettings->ucMinTempKran);
+            LCD_vPrintf_P(PSTR(" min %d"), pstSettings->ucMinTempKran);
             break;
     }
     //int_delay_ms(500);

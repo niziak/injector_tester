@@ -26,7 +26,7 @@ void APP_LIST_vShowDisplay(void)
     //     print currently edited mode
     LCD_vPrintf_P (PSTR("Auto%d"), (ptdAppList->eEditedAppMode)-APP_MODE_AUTO_1+1);
     //     print and entry number
-    LCD_vPrintf_P (PSTR(" Linia: %d"), ptdAppList->ucCurrentLine + 1);
+    LCD_vPrintf_P (PSTR(" zakres: %d"), ptdAppList->ucCurrentLine + 1);
 
     // 2nd line:        0123456789012345
     //                  00:00 - 00:00
