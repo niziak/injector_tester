@@ -143,9 +143,10 @@ void LOG_Reset_P (const char * message)
 void LOG_vMemDump(void *ptr, UCHAR size)
 {
     UCHAR ucCol=0;
+    UCHAR *pucMem = (UCHAR*) ptr;
     while (size--)
     {
-        LOG_Log_P(PSTR("%02X "), *((unsigned char*)ptr++) );
+        LOG_Log_P(PSTR("%02X "), *pucMem++);
         ucCol++;
         if (ucCol > 7)
         {

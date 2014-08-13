@@ -27,6 +27,9 @@ typedef enum
     MID_CLOCK_ADJ,
     MID_MIN_TZ,
     MID_MIN_TK,
+    MID_MAX_TK,
+    MID_MANUAL_ADJ,
+    MID_PIR_ADJ,
 } MENU_ITEM_ID_DEF;
 
 typedef enum
@@ -48,7 +51,6 @@ typedef enum
 	MENU_FN_REBOOT,
 	MENU_FN_10MIN,
 	MENU_FN_SET_CLOCK,
-	MENU_FN_SET_CLOCK_ADJ,
 
 	MENU_FN_1W_SHOW,
 	MENU_FN_1W_DETECT,
@@ -93,7 +95,7 @@ typedef struct
 #define MENU_ITEM_ID_NOT_FOUND  0xFF
 
 
-#define NUMBER_OF_MENU_ITEMS		24
+#define NUMBER_OF_MENU_ITEMS		30
 extern const MENU_ITEM_DEF				atdMenuItems[NUMBER_OF_MENU_ITEMS];
 //#define NUMBER_OF_MENU_ITEMS		(sizeof(atdMenuItems)/sizeof(atdMenuItems[0]))
 

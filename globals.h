@@ -44,7 +44,9 @@ typedef struct
     UINT                        uiPumpPIRTime;              ///< (in seconds) pump running time activated from PIR sensor
     UCHAR                       ucMinTempZasobnik;          ///< (in celsius) [0..99]
     UCHAR                       ucMinTempKran;              ///< (in celsius) [0..99]
+    UCHAR                       ucMaxTempKran;              ///< (in celsius) [0..99]
     signed char                 cSecondsPerDayAdj;          ///< (in seconds) [-128..127] daily adjustment for RTC clock
+    UCHAR                       aucSpare[16];
     MODE_SETTINGS_DEF           astModes[3];                ///< description of programmed modes settings (currently 3 modes supported)
 } NVM_SET_DEF;
 

@@ -37,30 +37,40 @@ Przyciski ze np: 4 sztuki do wykożystania 1 - menu 2..... 3..... 4..... + praca
  Ad 1: Minimalna temperatura wody w zasobniku jest wartością świętą i nie da się włączyć pompy gdy jest za niska (chyba, ze tryb manual np na 10 minut)
  Ad 2: Za niska temp w kranie, włączy pompę ale tylko w trybie 24h ?
  Ad 4c: 
-
- dorobić:
-  ustawianie czasu manual
-  ustawiania czasu działania pompy po wykryciu czujnikiem PIR
-  
+ 
 
 === OPIS OGOLNY ===  
- - jesli przez 20 sekund jest brak nacisniec na klawiaturke, aplikacja gasi podswietlenie i pokazuje pierwszy ekran statusu
- - gdy podswietlenie ekranu jest wylaczone, jakiekolwiek nacisniecie klawisza wlącza tylko podswietlenie
+ - jeśli przez 20 sekund jest brak nacisniec na klawiaturke, aplikacja gasi podswietlenie i pokazuje pierwszy ekran statusu
+ - gdy podświetlenie ekranu jest wylaczone, jakiekolwiek nacisniecie klawisza wlącza tylko podswietlenie
  - na porcie szeregowym 115200 8N1 jest konsola, można z niej wyczytać mniej więcej jak wygląda ekranik. 
-   Można też udawac sprzetowa klawiature z klawiatury PCta (strzalki + enter). Dodatkowo klawisz spacji zawiesza urządzenie,
-   aby można było w spokoju analizować log z konsolii.
- - gdy temperatura ktoregos z czujnikow zmieni sie o więcej niż 1 stopień, zapala się podświetlenie
+   Można też udawać sprzętową klawiaturę z klawiatury PCta (strzałki + enter). Dodatkowo klawisz spacji zawiesza urządzenie,
+   aby można było w spokoju analizować log z konsoli.
+ - gdy temperatura któregoś z czujnikow zmieni sie o więcej niż 1 stopień, zapala się podświetlenie
+ - czujniki są odpytywane co 5 sekund (3 sekundy przerwy + 2 sekundy czekania na wynik pomiaru). Odpytywanie częstsze niż 10 sekund powoduje samopodgrznie czujników.
 
 === Czujnik PIR ===
  - wykrycie obecności z czujnika PIR odbywa się przez zwarcie wejście Arduino D2 do masy (3 PIN od prawej w prawym górnym rogu plytki LCD Keypad Shield)
- - każde wykrycie obecności przez PIR w systemie jest zapamiętane na 60 sekund (sygnalizowane literką P na wyswietlaczu)
- - każde następne wykrycie, przedłuża ten czas o kolejne 60 sekund.
+ - każde wykrycie obecności przez PIR w systemie jest zapamiętane na 60 sekund (sygnalizowane literką P na wyświetlaczu)
+ - wartość domyślna 60 sekund jest edytowalna w MENU->Ustawienia->Czas z PIR
  - każde wykrycie obecności włącza podświetlenie ekranu
 
-=== Tryby pracy ===
- - Tryb ręczny - 10 minut. Pompa pracuje bezwarunkowo przez 10 minut.
- - 5 trybów automatycznych. Pompa jeśli temperatura wody jest wyższa niż minimalna ustalona oraz:
-    - Tryb 1: 24H - pompa pracuje zawsze
+ 
+=== Minimalne i maksymalne temperatury ===
+ Można zdefiniować minimalną temperaturę zasobnika. 
+	Poniżej tej temperatury praca pompy nie ma sensu, więc pompa się nie włączy w żadnym trybie z wyjątkiem ręcznego włączenia na 10 minut.
+ Można zdefiniować minimalna oraz maksymalną temperaturę wody w kranie. Ustalają one histerezę zadziałania pompy gdy temp wody spanie poniżej zadanej.
+    Np. min=30'C max=35'C
+	Jeśli temperatura w kranie spadnie poniżej 30 stopni, włączy się pompa obiegowa. Pompa wyłączy się gdy temperatura osiągnie 35 stopni.
+	Gdy temperatura zacznie spadać poniżej 35 stopni, pompa się nie włączy od razu. Włączy się dopiero gdy spadnie znowu poniżej 30 stopni.
+  
+    UWAGA: pompa nie zostanie włączona także gdy temperatura wody w kranie jest taka sama albo wyższa niż w zasobniku. Nie ma sensu pompować wody, która nigdy nie osiągnie zadanej temperatury.
+	
+ 
+ 
+=== Tryby pracy === 
+ - Tryb ręczny - 10 minut. Pompa pracuje bezwarunkowo (niezależnie od zakresu temperatur) przez 10 minut.
+ - 5 trybów automatycznych (praca pompy zależy także od zdefiniowanych min/max temperatur)
+ - Tryb 1: 24H - pompa pracuje zawsze
 	- Tryb 2: PIR - pompa pracuje tak długo jak zdarzenie z PIR-a (patrz opis "Czujnik PIR")
 	- Tryb 3: - 5 przedziałów czasowych użytkownika (przedział 00:00 - 00:00 traktowany jest jako niezdefiniowany)
 	- Tryb 4: - 5 przedziałów czasowych użytkownika

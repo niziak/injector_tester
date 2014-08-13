@@ -518,7 +518,7 @@ release:
 	$(COPY) tools_win32/avrdude.conf release
 	$(COPY) tools_win32/putty.exe release
 	$(COPY) tools_win32/libusb0.dll release
-	$(COPY) .git/refs/heads/	master release
+	$(COPY) .git/refs/heads/master release
 	$(POSIX_UTILS_DIR_PREFIX)tar -cvzf release.tgz release
 
 elf: $(OUTDIR)/$(TARGET).elf

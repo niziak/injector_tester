@@ -105,7 +105,7 @@ static void vPrintTemp (UCHAR ucOneWireIdx)
     if (TEMP_ERROR == atdKnownTempSensors[ucOneWireIdx].iTempInt)
     {
         //           23.3'
-        LCD_vPuts_P(PSTR("error"));
+        LCD_vPuts_P(PSTR("err"));
     }
     else
     {
@@ -225,13 +225,13 @@ void DISP_vPrintStatusScreen(void)
         case STATUS_SCREEN_TEMP:
             LCD_vPuts_P(PSTR("Z: "));
             vPrintTemp(ONEWIRE_ZASO_IDX);
-            LCD_vPrintf_P(PSTR(" min %d"), pstSettings->ucMinTempZasobnik);
+            LCD_vPrintf_P(PSTR(" (%d)"), pstSettings->ucMinTempZasobnik);
 
             LCD_vGotoXY(0,1);
 
             LCD_vPuts_P(PSTR("K: "));
             vPrintTemp(ONEWIRE_KRAN_IDX);
-            LCD_vPrintf_P(PSTR(" min %d"), pstSettings->ucMinTempKran);
+            LCD_vPrintf_P(PSTR(" (%02d-%02d)"), pstSettings->ucMinTempKran, pstSettings->ucMaxTempKran);
             break;
     }
     //int_delay_ms(500);

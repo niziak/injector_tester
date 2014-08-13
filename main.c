@@ -111,6 +111,8 @@ void main(void)
     LCD_BL_SETUP
     LCD_BL_HI   // turn on LCD backlight at start
 
+    PUMP_LED_SETUP
+
     PIR_SETUP
     PCMSK2 |= _BV(PCINT18); // enable PCINT18
     PCICR  |= _BV(PCIE2);   // Pin Change Interrupt Enable 2
@@ -174,7 +176,7 @@ void main(void)
 		        case SYS_1WIRE_CONVERT:
 		            DEBUG_T_P(PSTR("1w convert\n"));
 		            OW_vStartConversion();
-		            EventTimerPostAfter(EVENT_TIMER_1WIRE, SYS_1WIRE_READ, ONEWIRE_MEASURE_WAIT_MS);
+		            EventTimerPostAfter(EVENT_TIMER_1WIRE, SYS_1WIRE_READ, ONEWIRE_MEASURE_WAIT_MS); // schedule reading after 2 seconds
 		            break;
 
 		        case SYS_1WIRE_READ:
@@ -190,6 +192,7 @@ void main(void)
 		                    ucUIInactiveCounter = UI_INACTIVE_TIMEOUT; // enable backlight
 		                }
 		            }
+		            EventTimerPostAfter(EVENT_TIMER_1WIRE, SYS_1WIRE_CONVERT, ONEWIRE_MEASURE_INTERVAL_MS); // schedule next measuer after eading after 3 seconds
 		            break;
 
 		        case MENU_ACTION_LEFT:

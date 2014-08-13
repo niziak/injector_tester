@@ -13,7 +13,7 @@
 
 #define NVM_MAGIC_LEN       5
 #define NVM_MAGIC_BYTE      0xA5
-#define NVM_VERSION         1
+#define NVM_VERSION         2
 
 static EEMEM unsigned char                  NVM_aucMagic[NVM_MAGIC_LEN];
 static EEMEM unsigned int                   NVM_uiVersion;
@@ -54,6 +54,7 @@ void NVM_vLoadSettings(void)
 
     pstSettings->ucMinTempZasobnik  = DEFAULT_ZASO_MIN_TEMP;
     pstSettings->ucMinTempKran      = DEFAULT_KRAN_MIN_TEMP;
+    pstSettings->ucMaxTempKran      = DEFAULT_KRAN_MAX_TEMP;
     pstSettings->uiPumpManualTime   = DEFAULT_PUMP_MANUAL_TTL;
     pstSettings->uiPumpPIRTime      = DEFAULT_PIR_PRESENCE_TTL;
     pstSettings->cSecondsPerDayAdj  = DEFAULT_SEC_PER_DAY_ADJ;

@@ -20,6 +20,12 @@
   #define LOGIC_PRINTF_T_P(x,s...)
 #endif
 
+typedef enum
+{
+    HS_UNDEF=0,     ///< after power up, histeresis state is unknown
+    HS_ON,          ///< we reach lower border, switch on
+    HS_OFF,         ///< we reach upper border, switch off
+} H_STATE;
 /**
  * @brief Check modes, time ranges and minimum allowed temperature and return desired pump state
  * @return TRUE if pump has to be enabled
@@ -27,6 +33,7 @@
 BOOL bCalculatePumpState(void)
 {
     MODE_SETTINGS_DEF *pstCurrMode;
+    static H_STATE hState = HS_UNDEF; ///< current histeresis state
 
     LOGIC_PRINTF_P(PSTR("\n\nbCalculatePumpState()\n"));
     /// - check minimum temperature of @ref ONEWIRE_ZASO_IDX
@@ -36,11 +43,53 @@ BOOL bCalculatePumpState(void)
         return FALSE;
     }
 
-    /// - check minimum temperature of @ref ONEWIRE_KRAN_IDX
-    if (atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt < pstSettings->ucMinTempKran)
+    /// - check if there is sense to pump water if it never reach desired temperature
+    if (atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempInt <= atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt)
     {
-        LOGIC_PRINTF_P(PSTR("Temp kranu %d mniejsza niz %d! \n"), atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt, pstSettings->ucMinTempKran);
+        LOGIC_PRINTF_P(PSTR("Temp zasobnika %d mniejsza/rowna kranu %d! \n"), atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempInt, atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt);
         return FALSE;
+    }
+
+
+    /// - histeresis loop using min/max temperature of @ref ONEWIRE_KRAN_IDX
+    switch (hState)
+    {
+        case HS_UNDEF:
+            LOGIC_PRINTF_P(PSTR("\tHist undef, kran %d - max temp kran %d "), atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt, pstSettings->ucMaxTempKran);
+            if (atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt > pstSettings->ucMaxTempKran)
+            {
+                LOGIC_PRINTF_P(PSTR("OFF\n"));
+                hState = HS_OFF;
+            }
+            else
+            {
+                LOGIC_PRINTF_P(PSTR("ON\n"));
+                hState = HS_ON;
+            }
+            return FALSE;
+            break;
+
+        case HS_ON:
+            LOGIC_PRINTF_P(PSTR("\tHist ON, kran %d - az do max temp kran %d\n"), atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt, pstSettings->ucMaxTempKran);
+            if (atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt >= pstSettings->ucMaxTempKran)
+            {
+                LOGIC_PRINTF_P(PSTR("\tHist ON-->OFF\n"));
+                hState = HS_OFF;
+                return FALSE;
+            }
+            break;
+
+        case HS_OFF:
+            LOGIC_PRINTF_P(PSTR("\tHist OFF, kran %d - az do min temp kran %d "), atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt, pstSettings->ucMinTempKran);
+            if (atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt < pstSettings->ucMinTempKran)
+            {
+                LOGIC_PRINTF_P(PSTR("\tHist OFF-->ON\n"));
+                hState = HS_ON;
+            }
+            LOGIC_PRINTF_P(PSTR("\n"));
+            return FALSE;
+            break;
+
     }
 
     /// - check current pump mode
@@ -54,7 +103,7 @@ BOOL bCalculatePumpState(void)
         case APP_MODE_AUTO_1:    ///< pump is running only when PIR event
             if (uiPIRTTL>0)
             {
-                LOGIC_PRINTF_P(PSTR("PIR aktywny\n"));
+                LOGIC_PRINTF_P(PSTR("PIR aktywny (%d s)\n"), uiPIRTTL);
                 return TRUE;
             }
             else

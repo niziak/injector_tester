@@ -96,10 +96,10 @@ ISR(TIMER0_OVF_vect)
     }
 #endif
 
-    if (ulSystemTickMS % (ONEWIRE_MEASURE_INTERVAL_MS) == 0)    // do not use seconds counter because it will run 1000 times per second
-    {
-        EventPostFromIRQ (SYS_1WIRE_CONVERT);
-    }
+//    if (ulSystemTickMS % (ONEWIRE_MEASURE_INTERVAL_MS) == 0)    // do not use seconds counter because it will run 1000 times per second
+//    {
+//        EventPostFromIRQ (SYS_1WIRE_CONVERT);
+//    }
     EventTimerTickEveryMS();
 
     if (TRUE == bRefreshDisplay)

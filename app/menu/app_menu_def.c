@@ -19,9 +19,11 @@ const MENU_ITEM_DEF	atdMenuItems[NUMBER_OF_MENU_ITEMS] =
             { LVL1, MID_NA,            "Auto 3",               MENU_FN_APP_MODE_AUTO_3,                                      NO_ASK  },
             { LVL1, MID_NA,            "Auto 4",               MENU_FN_APP_MODE_AUTO_4,                                      NO_ASK  },
 
-        { LVL0, MID_NA,        "10 minut",                 MENU_FN_10MIN,                              NO_ASK                        },
+        { LVL0, MID_NA,        "Manual",                   MENU_FN_10MIN,                              NO_ASK                        },
 
 		{ LVL0, MID_SETTINGS,		"Ustawienia",              MENU_FN_CHILD_MENU,	                        NO_ASK	                 },
+		    { LVL1, MID_NA,            "Manual",               MENU_FN_CHILD_MENU,                     NO_ASK                        },
+		        { LVL3, MID_MANUAL_ADJ, 0,                         MENU_FN_UNDEF,                        ASK     },
             { LVL1, MID_NA,            "Auto 2",               MENU_FN_SETTINGS_AUTO_2,                NO_ASK                        },
             { LVL1, MID_NA,            "Auto 3",               MENU_FN_SETTINGS_AUTO_3,                NO_ASK                        },
             { LVL1, MID_NA,            "Auto 4",               MENU_FN_SETTINGS_AUTO_4,                NO_ASK                        },
@@ -33,13 +35,19 @@ const MENU_ITEM_DEF	atdMenuItems[NUMBER_OF_MENU_ITEMS] =
 
 			{ LVL1, MID_NA,			   "Zegar",		           MENU_FN_SET_CLOCK,                          ASK	    },
 			{ LVL1, MID_NA,            "Korekta zegara",       MENU_FN_CHILD_MENU,                      NO_ASK      },
-			    { LVL2, MID_CLOCK_ADJ, 0,                     MENU_FN_SET_CLOCK_ADJ,                        ASK     },
+			    { LVL2, MID_CLOCK_ADJ, 0,                       MENU_FN_UNDEF,                        ASK     },
 
 			{ LVL1, MID_NA,             "Min t. zasob",        MENU_FN_CHILD_MENU,                      NO_ASK      },
-			    { LVL2, MID_MIN_TZ,     0,                     MENU_FN_UNDEF,                               ASK     },
+			    { LVL2, MID_MIN_TZ,     0,                      MENU_FN_UNDEF,                               ASK     },
 
 	        { LVL1, MID_NA,             "Min t. kranu",        MENU_FN_CHILD_MENU,                      NO_ASK      },
-	            { LVL2, MID_MIN_TK,     0,                     MENU_FN_UNDEF,                               ASK     },
+	            { LVL2, MID_MIN_TK,     0,                      MENU_FN_UNDEF,                               ASK     },
+
+            { LVL1, MID_NA,             "Max t. kranu",        MENU_FN_CHILD_MENU,                      NO_ASK      },
+                { LVL2, MID_MAX_TK,     0,                      MENU_FN_UNDEF,                               ASK     },
+
+            { LVL1, MID_NA,             "Czas z PIR",          MENU_FN_CHILD_MENU,                      NO_ASK      },
+                { LVL2, MID_PIR_ADJ,    0,                       MENU_FN_UNDEF,                               ASK    },
 
 
 			{ LVL1, MID_NA,            "Fabryczne",            MENU_FN_FACTORY_DEFAULT,                 ASK     },
