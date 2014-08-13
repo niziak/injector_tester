@@ -19,6 +19,7 @@
 #define PIR_SETUP             {   PIR_DDR &= ~_BV(PIR_PIN); PIR_PORT |= _BV(PIR_PIN); }        // DDR=0 - input port, PORT=1 - pull up
 
 
+
 #define PUMP_LED_PORT     PORTC
 #define PUMP_LED_DDR      DDRC
 #define PUMP_LED_PIN      PINC2
@@ -69,8 +70,8 @@
 #define ONEWIRE_ZASO_IDX        0
 #define ONEWIRE_KRAN_IDX        1
 
-#define ONEWIRE_MEASURE_INTERVAL_MS         10000
-#define ONEWIRE_MEASURE_WAIT_MS             2000
+#define ONEWIRE_MEASURE_INTERVAL_MS         1000        ///< after reading, wait this time before next conversion
+#define ONEWIRE_MEASURE_WAIT_MS             2000        ///< delay between start conversion command and reading temperature form sensor
 
 #define UI_INACTIVE_TIMEOUT                 20          ///< (in seconds) go to idle mode when no keypressed (also lcd backlight time)
 #define BLINK_SPEED                         400         ///< (in ms)
@@ -80,7 +81,8 @@
 
 #define DEFAULT_SEC_PER_DAY_ADJ             -8
 #define DEFAULT_ZASO_MIN_TEMP               38
-#define DEFAULT_KRAN_MIN_TEMP               38
+#define DEFAULT_KRAN_MIN_TEMP               35
+#define DEFAULT_KRAN_MAX_TEMP               40
 #define DEFAULT_PIR_PRESENCE_TTL                    60          ///< (in seconds) how long presence is reported after it was detected
 #define DEFAULT_PUMP_MANUAL_TTL                     (10*60)     ///< (in seconds) how long pump should work when turned on from menu
 
