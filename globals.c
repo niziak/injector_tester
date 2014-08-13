@@ -28,7 +28,10 @@ volatile unsigned int       uiPIRTTL;                   ///< >0 if presence was 
 
 NVM_SET_DEF                 stSettings;
 
-char copyright[] = "(C) Wojciech Niziñski 2013-2014";
+char copyright[] = "\
+Copyright (C) 2013-2014 Wojciech Nizinski. All rights reserved. \
+You can use this work only for reference. \
+No part of this work may be redistributed or modified in any form or any means (source, binary, others) without prior written permission from Wojciech Nizinski\n";
 
 
 
