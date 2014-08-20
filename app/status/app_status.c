@@ -86,7 +86,7 @@ void DISP_vStatusScreenPrev(void)
 }
 
 /**
- * Immediatelly set new status screen
+ * Immediately set new status screen
  * @param eNewScreenId
  */
 void DISP_vStatusScreenSetNew(STATUS_SCREEEN_ID_DEF eNewScreenId)
@@ -143,10 +143,40 @@ void DISP_vPrintStatusScreen(void)
     switch (eCurrentScreenId)
     {
         case STATUS_SCREEN_IDLE:
+            DISP_STOP_BLINK_TIMER
             LCD_vPuts_P(PSTR("Z "));
             vPrintTemp(ONEWIRE_ZASO_IDX);
-            LCD_vPuts_P(PSTR("  K "));
+
+            if (atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempInt < pstSettings->ucMinTempZasobnik)
+            {
+                DISP_START_BLINK_TIMER
+                if (bBlinkState==TRUE)
+                {
+                    LCD_vGotoXY(2,0);
+                    LCD_vPutc(255); // Put character '#'
+                    LCD_vPutc(255); // Put character '#'
+                    LCD_vPutc(255); // Put character '#'
+                    LCD_vPutc(255); // Put character '#'
+                }
+            }
+
+            LCD_vGotoXY(9,0);
+            LCD_vPuts_P(PSTR("K "));
             vPrintTemp(ONEWIRE_KRAN_IDX);
+
+            if (atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt < pstSettings->ucMinTempKran)
+            {
+                DISP_START_BLINK_TIMER
+                if (bBlinkState==TRUE)
+                {
+                    LCD_vGotoXY(11,0);
+                    LCD_vPutc(255); // Put character '#'
+                    LCD_vPutc(255); // Put character '#'
+                    LCD_vPutc(255); // Put character '#'
+                    LCD_vPutc(255); // Put character '#'
+                }
+            }
+
 
             LCD_vGotoXY(0,1);
             LCD_vPrintf_P(PSTR("%02d:%02d:%02d"),   ptdLocalTime->tm_hour,
@@ -196,10 +226,6 @@ void DISP_vPrintStatusScreen(void)
                     LCD_vGotoXY(15,1);
                     LCD_vPutc(255); // Put character '#'
                 }
-            }
-            else
-            {
-                DISP_STOP_BLINK_TIMER
             }
             return;
             break;
