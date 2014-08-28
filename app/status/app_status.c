@@ -163,7 +163,7 @@ void DISP_vPrintStatusScreen(void)
             LCD_vGotoXY(9,0);
             LCD_vPuts_P(PSTR("K "));
             vPrintTemp(ONEWIRE_KRAN_IDX);
-
+#if 0
             if (atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt < pstSettings->ucMinTempKran)
             {
                 DISP_START_BLINK_TIMER
@@ -176,7 +176,7 @@ void DISP_vPrintStatusScreen(void)
                     LCD_vPutc(255); // Put character '#'
                 }
             }
-
+#endif
 
             LCD_vGotoXY(0,1);
             LCD_vPrintf_P(PSTR("%02d:%02d:%02d"),   ptdLocalTime->tm_hour,
