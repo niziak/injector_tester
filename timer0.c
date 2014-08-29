@@ -15,7 +15,7 @@
 #include <key.h>
 #include <hal_lcd.h>
 
-#define WITH_INT_OVERLAP_DETECTION      FALSE
+#define WITH_INT_OVERLAP_DETECTION      TRUE
 
 #if (WITH_INT_OVERLAP_DETECTION)
 static volatile BOOL bInISR = FALSE;
@@ -40,10 +40,12 @@ ISR(TIMER0_OVF_vect)
     }
     bInISR = TRUE;
 #endif
-    ulSystemTickMS++;
+    ulSystemTickMS += (TIMER0_ISR_EVERY_US/1000);
+
+    EventTimerTickEveryMS();
 
     // ONE SECOND TICK
-    if (ulSystemTickMS % 1000 == 0)
+    if ((ulSystemTickMS % 1000) == 0)
     {
         ulSystemTickS++;
         if (ucUIInactiveCounter>0)
@@ -67,9 +69,6 @@ ISR(TIMER0_OVF_vect)
                 bPumpIsRunning = FALSE;
             }
         }
-//        RTC_vTickLocalTime();
-//        RTC_vConvertLocalTime();
-
 
         EventPostFromIRQ (SYS_CLOCK_1S); // do not enable, it is too fast for main loop to handle
 #if (WITH_HB_EVENT)
@@ -80,7 +79,7 @@ ISR(TIMER0_OVF_vect)
 
     if (TRUE == bNeedsBlinking)
     {
-        if (ulSystemTickMS % (BLINK_SPEED) == 0)
+        if (ulSystemTickMS % (BLINK_SPEED_MS) == 0)
         {
             bBlinkState = (bBlinkState==0 ? 1 : 0);
             //DISP_REFRESH
@@ -94,18 +93,6 @@ ISR(TIMER0_OVF_vect)
         KEY_vKeyIsr();
     }
 #endif
-
-//    if (ulSystemTickMS % (ONEWIRE_MEASURE_INTERVAL_MS) == 0)    // do not use seconds counter because it will run 1000 times per second
-//    {
-//        EventPostFromIRQ (SYS_1WIRE_CONVERT);
-//    }
-    EventTimerTickEveryMS();
-
-    if (TRUE == bRefreshDisplay)
-    {
-        bRefreshDisplay = FALSE;
-        LCD_Draw();
-    }
 
 #if (WITH_INT_OVERLAP_DETECTION)
     bInISR = FALSE;
@@ -128,7 +115,8 @@ void TIMER_vInit(void)
     TIMSK0 |= _BV(TOIE0);    // enable timer0 overflow int
     RESET_TIMER0_CNT;
     //TCCR0B = _BV(CS00) | _BV(CS02);      // start timer with /1024 prescaler 16000000/1024 = 15625 /s = timer tick every 64us * 256  = 16,384ms
-    TCCR0B = _BV(CS00) | _BV(CS01);      // start timer with /644 prescaler 16000000/64 = 250000 /s = timer tick every 4us * 256  = 1024usms
+    TCCR0B = _BV(CS00) | _BV(CS01);      // start timer with /64 prescaler 16000000/64 = 250000 /s = timer tick every 4us * 256  = 1024usms
+    //TCCR0B =  _BV(CS02);      // start timer with /256 prescaler 16000000/256
 
 #else
 
