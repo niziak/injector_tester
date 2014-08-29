@@ -101,6 +101,7 @@ ISR(PCINT2_vect)
     }
 }
 
+
 /**
  * MAIN
  */
@@ -151,13 +152,13 @@ void main(void)
 	atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt = TEMP_ERROR;
 
     EventPost(SYS_1WIRE_CONVERT);
+    EventTimerPostAfter(EVENT_TIMER_RTC_OFFSET, SYS_RTC_OFFSET_CALC_START, 5000);
 
     APP_vInit();
     APP_vActivateApp(APP_STATUS); // system needs first application
 
     TIMER_vInit();
     sei(); //TODO
-    OW_vStartConversion();
 	do {
         wdt_reset();
 #if (INJECTOR_TESTER_MODE)
@@ -183,7 +184,7 @@ void main(void)
 		            DEBUG_T_P(PSTR("1w read\n"));
 		            OW_vWorker();
 		            // detect temperature change
-		            for (UCHAR ucI=0; ucI<NUM_OF_TEMP_SENSORS; ucI++)
+		            for (UCHAR ucI=0; ucI < NUM_OF_TEMP_SENSORS; ucI++)
 		            {
 		                //DEBUG_P(PSTR("%d == %d (%d,%d)\n"), aiPreviousTemp[ucI], (atdKnownTempSensors[ucI].iTempInt * 10) + (atdKnownTempSensors[ucI].iTempFrac/1000), atdKnownTempSensors[ucI].iTempInt, atdKnownTempSensors[ucI].iTempFrac );
 		                if ( ABS_DIFF(aiPreviousTemp[ucI], (atdKnownTempSensors[ucI].iTempInt * 10) + (atdKnownTempSensors[ucI].iTempFrac/1000)) >= 10)
@@ -230,15 +231,26 @@ void main(void)
                     DISP_REFRESH
                     break;
 
+                case SYS_RTC_OFFSET_CALC_START:
+                    RTC_vStartDriftCalulation();
+                    EventTimerPostAfter(EVENT_TIMER_RTC_OFFSET, SYS_RTC_OFFSET_CALC_FINISH, RTC_OFFSET_MEASURE_TIME_MSEC); // schedule next measuer after eading after 3 seconds
+                    break;
+
+                case SYS_RTC_OFFSET_CALC_FINISH:
+                    RTC_vStopDriftCalculation();
+                    cli();
+                    for (;;) wdt_reset();
+                    break;
+
 		        default:
 		            break;
 		    }
 
 		    // forward event to active application
 		    APP_vRouteEvent(eEvent);
-		    APP_vUpdateDisplay();
-		    DISP_REFRESH
-		    LCD_DrawDebug();
+//		    APP_vUpdateDisplay();
+		    DISP_REFRESH    // refresh display after each event
+//		    LCD_DrawDebug();
 
 		    DEBUG_P(PSTR("\n. . . . . . . . . . . . . .\n\n"));
 
@@ -255,13 +267,14 @@ void main(void)
 		    breakable_delay_ms(100); // no event - so sleep //TODO make real sleep
 		}
 
-//		if (TRUE == bRefreshDisplay)
-//		{
-//            bRefreshDisplay = FALSE;
-//
-//            APP_vUpdateDisplay();
-//            LCD_Draw();
-//	    }
+		if (TRUE == bRefreshDisplay)
+		{
+            bRefreshDisplay = FALSE;
+
+            APP_vUpdateDisplay();
+            LCD_Draw();
+		    LCD_DrawDebug();
+	    }
 
 		// LCD BL
 		if (ucUIInactiveCounter == 0)

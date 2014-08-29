@@ -16,6 +16,7 @@ typedef		unsigned int			UINT;
 typedef		unsigned int			u_int;
 typedef		int						INT;
 
+typedef     unsigned long           ULONG;
 typedef     unsigned char           BOOL;
 
 #ifndef  FALSE

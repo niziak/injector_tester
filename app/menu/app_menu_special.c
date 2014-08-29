@@ -27,7 +27,7 @@ BOOL MENU_ShowSpecialElement(void)
             break;
 
         case MID_CLOCK_ADJ:
-            LCD_vPrintf_P(PSTR("Korekcja: %d"), pstSettings->cSecondsPerDayAdj);
+            LCD_vPrintf_P(PSTR("%d (blad: %d)"), pstSettings->cSecondsPerDayAdj, iCalcTimeOfs);
             break;
 
         case MID_MIN_TZ:
@@ -46,6 +46,10 @@ BOOL MENU_ShowSpecialElement(void)
             break;
         case MID_PIR_ADJ:
             LCD_vPrintf_P(PSTR("%d"), pstSettings->uiPumpPIRTime);
+            break;
+
+        case MID_BL_ADJ:
+            LCD_vPrintf_P(PSTR("%d"), pstSettings->uiBacklightTime);
             break;
     }
     return TRUE;
@@ -142,6 +146,9 @@ BOOL MENU_HandleSpecialElement(EVENT_DEF eMenuEvent)
 
            case MID_PIR_ADJ:
                vHandleGenericIncDecEvents (eMenuEvent, &pstSettings->uiPumpPIRTime, VT_UINT);
+               break;
+           case MID_BL_ADJ:
+               vHandleGenericIncDecEvents (eMenuEvent, &pstSettings->uiBacklightTime, VT_UINT);
                break;
     }
     return TRUE;

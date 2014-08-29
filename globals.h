@@ -15,6 +15,7 @@ typedef enum
     APP_MODE_AUTO_2,    ///< user defined mode 2
     APP_MODE_AUTO_3,    ///< user defined mode 3
     APP_MODE_AUTO_4,    ///< user defined mode 4
+    APP_MODE_AUTO_5,    ///< user defined mode 4
 
 } APP_MODE_DEF;
 
@@ -46,8 +47,10 @@ typedef struct
     UCHAR                       ucMinTempKran;              ///< (in celsius) [0..99]
     UCHAR                       ucMaxTempKran;              ///< (in celsius) [0..99]
     signed char                 cSecondsPerDayAdj;          ///< (in seconds) [-128..127] daily adjustment for RTC clock
-    UCHAR                       aucSpare[16];
-    MODE_SETTINGS_DEF           astModes[3];                ///< description of programmed modes settings (currently 3 modes supported)
+    UINT                        uiBacklightTime;            ///< (in seconds) back light time
+    UCHAR                       aucSpare[14];
+
+    MODE_SETTINGS_DEF           astModes[NUMBER_OF_USER_MODES];   ///< description of programmed modes settings (currently 4 modes supported)
 } NVM_SET_DEF;
 
 
@@ -67,6 +70,11 @@ extern volatile BOOL                bRefreshDisplay;
 extern volatile BOOL                bNeedsBlinking;
 extern volatile unsigned int        uiPIRTTL;
 extern volatile BOOL                bPumpIsRunning;
+extern signed   int                 iCalcTimeOfs;
+
+#include <avr/pgmspace.h>
+
+extern const CHAR copyright[] PROGMEM;
 
 #define DISP_REFRESH                { bRefreshDisplay = TRUE;  }
 #define DISP_START_BLINK_TIMER      { bNeedsBlinking  = TRUE;  }

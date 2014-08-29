@@ -74,7 +74,7 @@
 #define ONEWIRE_MEASURE_WAIT_MS             2000        ///< delay between start conversion command and reading temperature form sensor
 
 #define UI_INACTIVE_TIMEOUT                 20          ///< (in seconds) go to idle mode when no keypressed (also lcd backlight time)
-#define BLINK_SPEED                         400         ///< (in ms)
+#define BLINK_SPEED_MS                      400         ///< (in ms)
 
 #define UI_NEG_POPUP_TIME                   4000
 #define UI_POS_POPUP_TIME                   3000
@@ -90,7 +90,11 @@
 
 #define LCD_CHAR_CELSIUS                    ((unsigned char)223)
 
+#define NUMBER_OF_USER_MODES                4           ///<
 #define TIMERANGES_PER_USER_MODE            5           ///< how many time ranges can be defined per user mode
+
+#define RTC_OFFSET_MEASURE_TIME_MSEC        (3600UL*1000UL)         ///< how long period is taken to calculate RTC drift
+#define TIMER0_ISR_EVERY_US                 (1000)      ///< Timer ISR is called every ??? us
 
 
 #include <globals.h>

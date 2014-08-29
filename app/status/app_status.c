@@ -179,9 +179,9 @@ void DISP_vPrintStatusScreen(void)
 #endif
 
             LCD_vGotoXY(0,1);
-            LCD_vPrintf_P(PSTR("%02d:%02d:%02d"),   ptdLocalTime->tm_hour,
-                                                    ptdLocalTime->tm_min,
-                                                    ptdLocalTime->tm_sec);
+            LCD_vPrintf_P(PSTR("%02d:%02d:%02d"),   RTC_ptdLocalTime->tm_hour,
+                                                    RTC_ptdLocalTime->tm_min,
+                                                    RTC_ptdLocalTime->tm_sec);
 
             if (uiPIRTTL > 0)
             {
@@ -212,6 +212,7 @@ void DISP_vPrintStatusScreen(void)
                     case APP_MODE_AUTO_2:
                     case APP_MODE_AUTO_3:
                     case APP_MODE_AUTO_4:
+                    case APP_MODE_AUTO_5:
                         LCD_vPrintf_P(PSTR("Auto%d"), (pstSettings->eAppMode)-APP_MODE_AUTO_1+1);
                         break;
                 }

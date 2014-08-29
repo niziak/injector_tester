@@ -26,9 +26,11 @@ volatile BOOL               bPumpIsRunning;             ///< flag to start/stop 
 
 volatile unsigned int       uiPIRTTL;                   ///< >0 if presence was detected (decremented every 1S in timer)
 
+signed int                  iCalcTimeOfs;               ///< calculated RTC time offset
+
 NVM_SET_DEF                 stSettings;
 
-char copyright[] = "\
+const CHAR copyright[] PROGMEM = "\
 Copyright (C) 2013-2014 Wojciech Nizinski. All rights reserved. \
 You can use this work only for reference. \
 No part of this work may be redistributed or modified in any form or any means (source, binary, others) without prior written permission from Wojciech Nizinski\n";

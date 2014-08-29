@@ -58,6 +58,7 @@ void NVM_vLoadSettings(void)
     pstSettings->uiPumpManualTime   = DEFAULT_PUMP_MANUAL_TTL;
     pstSettings->uiPumpPIRTime      = DEFAULT_PIR_PRESENCE_TTL;
     pstSettings->cSecondsPerDayAdj  = DEFAULT_SEC_PER_DAY_ADJ;
+    pstSettings->uiBacklightTime    = UI_INACTIVE_TIMEOUT;
 
     if (bError == TRUE)
     {

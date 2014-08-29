@@ -107,6 +107,13 @@ ISR(USART_RX_vect)
     switch (ucRXByte)
     {
         case ' ':  // space - special action to hang device
+            cli();
+            for (;;) wdt_reset();
+            break;
+
+        case 'c':  // 'c' show copyright
+            cli();
+            RESET_P(copyright);
             for (;;) wdt_reset();
             break;
 

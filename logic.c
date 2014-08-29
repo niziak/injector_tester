@@ -35,7 +35,7 @@ BOOL bCalculatePumpState(void)
     MODE_SETTINGS_DEF *pstCurrMode;
     static H_STATE hState = HS_UNDEF; ///< current histeresis state
 
-    LOGIC_PRINTF_P(PSTR("\n\nbCalculatePumpState()\n"));
+    LOGIC_PRINTF_P(PSTR("\n\nbCalculatePumpState()\n\t"));
     /// - check minimum temperature of @ref ONEWIRE_ZASO_IDX
     if (atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempInt < pstSettings->ucMinTempZasobnik)
     {
@@ -44,6 +44,7 @@ BOOL bCalculatePumpState(void)
     }
 
     /// - check if there is sense to pump water if it never reach desired temperature
+    ///   in other words - water reach temperature of tank, no sense to pump it
     if (atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempInt <= atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt)
     {
         LOGIC_PRINTF_P(PSTR("Temp zasobnika %d mniejsza/rowna kranu %d! \n"), atdKnownTempSensors[ONEWIRE_ZASO_IDX].iTempInt, atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt);
@@ -116,6 +117,7 @@ BOOL bCalculatePumpState(void)
         case APP_MODE_AUTO_2:
         case APP_MODE_AUTO_3:
         case APP_MODE_AUTO_4:
+        case APP_MODE_AUTO_5:
             LOGIC_PRINTF_P(PSTR("\tMode idx=%d\n"), pstSettings->eAppMode-APP_MODE_AUTO_2);
 
             pstCurrMode = &(pstSettings->astModes[pstSettings->eAppMode-APP_MODE_AUTO_2]);
@@ -134,12 +136,12 @@ BOOL bCalculatePumpState(void)
                     LOGIC_PRINTF_P(PSTR("\n"));
                     continue;
                 }
-                UINT uiStartTimeMin = pstCurrRange->ucStartHour * 60 + pstCurrRange->ucStartMin;
-                UINT uiEndTimeMin   = pstCurrRange->ucEndHour   * 60 + pstCurrRange->ucEndMin;
-                UINT uiCurrTimeMin  = ptdLocalTime->tm_hour     * 60 + ptdLocalTime->tm_min;
+                UINT uiStartTimeMin = pstCurrRange->ucStartHour     * 60 + pstCurrRange->ucStartMin;
+                UINT uiEndTimeMin   = pstCurrRange->ucEndHour       * 60 + pstCurrRange->ucEndMin;
+                UINT uiCurrTimeMin  = RTC_ptdLocalTime->tm_hour     * 60 + RTC_ptdLocalTime->tm_min;
                 LOGIC_PRINTF_P (PSTR("\t%d < %d < %d\n"), uiStartTimeMin, uiCurrTimeMin, uiEndTimeMin);
                 if (    (uiStartTimeMin <= uiCurrTimeMin)
-                     && (uiCurrTimeMin  <= uiEndTimeMin) )
+                     && (uiCurrTimeMin  <= uiEndTimeMin ) )
                 {
                     return TRUE;
                 }

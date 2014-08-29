@@ -30,6 +30,7 @@ typedef enum
     MID_MAX_TK,
     MID_MANUAL_ADJ,
     MID_PIR_ADJ,
+    MID_BL_ADJ,
 } MENU_ITEM_ID_DEF;
 
 typedef enum
@@ -62,10 +63,12 @@ typedef enum
 	MENU_FN_APP_MODE_AUTO_2,
 	MENU_FN_APP_MODE_AUTO_3,
 	MENU_FN_APP_MODE_AUTO_4,
+	MENU_FN_APP_MODE_AUTO_5,
 
 	MENU_FN_SETTINGS_AUTO_2,
 	MENU_FN_SETTINGS_AUTO_3,
 	MENU_FN_SETTINGS_AUTO_4,
+	MENU_FN_SETTINGS_AUTO_5,
 
 	MENU_FN_FACTORY_DEFAULT,
 
@@ -95,7 +98,7 @@ typedef struct
 #define MENU_ITEM_ID_NOT_FOUND  0xFF
 
 
-#define NUMBER_OF_MENU_ITEMS		30
+#define NUMBER_OF_MENU_ITEMS		34
 extern const MENU_ITEM_DEF				atdMenuItems[NUMBER_OF_MENU_ITEMS];
 //#define NUMBER_OF_MENU_ITEMS		(sizeof(atdMenuItems)/sizeof(atdMenuItems[0]))
 

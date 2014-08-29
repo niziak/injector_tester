@@ -14,6 +14,7 @@ typedef enum
 {
     EVENT_TIMER_1WIRE = 0,  ///< timer id, first must be zero because it is used as index in @atdTimers
     EVENT_TIMER_POPUP,
+    EVENT_TIMER_RTC_OFFSET, ///< RTC drift calculation
 
     EVENT_TIMER_LAST,
 } EVENT_DELAYED_TIMER_ID;
@@ -27,8 +28,13 @@ typedef enum
     SYS_EVENT_NONE = 0,
 
     SYS_CLOCK_1S,              ///< every one second
+
     SYS_1WIRE_CONVERT,
     SYS_1WIRE_READ,
+
+
+    SYS_RTC_OFFSET_CALC_START,
+    SYS_RTC_OFFSET_CALC_FINISH,
 
     SYS_UI_TIMEOUT,            ///< no user action - timeout from last keypress
 
@@ -38,7 +44,7 @@ typedef enum
     MENU_ACTION_RIGHT,         ///< key right   - enter to next screen
     MENU_ACTION_SELECT,        ///< make action on selected element
 
-    MENU_ACTION_CONFIRMED,
+    MENU_ACTION_CONFIRMED,     ///< enter to menu was confirmed from user
 //    MENU_ACTION_PAUSE,          ///< disable menu, but don't clear internal structure
 //    MENU_ACTION_RESUME,         ///< enable menu, but don't reset internal structures
 
@@ -59,7 +65,7 @@ typedef enum
 
 extern void EventPost (EVENT_DEF eEvent);
 extern void EventPostFromIRQ (EVENT_DEF eEvent);
-extern void EventTimerPostAfter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms);
+extern void EventTimerPostAfter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned long delayms);
 extern void EventTimerTickEveryMS(void);
 extern void EventTimerClear (EVENT_DELAYED_TIMER_ID eTimerId);
 

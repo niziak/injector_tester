@@ -93,8 +93,8 @@
   #define RTC_PRINTF_T_P(x,s...)
 #endif
 
-tm          tdLocalTime;                ///< actual time in tm structure
-time_t      tSecondsUntilEpoch;         ///< actual time in seconds until 1970
+tm          RTC_tdLocalTime;                ///< actual time in tm structure
+time_t      RTC_tSecondsUntilEpoch;         ///< actual time in seconds (only H:M:S are converted)
 time_t      tOffsetFrom1970;
 
 
@@ -197,8 +197,8 @@ void RTC_vSetState(BOOL bNewState)
  */
 void RTC_vInit(void)
 {
-    memset (&tdLocalTime,0, sizeof(tdLocalTime));
-    tSecondsUntilEpoch = 0;
+    memset (&RTC_tdLocalTime,0, sizeof(RTC_tdLocalTime));
+    RTC_tSecondsUntilEpoch = 0;
 
     DDRC   &= ~_BV(PINC5);      // input
     PORTC |=   _BV(PINC5);      // pull up
@@ -280,29 +280,36 @@ void RTC_vGetTime(void)
 {
     unsigned char aucData[(DS1307_REG_YEAR)-(DS1307_REG_SECONDS)+1];    // buffer to load registers from 0 (seconds) to 6 (year)
     unsigned char ucI;
+    BOOL bFail = FALSE;
 
     RTC_PRINTF_P (PSTR("RTC_vGetTime(): "));
 
     i2c_start_wait (DS1307_ADDR+I2C_WRITE);     // set device address and write mode
-    i2c_write (DS1307_REG_SECONDS);             // write address
+    bFail |= i2c_write (DS1307_REG_SECONDS);             // write address
 
-    i2c_rep_start (DS1307_ADDR+I2C_READ);       // set device address and read mode
-    for (ucI=0; ucI<sizeof(aucData); ucI++)
+    bFail |= i2c_rep_start (DS1307_ADDR+I2C_READ);       // set device address and read mode
+    for (ucI=0; ucI < sizeof(aucData); ucI++)
     {
         aucData[ucI] = i2c_readAck();
         RTC_PRINTF_P (PSTR("%02X "), aucData[ucI]);
     }
     (void)i2c_readNak();    // one more read - unnecessary
     i2c_stop();
-
+    if (bFail == TRUE)
+    {
+        LOG_P(PSTR("RTC_vGetTime error!\n"));
+        return;
+    }
     RTC_PRINTF_P (PSTR("\n"));
 
-    ptdLocalTime->tm_sec  = BCD2DEC(aucData[0] & REG_SECONDS_MASK); // zero is written to REG_SECONDS_CLOCK_HALT bit, so halted clock will start
-    ptdLocalTime->tm_min  = BCD2DEC(aucData[1]);
-    ptdLocalTime->tm_hour = BCD2DEC(aucData[2]);
-    ptdLocalTime->tm_mday = BCD2DEC(aucData[3]);
-    ptdLocalTime->tm_mon  = BCD2DEC(aucData[4]);
-    ptdLocalTime->tm_year = BCD2DEC(aucData[5]);
+    RTC_ptdLocalTime->tm_sec  = BCD2DEC(aucData[0] & REG_SECONDS_MASK); // zero is written to REG_SECONDS_CLOCK_HALT bit, so halted clock will start
+    RTC_ptdLocalTime->tm_min  = BCD2DEC(aucData[1]);
+    RTC_ptdLocalTime->tm_hour = BCD2DEC(aucData[2]);
+    RTC_ptdLocalTime->tm_mday = BCD2DEC(aucData[3]);
+    RTC_ptdLocalTime->tm_mon  = BCD2DEC(aucData[4]);
+    RTC_ptdLocalTime->tm_year = BCD2DEC(aucData[5]);
+
+    RTC_tSecondsUntilEpoch = ((ULONG)RTC_ptdLocalTime->tm_hour * SEC_PER_HOUR) + ((ULONG)RTC_ptdLocalTime->tm_min * SEC_PER_MIN) + (ULONG)RTC_ptdLocalTime->tm_sec;
 }
 
 /**
@@ -314,29 +321,84 @@ void RTC_vGetTime(void)
  */
 void RTC_vSetTime(unsigned char ucHour, unsigned char ucMin, unsigned char ucSec)
 {
+     BOOL bFail = FALSE;
     RTC_PRINTF_P (PSTR("RTC_vSetTime(%02d,%02d,%02d)\n"), ucHour, ucMin, ucSec);
 
      i2c_start_wait (DS1307_ADDR+I2C_WRITE);     // set device address and write mode
 
      /// - set seconds, minutes and hour
-     i2c_write (DS1307_REG_SECONDS);             // write address
-     i2c_write (DEC2BCD(ucSec));   // +00 DS1307_REG_SECONDS
-     i2c_write (DEC2BCD(ucMin));  // +01 DS1307_REG_MINUTES
-     i2c_write (DEC2BCD(ucHour)); // +02 DS1307_REG_HOURS
+     bFail |= i2c_write (DS1307_REG_SECONDS);             // write address
+     bFail |= i2c_write (DEC2BCD(ucSec));   // +00 DS1307_REG_SECONDS
+     bFail |= i2c_write (DEC2BCD(ucMin));  // +01 DS1307_REG_MINUTES
+     bFail |= i2c_write (DEC2BCD(ucHour)); // +02 DS1307_REG_HOURS
 
      /// - reset day=1, month=1 year=00
-     i2c_write (1);          // +03 DS1307_REG_DAY
-     i2c_write (1);          // +04 DS1307_REG_MONTH
-     i2c_write (0);          // +05 DS1307_REG_YEAR
+     bFail |= i2c_write (1);          // +03 DS1307_REG_DAY
+     bFail |= i2c_write (1);          // +04 DS1307_REG_MONTH
+     bFail |= i2c_write (0);          // +05 DS1307_REG_YEAR
 
 
-     i2c_rep_start (DS1307_ADDR+I2C_WRITE);     // set device address and write mode
-     i2c_write (DS1307_RAM_INITIAL_SEC);         // write address
-     i2c_write (ucSec);
-     i2c_write (ucMin);
-     i2c_write (ucHour);
+     bFail |= i2c_rep_start (DS1307_ADDR+I2C_WRITE);     // set device address and write mode
+     bFail |= i2c_write (DS1307_RAM_INITIAL_SEC);         // write address
+     bFail |= i2c_write (ucSec);
+     bFail |= i2c_write (ucMin);
+     bFail |= i2c_write (ucHour);
      i2c_stop();
 
+     if (bFail == TRUE)
+     {
+         LOG_P(PSTR("RTC_vSetTime error!\n"));
+         return;
+     }
      RTC_vGetTime();
      RTC_vSetNextAdjustmentDate();
+}
+
+
+static unsigned long    RTC_ulStoredSystemTickMS;
+static time_t           RTC_tStoredSecondsUntilEpoch;
+#define                 WAIT_FOR_NEW_RTC_TIME_INTERVAL_MS   50
+/**
+ * @brief Periodically (every @ref WAIT_FOR_NEW_RTC_TIME_INTERVAL_MS) check RTC chip for seconds counter change
+ */
+static void RTC_vWaitForRTCNewTime(void)
+{
+    RTC_vGetTime();
+    UCHAR ucOldSec  = RTC_ptdLocalTime->tm_sec;
+    while (ucOldSec != RTC_ptdLocalTime->tm_sec)
+    {
+        _delay_ms(WAIT_FOR_NEW_RTC_TIME_INTERVAL_MS);
+        RTC_vGetTime();
+    }
+}
+
+/**
+ * @brief Store current system timer clock and RTC clock to calculate difference later in @ref RTC_vStopDriftCalculation
+ */
+void RTC_vStartDriftCalulation(void)
+{
+    DEBUG_T_P(PSTR("RTC diff start\n"));
+    RTC_vWaitForRTCNewTime();
+    DEBUG_T_P(PSTR("System timer (ms)   = %lu\n"), ulSystemTickMS  );
+    DEBUG_T_P(PSTR("RTC (s)   = %lu\n"), RTC_tSecondsUntilEpoch  );
+    RTC_ulStoredSystemTickMS     = ulSystemTickMS;
+    RTC_tStoredSecondsUntilEpoch = RTC_tSecondsUntilEpoch;
+}
+
+/**
+ * @brief Calculate RTC clock difference using CPU Timer0 clock
+ */
+void RTC_vStopDriftCalculation(void)
+{
+    DEBUG_T_P(PSTR("RTC diff finish\n"));
+    RTC_vWaitForRTCNewTime();
+    DEBUG_T_P(PSTR("System timer (ms)   = %lu\n"), ulSystemTickMS  );
+    DEBUG_T_P(PSTR("RTC (s)   = %lu\n"), RTC_tSecondsUntilEpoch  );
+    unsigned long ulRTCDiffS = (RTC_tSecondsUntilEpoch - RTC_tStoredSecondsUntilEpoch);
+    unsigned long ulSysDiffS = (ulSystemTickMS         - RTC_ulStoredSystemTickMS    ) / 1000;
+    iCalcTimeOfs = (unsigned long)((ulRTCDiffS - ulSysDiffS) * (3600UL)/ulSysDiffS);
+    DEBUG_T_P(PSTR("RTC   diff (s)   = %lu\n"), ulRTCDiffS   );
+    DEBUG_T_P(PSTR("Timer diff (s)   = %lu\n"), ulSysDiffS   );
+    DEBUG_T_P(PSTR("RTC drift/1h (s) = %d\n"), iCalcTimeOfs  );
+    DEBUG_T_P(PSTR("RTC drift/24h (s) = %d\n"), iCalcTimeOfs*24  );
 }

@@ -22,13 +22,13 @@ APP_CLOCK_DEF    tdAppClock;
 
 static void APP_CLOCK_vInit(void)
 {
-    ptdAppClock->ucNewHour = ptdLocalTime->tm_hour;
+    ptdAppClock->ucNewHour = RTC_ptdLocalTime->tm_hour;
 
-    ptdAppClock->ucNewMin10  = ptdLocalTime->tm_min  / 10;
-    ptdAppClock->ucNewMin1   = ptdLocalTime->tm_min  % 10;
+    ptdAppClock->ucNewMin10  = RTC_ptdLocalTime->tm_min  / 10;
+    ptdAppClock->ucNewMin1   = RTC_ptdLocalTime->tm_min  % 10;
 
-    ptdAppClock->ucNewSec10  = ptdLocalTime->tm_sec  / 10;
-    ptdAppClock->ucNewSec1   = ptdLocalTime->tm_sec  % 10;
+    ptdAppClock->ucNewSec10  = RTC_ptdLocalTime->tm_sec  / 10;
+    ptdAppClock->ucNewSec1   = RTC_ptdLocalTime->tm_sec  % 10;
 
     ptdAppClock->eCurrentEditPos = AC_POS_HOUR;
     LCD_vCursorShow();
@@ -76,6 +76,7 @@ void APP_CLOCK_vHandleEvent(EVENT_DEF eEvent)
                            BCD2DEC(ptdAppClock->ucNewMin10 << 4 | ptdAppClock->ucNewMin1),
                            BCD2DEC(ptdAppClock->ucNewSec10 << 4 | ptdAppClock->ucNewSec1)
                          );
+            EventPost(SYS_RTC_OFFSET_CALC_START); // recalculate time offset
             APP_vShowPopupMessage_P(PSTR_TXT_CLOCK_SET, UI_POS_POPUP_TIME);
             break;
 

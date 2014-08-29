@@ -23,8 +23,8 @@
 
 typedef struct
 {
-    EVENT_DEF eEvent;       ///< event to post when timer expires
-    unsigned int delayms;   ///< countdown timer. Event is posted when reach zero
+    EVENT_DEF eEvent;        ///< event to post when timer expires
+    unsigned long delayms;   ///< countdown timer. Event is posted when reach zero
 } EVENT_DELAYED_TIMER_DEF;
 
 static EVENT_DELAYED_TIMER_DEF  atdTimers[EVENT_TIMER_LAST];    ///< array indexed by @ref EVENT_DELAYED_TIMER_ID
@@ -127,7 +127,7 @@ void EventPost (EVENT_DEF eEvent)
  * @param eEvent    event to post after time
  * @param delayms   delay in ms (unsidned int)
  */
-void EventTimerPostAfter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned int delayms)
+void EventTimerPostAfter (EVENT_DELAYED_TIMER_ID eTimerId, EVENT_DEF eEvent, unsigned long delayms)
 {
     EV_DEBUG_P(PSTR("t %d post ev %02X after %d ms\n"), eTimerId, eEvent, delayms);
     atdTimers[eTimerId].delayms = delayms;

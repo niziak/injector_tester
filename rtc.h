@@ -31,7 +31,7 @@ extern unsigned char ucBCD2DEC (unsigned char bcd);
     tm_isdst: A flag that indicates whether daylight saving time is in effect at the time described. The value is positive if daylight saving time is in effect, zero if it is not, and negative if the information is not available.
  *
  */
-typedef long int time_t;
+typedef unsigned long int time_t;
 
 typedef struct
 {
@@ -46,9 +46,9 @@ typedef struct
     UCHAR tm_isdst;
 } tm;
 
-extern time_t tSecondsUntilEpoch;
-extern tm tdLocalTime;
-#define ptdLocalTime    (&(tdLocalTime))
+extern time_t   RTC_tSecondsUntilEpoch;
+extern tm       RTC_tdLocalTime;
+#define         RTC_ptdLocalTime    (&(RTC_tdLocalTime))
 
 #define MIN_PER_HOUR    60
 #define HOUR_PER_DAY    24
@@ -68,5 +68,8 @@ extern void RTC_vTickLocalTime(void);
 
 extern void RTC_vGetTime(void);
 extern void RTC_vSetTime(unsigned char ucHour, unsigned char ucMin, unsigned char ucSec);
+
+extern void RTC_vStartDriftCalulation(void);
+extern void RTC_vStopDriftCalculation(void);
 
 #endif /* RTC_H_ */

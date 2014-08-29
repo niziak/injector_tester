@@ -17,6 +17,7 @@
 #define DEBUG_P(format, string...)      {                                           LOG_Log_P(format, ##string);}
 #define DEBUG_T_P(format, string...)    {LOG_Log_P(PSTR("[%5u] "),ulSystemTickS);     LOG_Log_P(format, ##string);}
 #define LOG(format, string...)          LOG_Log(format, ##string)
+#define LOG_P(format, string...)        LOG_Log_P(format, ##string)
 #define DEBUG_MEM(ptr,size)             {DEBUG("\nMEM: %s=@%p (%d):\n", #ptr, ptr, size); LOG_vMemDump(ptr,size); }
 #define LOG_NL                          {LOG_vNL();}
 
