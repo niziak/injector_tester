@@ -10,11 +10,12 @@
 
 #if (F_CPU==8000000UL)
 
-    #define RESET_TIMER0_CNT    { TCNT0 = 0xFF-8; }              // set value - overflow every 8 ticks 128us*8=1024
+    #define RESET_TIMER0_CNT    { TCNT0 = 0xFF-8; }              // set value - overflow every 8 ticks 128us*8=1024us
 
 #elif (F_CPU==16000000UL)
 
-    #define RESET_TIMER0_CNT    { TCNT0 = 0xFF-8-8; }            // set value - overflow every 8 ticks 128us*8=1024
+    //#define RESET_TIMER0_CNT    { TCNT0 = 0xFF-8-8+1; }            // set value - overflow every 16 ticks 64us*16=1024us
+    #define RESET_TIMER0_CNT    { TCNT0 = 0xFF-250; }            //
 
 #else
 

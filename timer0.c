@@ -46,7 +46,6 @@ ISR(TIMER0_OVF_vect)
     if (ulSystemTickMS % 1000 == 0)
     {
         ulSystemTickS++;
-        tSecondsUntilEpoch++;
         if (ucUIInactiveCounter>0)
         {
             ucUIInactiveCounter--;
@@ -119,14 +118,20 @@ ISR(TIMER0_OVF_vect)
 void TIMER_vInit(void)
 {
 #if defined (__AVR_ATmega8__)
+
     TIMSK |= (1<<TOIE0);    // enable timer0 overflow int
     RESET_TIMER0_CNT;
-    TCCR0 = (1<<CS00) | (1<<CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick co 128us * 256  = 32ms
+    TCCR0 = (1<<CS00) | (1<<CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick every 128us * 256  = 32ms
+
 #elif defined (__AVR_ATmega328P__)
+
     TIMSK0 |= _BV(TOIE0);    // enable timer0 overflow int
     RESET_TIMER0_CNT;
-    TCCR0B = _BV(CS00) | _BV(CS02);      // start timer with /1024 prescaler 8000000/1024 = 7812 /s = timer tick co 128us * 256  = 32ms
+    //TCCR0B = _BV(CS00) | _BV(CS02);      // start timer with /1024 prescaler 16000000/1024 = 15625 /s = timer tick every 64us * 256  = 16,384ms
+    TCCR0B = _BV(CS00) | _BV(CS01);      // start timer with /644 prescaler 16000000/64 = 250000 /s = timer tick every 4us * 256  = 1024usms
+
 #else
+
     #error "CPU!"
 #endif
 
