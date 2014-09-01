@@ -86,6 +86,10 @@ static void vHandleGenericIncDecEvents (EVENT_DEF eMenuEvent, void *pvValue, VAL
 
     switch (eMenuEvent)
     {
+        case MENU_ACTION_LEFT:
+            MENU_vLevelUp();
+            break;
+
         case MENU_ACTION_DOWN:
         case MENU_ACTION_UP:
             switch (eType)
@@ -121,7 +125,7 @@ BOOL MENU_HandleSpecialElement(EVENT_DEF eMenuEvent)
     switch (atdMenuItems[(PTDMENU->ucCurrentItem)].eMID)
     {
            default:
-               return FALSE; // element not handler, return handling to defaul menu display
+               return FALSE; // element not handler, return handling to default menu display
                break;
 
            case MID_MIN_TZ:
