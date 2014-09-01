@@ -54,7 +54,11 @@ static void vDisplayScreenTitle(void)
             break;
 
     }
-    DISP_REFRESH
+    //TODO - it is not beautiful....
+    // forcing immediately display update
+    //DISP_REFRESH
+    LCD_Draw();
+    LCD_DrawDebug();
     breakable_delay_ms(500);
 }
 
