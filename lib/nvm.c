@@ -56,7 +56,7 @@ void NVM_vLoadSettings(void)
     pstSettings->ucMinTempKran      = DEFAULT_KRAN_MIN_TEMP;
     pstSettings->ucMaxTempKran      = DEFAULT_KRAN_MAX_TEMP;
     pstSettings->uiPumpManualTime   = DEFAULT_PUMP_MANUAL_TTL;
-    pstSettings->uiPumpPIRTime      = DEFAULT_PIR_PRESENCE_TTL;
+    pstSettings->uiPumpPIRTime      = DEFAULT_PUMP_PIR_MAX_TTL;
     pstSettings->cSecondsPerDayAdj  = DEFAULT_SEC_PER_DAY_ADJ;
     pstSettings->uiBacklightTime    = UI_INACTIVE_TIMEOUT;
 

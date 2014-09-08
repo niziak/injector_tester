@@ -83,8 +83,8 @@
 #define DEFAULT_ZASO_MIN_TEMP               38
 #define DEFAULT_KRAN_MIN_TEMP               35
 #define DEFAULT_KRAN_MAX_TEMP               40
-#define DEFAULT_PIR_PRESENCE_TTL                    60          ///< (in seconds) how long presence is reported after it was detected
-#define DEFAULT_PUMP_MANUAL_TTL                     (10*60)     ///< (in seconds) how long pump should work when turned on from menu
+#define DEFAULT_PUMP_PIR_MAX_TTL            300         ///< (in seconds) how long pump can be on after PIR event (or to reach maximum temperature)
+#define DEFAULT_PUMP_MANUAL_TTL             (10*60)     ///< (in seconds) how long pump should work when turned on from menu
 
 #define AVRLIB_HAS_EEPROM_UPDATE_BLOCK_FN       FALSE
 
@@ -93,7 +93,9 @@
 #define NUMBER_OF_USER_MODES                4           ///<
 #define TIMERANGES_PER_USER_MODE            5           ///< how many time ranges can be defined per user mode
 
-#define RTC_OFFSET_MEASURE_TIME_MSEC        (3600UL*1000UL)         ///< how long period is taken to calculate RTC drift
+#define WITH_RTC_DRIFT_MEASURE  0               ///< use system timer to check RTC drift - not usable because quartz 16MHz is also not well calibrated :)
+    #define RTC_OFFSET_MEASURE_TIME_MSEC        (6*3600UL*1000UL)         ///< how long period is taken to calculate RTC drift
+
 #define TIMER0_ISR_EVERY_US                 (1000)      ///< Timer ISR is called every ??? us
 
 

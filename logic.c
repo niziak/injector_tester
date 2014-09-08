@@ -109,15 +109,21 @@ BOOL bCalculatePumpState(void)
             }
             else
             {
-                LOGIC_PRINTF_P(PSTR("PIR NIE aktywny\n"));
+                LOGIC_PRINTF_P(PSTR("PIR NIE-aktywny\n"));
                 return FALSE;
             }
             break;
 
-        case APP_MODE_AUTO_2:
-        case APP_MODE_AUTO_3:
-        case APP_MODE_AUTO_4:
-        case APP_MODE_AUTO_5:
+        case APP_MODE_AUTO_2: ///< PIR + Auto2 time range
+        case APP_MODE_AUTO_3: ///< PIR + Auto3 time range
+            if (uiPIRTTL==0)
+            {
+                LOGIC_PRINTF_P(PSTR("PIR NIE-aktywny\n"));
+                return FALSE;
+            }
+            // no break intentionally
+        case APP_MODE_AUTO_4: ///< only Auto4 time range
+        case APP_MODE_AUTO_5: ///< only Auto5 time range
             LOGIC_PRINTF_P(PSTR("\tMode idx=%d\n"), pstSettings->eAppMode-APP_MODE_AUTO_2);
 
             pstCurrMode = &(pstSettings->astModes[pstSettings->eAppMode-APP_MODE_AUTO_2]);

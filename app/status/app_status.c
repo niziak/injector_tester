@@ -59,7 +59,7 @@ static void vDisplayScreenTitle(void)
     //DISP_REFRESH
     LCD_Draw();
     LCD_DrawDebug();
-    breakable_delay_ms(500);
+    breakable_delay_ms(300);
 }
 
 /**
@@ -203,6 +203,7 @@ void DISP_vPrintStatusScreen(void)
             }
             else
             {
+                //TODO put mode name strings into one function
                 switch (pstSettings->eAppMode)
                 {
                     default:
@@ -212,12 +213,20 @@ void DISP_vPrintStatusScreen(void)
                         LCD_vPrintf_P(PSTR("24h"));
                         break;
 
-                    case APP_MODE_AUTO_1:
-                    case APP_MODE_AUTO_2:
-                    case APP_MODE_AUTO_3:
-                    case APP_MODE_AUTO_4:
-                    case APP_MODE_AUTO_5:
-                        LCD_vPrintf_P(PSTR("Auto%d"), (pstSettings->eAppMode)-APP_MODE_AUTO_1+1);
+                    case APP_MODE_AUTO_1:   // PIR
+                        LCD_vPrintf_P(PSTR("PIR"));
+                        break;
+                    case APP_MODE_AUTO_2:   // A2+PIR
+                        LCD_vPrintf_P(PSTR("A2+P"));
+                        break;
+                    case APP_MODE_AUTO_3:   // A3+PIR
+                        LCD_vPrintf_P(PSTR("A3+P"));
+                        break;
+                    case APP_MODE_AUTO_4:   // A4
+                        LCD_vPrintf_P(PSTR("A4"));
+                    case APP_MODE_AUTO_5:   // A5
+                        LCD_vPrintf_P(PSTR("A5"));
+                        //LCD_vPrintf_P(PSTR("A%d"), (pstSettings->eAppMode)-APP_MODE_AUTO_1+1);
                         break;
                 }
             }
