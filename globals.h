@@ -70,7 +70,9 @@ extern volatile BOOL                bRefreshDisplay;
 extern volatile BOOL                bNeedsBlinking;
 extern volatile unsigned int        uiPIRTTL;
 extern volatile BOOL                bPumpIsRunning;
-extern signed   int                 iCalcTimeOfs;
+#if (WITH_RTC_DRIFT_MEASURE)
+extern          long                lCalcTimeOfs;
+#endif
 
 #include <avr/pgmspace.h>
 

@@ -14,7 +14,9 @@ typedef enum
 {
     EVENT_TIMER_1WIRE = 0,  ///< timer id, first must be zero because it is used as index in @atdTimers
     EVENT_TIMER_POPUP,
+    #if WITH_RTC_DRIFT_MEASURE
     EVENT_TIMER_RTC_OFFSET, ///< RTC drift calculation
+    #endif
 
     EVENT_TIMER_LAST,
 } EVENT_DELAYED_TIMER_ID;
@@ -32,9 +34,10 @@ typedef enum
     SYS_1WIRE_CONVERT,
     SYS_1WIRE_READ,
 
-
+#if WITH_RTC_DRIFT_MEASURE
     SYS_RTC_OFFSET_CALC_START,
     SYS_RTC_OFFSET_CALC_FINISH,
+#endif
 
     SYS_UI_TIMEOUT,            ///< no user action - timeout from last keypress
 

@@ -106,6 +106,11 @@ ISR(USART_RX_vect)
     eTimeState = TIME_SET_NONE;
     switch (ucRXByte)
     {
+#if (WITH_RTC_DRIFT_MEASURE)
+        case 'd':
+            EventPostFromIRQ(SYS_RTC_OFFSET_CALC_FINISH);
+            break;
+#endif
         case ' ':  // space - special action to hang device
             cli();
             for (;;) wdt_reset();

@@ -53,8 +53,8 @@
 #define DS1307_REG_CONTROL          7
   #define CTRL_OUT_STATE       7    ///< SQ output state when @ref CTRL_SQW_ENABLE=0
   #define CTRL_SQW_ENABLE      4    ///< enable square wave generation
-  #define CTRL_RS1             1    ///< frequency control of sqare wave
-  #define CTRL_RS0             0    ///< frequency control of sqare wave
+  #define CTRL_RS1             1    ///< frequency control of square wave
+  #define CTRL_RS0             0    ///< frequency control of square wave
 
   #define CTRL_RS_MASK         3
   #define CTRL_RS_1HZ          0
@@ -62,8 +62,12 @@
   #define CTRL_RS_8192HZ       2
   #define CTRL_RS_32768HZ      3
 
-#define DS1307_RAM_START            0x08    ///< first avail user RAM addres
+#define DS1307_RAM_START            0x08    ///< first avail user RAM address
 
+/**
+ * Store time stamp when time was set by user
+ * Day, month, year will be zero
+ */
 #define DS1307_RAM_INITIAL_SEC      0x08
 #define DS1307_RAM_INITIAL_MIN      0x09
 #define DS1307_RAM_INITIAL_HOUR     0x0A
@@ -79,14 +83,14 @@
 #define DS1307_RAM_ADJ_MONTH        0x0F
 #define DS1307_RAM_ADJ_YEAR         0x10
 
-#define DS1307_RAM_END              0x3F    ///< last avail user RAM addres
+#define DS1307_RAM_END              0x3F    ///< last avail user RAM address
 
 #define RTC_DEBUG       0
 
 #if (RTC_DEBUG)
-  #define RTC_PRINTF(f,s...)     printf(f, ##s)
-  #define RTC_PRINTF_P(f,s...)   printf_P(f, ##s)
-  #define RTC_PRINTF_T_P(f,s...) printf_P(f, ##s)
+  #define RTC_PRINTF(f,s...)        printf  (f, ##s)
+  #define RTC_PRINTF_P(f,s...)      printf_P(f, ##s)
+  #define RTC_PRINTF_T_P(f,s...)    printf_P(f, ##s)
 #else
   #define RTC_PRINTF(x,s...)
   #define RTC_PRINTF_P(x,s...)
@@ -263,13 +267,13 @@ void RTC_vTickLocalTime(void)
 
 void RTC_vSetNextAdjustmentDate(void)
 {
-    //UCHAR ucNextDay, ucNextMonth, ucNextyear;
+    UCHAR ucNextDay, ucNextMonth, ucNextyear;
 
     i2c_start_wait (DS1307_ADDR+I2C_WRITE);
     i2c_write (DS1307_RAM_ADJ_DAY);         // write address
-    //i2c_write (ucNextDay);
-    //i2c_write (ucNextMonth);
-    //i2c_write (ucNextyear);
+    i2c_write (ucNextDay);
+    i2c_write (ucNextMonth);
+    i2c_write (ucNextyear);
     i2c_stop();
 }
 
@@ -355,6 +359,8 @@ void RTC_vSetTime(unsigned char ucHour, unsigned char ucMin, unsigned char ucSec
 }
 
 
+#if (WITH_RTC_DRIFT_MEASURE)
+#include <stdlib.h>
 static unsigned long    RTC_ulStoredSystemTickMS;
 static time_t           RTC_tStoredSecondsUntilEpoch;
 #define                 WAIT_FOR_NEW_RTC_TIME_INTERVAL_MS   50
@@ -393,12 +399,18 @@ void RTC_vStopDriftCalculation(void)
     DEBUG_T_P(PSTR("RTC diff finish\n"));
     RTC_vWaitForRTCNewTime();
     DEBUG_T_P(PSTR("System timer (ms)   = %lu\n"), ulSystemTickMS  );
-    DEBUG_T_P(PSTR("RTC (s)   = %lu\n"), RTC_tSecondsUntilEpoch  );
-    unsigned long ulRTCDiffS = (RTC_tSecondsUntilEpoch - RTC_tStoredSecondsUntilEpoch);
-    unsigned long ulSysDiffS = (ulSystemTickMS         - RTC_ulStoredSystemTickMS    ) / 1000;
-    iCalcTimeOfs = (unsigned long)((ulRTCDiffS - ulSysDiffS) * (3600UL)/ulSysDiffS);
-    DEBUG_T_P(PSTR("RTC   diff (s)   = %lu\n"), ulRTCDiffS   );
-    DEBUG_T_P(PSTR("Timer diff (s)   = %lu\n"), ulSysDiffS   );
-    DEBUG_T_P(PSTR("RTC drift/1h (s) = %d\n"), iCalcTimeOfs  );
-    DEBUG_T_P(PSTR("RTC drift/24h (s) = %d\n"), iCalcTimeOfs*24  );
+    DEBUG_T_P(PSTR("RTC (s)   = %lu\n"), RTC_tSecondsUntilEpoch );
+    long lRTCDiffS = (RTC_tSecondsUntilEpoch - RTC_tStoredSecondsUntilEpoch);
+    long lSysDiffS = (ulSystemTickMS         - RTC_ulStoredSystemTickMS    ) / 1000;
+    lCalcTimeOfs = 0;
+    if (labs(lRTCDiffS-lSysDiffS) > 2) // if diff is significant
+    {
+        lCalcTimeOfs = -((lRTCDiffS - lSysDiffS) * (3600L) / lSysDiffS);
+    }
+    DEBUG_T_P(PSTR("RTC   diff (s)   = %ld\n"),  lRTCDiffS   );
+    DEBUG_T_P(PSTR("Timer diff (s)   = %ld\n"),  lSysDiffS   );
+    DEBUG_T_P(PSTR("RTC adj/1h (s) = %ld\n"),  lCalcTimeOfs  );
+    DEBUG_T_P(PSTR("RTC adj/24h (s) = %ld\n"), lCalcTimeOfs*24  );
 }
+
+#endif // WITH_RTC_DRIFT_MEASURE

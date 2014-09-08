@@ -14,8 +14,9 @@
 
 #elif (F_CPU==16000000UL)
 
+    #define TIMER0_CNT_CRYSTAL_ADJ  (+0)                        // by hand
     //#define RESET_TIMER0_CNT    { TCNT0 = 0xFF-8-8+1; }            // set value - overflow every 16 ticks 64us*16=1024us
-    #define RESET_TIMER0_CNT    { TCNT0 = 0xFF-250+1; }            //
+    #define RESET_TIMER0_CNT    { TCNT0 = 0xFF-250+1+TIMER0_CNT_CRYSTAL_ADJ; }
 
 #else
 

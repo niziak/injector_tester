@@ -76,7 +76,9 @@ void APP_CLOCK_vHandleEvent(EVENT_DEF eEvent)
                            BCD2DEC(ptdAppClock->ucNewMin10 << 4 | ptdAppClock->ucNewMin1),
                            BCD2DEC(ptdAppClock->ucNewSec10 << 4 | ptdAppClock->ucNewSec1)
                          );
+            #if (WITH_RTC_DRIFT_MEASURE)
             EventPost(SYS_RTC_OFFSET_CALC_START); // recalculate time offset
+            #endif
             APP_vShowPopupMessage_P(PSTR_TXT_CLOCK_SET, UI_POS_POPUP_TIME);
             break;
 

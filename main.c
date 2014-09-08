@@ -152,7 +152,9 @@ void main(void)
 	atdKnownTempSensors[ONEWIRE_KRAN_IDX].iTempInt = TEMP_ERROR;
 
     EventPost(SYS_1WIRE_CONVERT);
+    #if WITH_RTC_DRIFT_MEASURE
     EventTimerPostAfter(EVENT_TIMER_RTC_OFFSET, SYS_RTC_OFFSET_CALC_START, 5000);
+    #endif
 
     APP_vInit();
     APP_vActivateApp(APP_STATUS); // system needs first application
@@ -230,7 +232,7 @@ void main(void)
                     APP_vUpdateDisplay();
                     DISP_REFRESH
                     break;
-
+#if (WITH_RTC_DRIFT_MEASURE)
                 case SYS_RTC_OFFSET_CALC_START:
                     RTC_vStartDriftCalulation();
                     EventTimerPostAfter(EVENT_TIMER_RTC_OFFSET, SYS_RTC_OFFSET_CALC_FINISH, RTC_OFFSET_MEASURE_TIME_MSEC); // schedule next measuer after eading after 3 seconds
@@ -238,10 +240,15 @@ void main(void)
 
                 case SYS_RTC_OFFSET_CALC_FINISH:
                     RTC_vStopDriftCalculation();
-                    cli();
-                    for (;;) wdt_reset();
+                    #if 0
+                        LCD_vClrScr();
+                        LCD_vPrintf_P(PSTR("RTC ofs=%d"), lCalcTimeOfs);
+                        LCD_Draw();
+                        cli();
+                        for (;;) wdt_reset();
+                    #endif
                     break;
-
+#endif
 		        default:
 		            break;
 		    }

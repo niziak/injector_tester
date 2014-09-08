@@ -27,7 +27,11 @@ BOOL MENU_ShowSpecialElement(void)
             break;
 
         case MID_CLOCK_ADJ:
-            LCD_vPrintf_P(PSTR("%d (blad: %d)"), pstSettings->cSecondsPerDayAdj, iCalcTimeOfs);
+            #if (WITH_RTC_DRIFT_MEASURE)
+                LCD_vPrintf_P(PSTR("%d (blad: %l)"), pstSettings->cSecondsPerDayAdj, lCalcTimeOfs);
+            #else
+                LCD_vPrintf_P(PSTR("%d co 24h"), pstSettings->cSecondsPerDayAdj);
+            #endif
             break;
 
         case MID_MIN_TZ:
