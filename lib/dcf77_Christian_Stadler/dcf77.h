@@ -116,7 +116,8 @@ static uint8  dfc77_datatmp_au8[8];            /* data which is currently sample
 static uint8  dcf77_data_au8[8];               /* valid DCF77 data */
 static uint8  dcf77_sync_u8 = DCF77_SYNC_WAIT; /* DCF77 sync state */
 
-
+volatile static const char*  pucLastMsg;   ///< pointer to debug message
+#define DCF_MSG(pucString)  { pucLastMsg = (pucString); }
 
 /******************************************************************************
  * dcf77_get_sync
@@ -265,6 +266,11 @@ bool dcf77_newdata(void)
     bool valid;
     bool parity;
     uint8 data;
+    DCF77_DEBUG_P(PSTR("\n\n"));
+    DCF77_DEBUG_P(PSTR("DCF sync=%d [%s]\n"),      dcf77_sync_u8, pucLastMsg);
+    DCF77_DEBUG_P(PSTR("DCF newdata=%d\n"), dcf77_newdata_b);
+    DCF77_DEBUG_P(PSTR("DCF bitpos=%d\n"),  dcf77_bitpos_u8);
+    DCF77_DEBUG_P(PSTR("DCF cntms=%d\n"),   dcf77_cntms_u16);
 
     /* if sync is OK and */
     /* start of new minute is 0 (start of minute is always 1) */
@@ -354,6 +360,7 @@ void dcf77_1ms_task(void)
         /* falling edge of signal */
         if (pindeb_b == FALSE)
         {
+            DCF_MSG((""));
 #ifdef DCF77_LED_PULSE
             /* output signal pulse onto LED */
             output_high(DCF77_LED_PULSE);
@@ -365,11 +372,13 @@ void dcf77_1ms_task(void)
                 /* if we where waiting for 1st sync */
                 if (dcf77_sync_u8 == DCF77_SYNC_WAIT)
                 {
+                    DCF_MSG(("1st sync rxed"));
                     dcf77_sync_u8 = DCF77_SYNC_FIRST;
                 }
                 /* if 1 valid cycle has been received */
                 else if ( (dcf77_sync_u8 >= DCF77_SYNC_FIRST) && (dcf77_bitpos_u8 == 59) )
                 {
+                    DCF_MSG(("frame complete"));
                     dcf77_sync_u8 = DCF77_SYNC_OK;
                 
                     memcpy(dcf77_data_au8, dfc77_datatmp_au8, 8);
@@ -378,6 +387,7 @@ void dcf77_1ms_task(void)
                 /* valid start condition but wrong number of bits deteced during last cycle */
                 else
                 {
+                    DCF_MSG(("! frame not complete"));
                     dcf77_sync_u8 = DCF77_SYNC_WAIT;
                 }
                 dcf77_bitpos_u8 = 0;
@@ -385,6 +395,7 @@ void dcf77_1ms_task(void)
             /* check for invalid idle time (FIXME: after high wait 800ms idle, after low 900ms idle) */
             else if ( (dcf77_cntms_u16 < DCF77_BIT_IDLE_MIN) || (dcf77_cntms_u16 > DCF77_BIT_IDLE_MAX) )
             {
+                DCF_MSG(("! idle too long"));
                 dcf77_sync_u8 = DCF77_SYNC_WAIT;
             }
             else
@@ -398,16 +409,19 @@ void dcf77_1ms_task(void)
             /* check for logic "0" */
             if ( (dcf77_cntms_u16 > DCF77_BIT_LOW_MIN) && (dcf77_cntms_u16 < DCF77_BIT_LOW_MAX) )
             {
+                DCF_MSG(("bit=0"));
                 data_b = 0;
             }
             /* check for logic "1" */
             else if ( (dcf77_cntms_u16 > DCF77_BIT_HIGH_MIN) && (dcf77_cntms_u16 < DCF77_BIT_HIGH_MAX) )
             {
+                DCF_MSG(("bit=1"));
                 data_b = 1;
             }
             /* wrong timing detected */
             else
             {
+                DCF_MSG(("! wrong timing"));
                 dcf77_sync_u8 = DCF77_SYNC_WAIT;
             }
 
