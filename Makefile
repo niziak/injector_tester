@@ -129,6 +129,8 @@ SRC+= lib/hal_lcd.c
 
 SRC+= lib/nvm.c
 SRC+= lib/events.c 
+SRC+= lib/dcf77.c
+
 
 SRC+=	app/app.c
 

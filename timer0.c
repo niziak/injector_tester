@@ -14,6 +14,9 @@
 #include <rtc.h>
 #include <key.h>
 #include <hal_lcd.h>
+#if (WITH_DCF77_SUPPORT)
+#include <dcf77.h>
+#endif
 
 #define WITH_INT_OVERLAP_DETECTION      TRUE
 
@@ -43,7 +46,9 @@ ISR(TIMER0_OVF_vect)
     ulSystemTickMS += (TIMER0_ISR_EVERY_US/1000);
 
     EventTimerTickEveryMS();
-
+    #if (WITH_DCF77_SUPPORT)
+        DCFTask();
+    #endif
     // ONE SECOND TICK
     if ((ulSystemTickMS % 1000) == 0)
     {

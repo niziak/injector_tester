@@ -21,18 +21,18 @@
 /**
  *
  * +--- arduino pins-------------------------------------------------------------------------------------------------------------------+
- * |                                                  ATMEGA 328p
- * |
- * |                 PCINT14 / RESETn        PC6    1 ###    ### 28  PC5 ADC5 /SCL / PCINT13----------RTC I2C SCL
- * D0             ---PCINT16 / RXD           PD0    2 ###    ### 27  PC4 ADC4 /SDA / PCINT12----------RTC I2C SDA
- * D1             ---PCINT17 / TXD           PD1    3 ########## 26  PC3 ADC3 / PCINT11---------------DS 1wire
- * D2 PIR (NO)-------PCINT18 / INT0          PD2    4 ####M##### 25  PC2 ADC2 / PCINT10---------------PK Pompa
- * D3                PCINT19 / OC2B / INT1   PD3    5 ####E##### 24  PC1 ADC1 / PCINT9
- * D4 LCD D4---------PCINT20 / XCK  / T0     PD4    6 ####G##### 23  PC0 ADC0 / PCINT8----------------ADC KEYBOARD
+ * |                                                  ATMEGA 328p                                                                      |
+ * |                                                                                                                                   |
+ * |                 PCINT14 / RESETn        PC6    1 ###    ### 28  PC5 ADC5 /SCL / PCINT13----------RTC I2C SCL----------------------A5
+ * D0             ---PCINT16 / RXD           PD0    2 ###    ### 27  PC4 ADC4 /SDA / PCINT12----------RTC I2C SDA----------------------A4
+ * D1             ---PCINT17 / TXD           PD1    3 ########## 26  PC3 ADC3 / PCINT11---------------DS 1wire-------------------------A3
+ * D2 PIR (NO)-------PCINT18 / INT0          PD2    4 ####M##### 25  PC2 ADC2 / PCINT10---------------PK Pompa-------------------------A2
+ * D3                PCINT19 / OC2B  / INT1  PD3    5 ####E##### 24  PC1 ADC1 / PCINT9----------------DCF77----------------------------A1 (pull up)
+ * D4 LCD D4---------PCINT20 / XCK   / T0    PD4    6 ####G##### 23  PC0 ADC0 / PCINT8----------------ADC KEYBOARD---------------------N/A
  *                                           VCC    7 ####A##### 22  GND
  *                                           GND    8 #### ##### 21  AREF --||-- 100nF
- *                   PCINT6  / XTAL1 / TOSC1 PB6    9 ####3##### 20  AVCC
- *                   PCINT7  / XTAL2 / TOSC2 PB7   10 ####2##### 19  PB5 SCK  / PCINT5----------------LED Yellow on arduino board      D13
+ *          ---------PCINT6  / XTAL1 / TOSC1 PB6    9 ####3##### 20  AVCC
+ *          ---------PCINT7  / XTAL2 / TOSC2 PB7   10 ####2##### 19  PB5 SCK  / PCINT5----------------LED Yellow on arduino board      D13
  * D5 LCD D5---------PCINT21 / OC0B  / T1    PD5   11 ####8##### 18  PB4 MISO / PCINT4                                                 D12
  * D6 LCD D6---------PCINT22 / OC0A  / AIN0  PD6   12 ####p##### 17  PB3 MOSI / OC2A / PCINT3                                          D11
  * D7 LCD D7---------PCINT23 / AIN1          PD7   13 ########## 16  PB2 SSn  / OC1B / PCINT2---------LCD LED (backlight)              D10
@@ -83,7 +83,9 @@
 #include <usart0.h>
 #include "logic.h"
 #include "globals.h"
-
+#if (WITH_DCF77_SUPPORT)
+#include <dcf77.h>
+#endif
 
 
 
@@ -114,6 +116,7 @@ void main(void)
 
     PUMP_LED_SETUP
 
+    DCF77_PORT_SETUP
     PIR_SETUP
     PCMSK2 |= _BV(PCINT18); // enable PCINT18
     PCICR  |= _BV(PCIE2);   // Pin Change Interrupt Enable 2
@@ -178,6 +181,7 @@ void main(void)
 		    {
 		        case SYS_1WIRE_CONVERT:
 		            DEBUG_T_P(PSTR("1w convert\n"));
+		            OW_vConfigDevices(); // set resolution etc...
 		            OW_vStartConversion();
 		            EventTimerPostAfter(EVENT_TIMER_1WIRE, SYS_1WIRE_READ, ONEWIRE_MEASURE_WAIT_MS); // schedule reading after 2 seconds
 		            break;

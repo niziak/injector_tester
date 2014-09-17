@@ -15,7 +15,9 @@
 #include <app.h>
 #include <rtc.h>
 #include <tools.h>
-
+#if (WITH_DCF77_SUPPORT)
+#include <dcf77.h>
+#endif
 
 static STATUS_SCREEEN_ID_DEF    eCurrentScreenId;
 static BOOL bShowScreenTitle;
@@ -51,6 +53,10 @@ static void vDisplayScreenTitle(void)
 
         case STATUS_SCREEN_TEMP:
             LCD_vPuts_P (PSTR("Temp:"));
+            break;
+
+        case STATUS_SCREEN_DCF:
+            LCD_vPuts_P (PSTR("DCF77:"));
             break;
 
     }
@@ -273,6 +279,27 @@ void DISP_vPrintStatusScreen(void)
             vPrintTemp(ONEWIRE_KRAN_IDX);
             LCD_vPrintf_P(PSTR(" (%02d-%02d)"), pstSettings->ucMinTempKran, pstSettings->ucMaxTempKran);
             break;
+
+        case STATUS_SCREEN_DCF:
+            LCD_vPrintf_P(PSTR("S%d V%d %d "), dcf77_get_sync(), dcf77_newdata(), DCF77_PIN_GET);
+
+            /* if new DCF77 data is received and the data is valid */
+            //if (dcf77_newdata() != FALSE)
+            {
+                LCD_vPrintf_P(PSTR("%02x:%02x"),
+                        dcf77_get_hrs(),
+                        dcf77_get_min());
+
+                LCD_vGotoXY(0,1);
+
+                LCD_vPrintf_P(PSTR("%02x.%02x.%04x"),
+                        dcf77_get_day(),
+                        dcf77_get_month(),
+                        dcf77_get_year());
+
+
+            }
+            break;
     }
     //int_delay_ms(500);
 }
@@ -290,7 +317,8 @@ void APP_STATUS_vHandleEvent(EVENT_DEF eEvent)
 
         case APP_REACTIVATED:
         case APP_ACTIVATED:
-            DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
+            //DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
+            DISP_vStatusScreenSetNew(STATUS_SCREEN_DCF);
             break;
 
         case MENU_ACTION_SELECT:
