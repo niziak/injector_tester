@@ -12,6 +12,7 @@
 #include <1wire_config.h>
 
 extern void    OWDetectDevices(void);
+extern void    OW_vConfigDevices(void);
 extern void    OWCalibrateDelays(void);
 extern void    OW_vWorker(void);
 extern void    OW_vStartConversion(void) OW_GCC_OPT2;

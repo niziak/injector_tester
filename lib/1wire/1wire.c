@@ -243,8 +243,8 @@ void TM_Convert_temperature(UCHAR idx, UINT *temp, UINT *frac)
  *  sets alarm temperatures
  *  sets resolution
  */
-void vOWConfigDevices(void) OW_GCC_OPT2;
-void vOWConfigDevices(void)
+void OW_vConfigDevices(void) OW_GCC_OPT2;
+void OW_vConfigDevices(void)
 {
 #if (OW_DEBUG)
   OW_PRINTF_P(PSTR("vOWConfigDevices()\n"));
@@ -341,7 +341,7 @@ void OW_vWorker()
   UCHAR ucSensIdx;
 
   //OWDetectDevices(); // detect and print devices to console TODO maybe mutex to access from http ?
-  vOWConfigDevices(); // set resultion etc...
+  //OW_vConfigDevices(); // set resultion etc...
 
 //  OW_vStartConversion();
 //  OW_SLEEP_MS (900); // wait for conversion result at least 750ms
