@@ -12,6 +12,7 @@
 #include <nvm.h>
 #include <app.h>
 #include <texts.h>
+#include <tools.h>
 
 /**
  * User-defined content for second display line
@@ -64,7 +65,8 @@ typedef enum
     VT_UCHAR,
     VT_CHAR,
     VT_INT,
-    VT_UINT
+    VT_UINT,
+    VT_TIME_ADJ,
 } VALUE_TYPES_DEF;
 /**
  * @brief Handler to increment/decrement pointed value
@@ -98,6 +100,10 @@ static void vHandleGenericIncDecEvents (EVENT_DEF eMenuEvent, void *pvValue, VAL
         case MENU_ACTION_UP:
             switch (eType)
             {
+                case VT_TIME_ADJ:
+                    vIncrementWithRange ((char*)pvValue, (int)cDirection, SEC_PER_DAY_ADJ_MIN, SEC_PER_DAY_ADJ_MAX);
+                    //*((char*)pvValue) += cDirection;
+                    break;
                 case VT_UCHAR:
                     *((unsigned char*)pvValue) += cDirection;
                     break;
@@ -145,7 +151,7 @@ BOOL MENU_HandleSpecialElement(EVENT_DEF eMenuEvent)
                break;
 
            case MID_CLOCK_ADJ:
-               vHandleGenericIncDecEvents (eMenuEvent, &pstSettings->cSecondsPerDayAdj, VT_CHAR);
+               vHandleGenericIncDecEvents (eMenuEvent, &pstSettings->cSecondsPerDayAdj, VT_TIME_ADJ);
                break;
 
            case MID_MANUAL_ADJ:

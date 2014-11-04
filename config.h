@@ -79,7 +79,9 @@
 #define UI_NEG_POPUP_TIME                   4000
 #define UI_POS_POPUP_TIME                   3000
 
-#define DEFAULT_SEC_PER_DAY_ADJ             -8
+#define DEFAULT_SEC_PER_DAY_ADJ            -8
+    #define SEC_PER_DAY_ADJ_MIN            -20
+    #define SEC_PER_DAY_ADJ_MAX             20         ///< maximum daily time adjustment (because of limits in @ref RTC_vCheckForDailyAdjustment)
 #define DEFAULT_ZASO_MIN_TEMP               38
 #define DEFAULT_KRAN_MIN_TEMP               35
 #define DEFAULT_KRAN_MAX_TEMP               40

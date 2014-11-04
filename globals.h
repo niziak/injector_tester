@@ -46,7 +46,7 @@ typedef struct
     UCHAR                       ucMinTempZasobnik;          ///< (in celsius) [0..99]
     UCHAR                       ucMinTempKran;              ///< (in celsius) [0..99]
     UCHAR                       ucMaxTempKran;              ///< (in celsius) [0..99]
-    signed char                 cSecondsPerDayAdj;          ///< (in seconds) [-128..127] daily adjustment for RTC clock
+    signed char                 cSecondsPerDayAdj;          ///< (in seconds) [-20..20] daily adjustment for RTC clock (@ref SEC_PER_DAY_ADJ_MIN and @ref SEC_PER_DAY_ADJ_MAX)
     UINT                        uiBacklightTime;            ///< (in seconds) back light time
     UCHAR                       aucSpare[14];
 

@@ -33,30 +33,30 @@ void breakable_delay_ms(unsigned int  __ms)
 /**
  * Increment *pucValue (by adding iStep) and make wrap around within range ucMin and ucMax
  *
- * @param pucValue
+ * @param pcValue
  * @param iStep     TRUE - increment up
- * @param ucMin
- * @param ucMax
+ * @param cMin
+ * @param cMax
  */
-void vIncrementWithRange (unsigned char *pucValue, int iStep, unsigned char ucMin, unsigned char ucMax)
+void vIncrementWithRange (char *pcValue, int iStep, char cMin, char cMax)
 {
-    iStep += *pucValue;
+    iStep += *pcValue;
     //CLOCK_PRINTF_P (PSTR("iStep=%d ucMax=%d ucMin=%d\n"), iStep, ucMax, ucMin);
-    if (iStep > ucMax)
+    if (iStep > cMax)
     {
         //CLOCK_PRINTF_P(PSTR("MAX\n"));
-        *pucValue = ucMin;
+        *pcValue = cMin;
     }
     else
-    if (iStep < ucMin)
+    if (iStep < cMin)
     {
         //CLOCK_PRINTF_P(PSTR("MIN\n"));
-        *pucValue = ucMax;
+        *pcValue = cMax;
     }
     else
     {
         //CLOCK_PRINTF_P(PSTR("OK\n"));
-        *pucValue = iStep;
+        *pcValue = iStep;
         //CLOCK_PRINTF_P(PSTR("result %d\n"), *pucValue);
     }
 }
