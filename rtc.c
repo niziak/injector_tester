@@ -85,7 +85,7 @@
 
 #define DS1307_RAM_END              0x3F    ///< last avail user RAM address
 
-#define RTC_DEBUG       0
+#define RTC_DEBUG       1
 
 #if (RTC_DEBUG)
   #define RTC_PRINTF(f,s...)        printf  (f, ##s)
@@ -98,9 +98,11 @@
 #endif
 
 tm          RTC_tdLocalTime;                ///< actual time in tm structure
-time_t      RTC_tSecondsUntilEpoch;         ///< actual time in seconds (only H:M:S are converted)
+time_t      RTC_tSecondsUntilEpoch;         ///< (ULONG) actual time in seconds (only H:M:S are converted)
+time_t      RTC_tNextAdjustment;            ///< (ULONG) time in seconds (only H:M:S are converted) when time adjustment should occur
 time_t      tOffsetFrom1970;
 
+static char  cNextAdjustmentValue;          ///< (char) adjustment to apply (0 - not needed/already adjusted)
 
 unsigned char ucDEC2BCD (unsigned char dec)
 {
@@ -198,11 +200,13 @@ void RTC_vSetState(BOOL bNewState)
 
 /**
  * Initalize I2C and I2C pins
+ * Called only once during hardware init
  */
 void RTC_vInit(void)
 {
     memset (&RTC_tdLocalTime,0, sizeof(RTC_tdLocalTime));
     RTC_tSecondsUntilEpoch = 0;
+    RTC_tNextAdjustment = -1;
 
     DDRC   &= ~_BV(PINC5);      // input
     PORTC |=   _BV(PINC5);      // pull up
@@ -264,8 +268,17 @@ void RTC_vTickLocalTime(void)
 #endif
 
 
+/**
+ * TODO not used yet
+ * @return Time when next time adjustment will ocur
+ */
+#if 0
+time_t RTC_ulGetNextAdjustmentDate(void)
+{
 
-void RTC_vSetNextAdjustmentDate(void)
+}
+
+void RTC_vSetNextAdjustmentDate(time_t ulNextTime)
 {
     UCHAR ucNextDay, ucNextMonth, ucNextyear;
 
@@ -276,9 +289,43 @@ void RTC_vSetNextAdjustmentDate(void)
     i2c_write (ucNextyear);
     i2c_stop();
 }
+#endif
+
+/**
+ * Check if it is need to adjust RTC clock.
+ * Called every second from main
+ *
+ * Algorithm:
+ *      with every 01:00:00 temporary adjustment variable @ref cNextAdjustmentValue is set to desire adjustment.
+ *      next when  01:01:30 adjustment is applied and variable @ref cNextAdjustmentValue is cleared
+ * @ref RTC_tSecondsUntilEpoch it is counting from 0 to 24*3600 = 86400 (-1)
+ */
+void RTC_vCheckForDailyAdjustment(void)
+{
+
+    RTC_PRINTF_P(PSTR("(epoch=%5lu) (adjust=%3d) (next adjust=%3d)\n"), RTC_tSecondsUntilEpoch, pstSettings->cSecondsPerDayAdj, cNextAdjustmentValue);
+
+    // sometimes, time can jump by 2 seconds (asynchronism between main 1 second event loop and RTC internal clock)
+    if (   (RTC_tSecondsUntilEpoch == (1*3600)            )
+        || (RTC_tSecondsUntilEpoch == (1*3600+1)          ) )
+    {
+        cNextAdjustmentValue = pstSettings->cSecondsPerDayAdj;
+        RTC_PRINTF_P(PSTR("01:00:00 set next adjustment to %2d\n"), cNextAdjustmentValue);
+    }
+
+    // sometimes, time can jump by 2 seconds (asynchronism between main 1 second event loop and RTC internal clock)
+    if (    (RTC_tSecondsUntilEpoch == (1*3600 + 1*60 + 30))
+         || (RTC_tSecondsUntilEpoch == (1*3600 + 1*60 + 31)) )
+    {
+        RTC_PRINTF_P(PSTR("01:01:30 adjustment %2d applied!\n"), cNextAdjustmentValue);
+        RTC_vSetTime(1, 1, 30 + cNextAdjustmentValue); //TODO: time saturation! now cNextAdjustmentValue is [-20..20] for workaround
+        cNextAdjustmentValue = 0;
+    }
+}
 
 /**
  * Reads current time (H:M:S) from RTC and set fields in @ref->ptdLocalTime struct
+ * It is called from main every 1 second
  */
 void RTC_vGetTime(void)
 {
@@ -313,7 +360,10 @@ void RTC_vGetTime(void)
     RTC_ptdLocalTime->tm_mon  = BCD2DEC(aucData[4]);
     RTC_ptdLocalTime->tm_year = BCD2DEC(aucData[5]);
 
-    RTC_tSecondsUntilEpoch = ((ULONG)RTC_ptdLocalTime->tm_hour * SEC_PER_HOUR) + ((ULONG)RTC_ptdLocalTime->tm_min * SEC_PER_MIN) + (ULONG)RTC_ptdLocalTime->tm_sec;
+    RTC_tSecondsUntilEpoch = ((ULONG)RTC_ptdLocalTime->tm_hour * SEC_PER_HOUR) +
+                             ((ULONG)RTC_ptdLocalTime->tm_min  * SEC_PER_MIN ) +
+                             ((ULONG)RTC_ptdLocalTime->tm_sec                );
+
 }
 
 /**
@@ -355,7 +405,7 @@ void RTC_vSetTime(unsigned char ucHour, unsigned char ucMin, unsigned char ucSec
          return;
      }
      RTC_vGetTime();
-     RTC_vSetNextAdjustmentDate();
+     //RTC_vSetNextAdjustmentDate();
 }
 
 

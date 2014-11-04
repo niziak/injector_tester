@@ -72,4 +72,6 @@ extern void RTC_vSetTime(unsigned char ucHour, unsigned char ucMin, unsigned cha
 extern void RTC_vStartDriftCalulation(void);
 extern void RTC_vStopDriftCalculation(void);
 
+extern void RTC_vCheckForDailyAdjustment(void);
+
 #endif /* RTC_H_ */

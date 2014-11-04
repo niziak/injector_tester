@@ -176,7 +176,7 @@ void main(void)
 		{
 		    EVENT_DEF eEvent = EventGet();
 		    DEBUG_P(PSTR("\n\n----------------------------\n"));
-		    DEBUG_T_P(PSTR("\tEvent %d\n\n"), eEvent);
+		    DEBUG_T_P(PSTR("[%5lu]\tEvent %d\n\n"), RTC_tSecondsUntilEpoch, eEvent);
 		    switch (eEvent)
 		    {
 		        case SYS_1WIRE_CONVERT:
@@ -228,6 +228,7 @@ void main(void)
 #endif
                 case SYS_CLOCK_1S:
                     RTC_vGetTime();
+                    RTC_vCheckForDailyAdjustment();
                     //DISP_REFRESH
                     break;
 
