@@ -317,8 +317,8 @@ void APP_STATUS_vHandleEvent(EVENT_DEF eEvent)
 
         case APP_REACTIVATED:
         case APP_ACTIVATED:
-            //DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
-            DISP_vStatusScreenSetNew(STATUS_SCREEN_DCF);
+            DISP_vStatusScreenSetNew(STATUS_SCREEN_IDLE);
+            //DISP_vStatusScreenSetNew(STATUS_SCREEN_DCF);
             break;
 
         case MENU_ACTION_SELECT:
