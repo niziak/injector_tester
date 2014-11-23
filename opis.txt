@@ -1,5 +1,4 @@
-﻿
-=== WYTYCZNE ===
+﻿=== WYTYCZNE ===
 Powinna byś możliwość zaprogramowania:
 1. Czujnik temperatury wody w zasobniku zakres (1 - 99°C) 
 	- jeżeli spadnie ponizej wartości zaprogramowanej np. 38°C nie będzie możliwości włączenia pompy obiegowej.
@@ -47,6 +46,7 @@ Przyciski ze np: 4 sztuki do wykożystania 1 - menu 2..... 3..... 4..... + praca
    aby można było w spokoju analizować log z konsoli.
  - gdy temperatura któregoś z czujnikow zmieni sie o więcej niż 1 stopień, zapala się podświetlenie
  - czujniki są odpytywane co 5 sekund (3 sekundy przerwy + 2 sekundy czekania na wynik pomiaru). Odpytywanie częstsze niż 10 sekund powoduje samopodgrznie czujników.
+ - korekta zegara (-20..20 sekund) jest wykonywana o godzinie 01:01:30
 
 === Czujnik PIR ===
  - wykrycie obecności z czujnika PIR odbywa się przez zwarcie wejście Arduino D2 do masy (3 PIN od prawej w prawym górnym rogu plytki LCD Keypad Shield)

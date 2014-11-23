@@ -303,7 +303,7 @@ void RTC_vSetNextAdjustmentDate(time_t ulNextTime)
 void RTC_vCheckForDailyAdjustment(void)
 {
 
-    RTC_PRINTF_P(PSTR("(epoch=%5lu) (adjust=%3d) (next adjust=%3d)\n"), RTC_tSecondsUntilEpoch, pstSettings->cSecondsPerDayAdj, cNextAdjustmentValue);
+    RTC_PRINTF_P(PSTR("(epoch=%5lu) (adjust set=%3d) (next adjust=%3d)\n"), RTC_tSecondsUntilEpoch, pstSettings->cSecondsPerDayAdj, cNextAdjustmentValue);
 
     // sometimes, time can jump by 2 seconds (asynchronism between main 1 second event loop and RTC internal clock)
     if (   (RTC_tSecondsUntilEpoch == (1*3600)            )
@@ -313,12 +313,20 @@ void RTC_vCheckForDailyAdjustment(void)
         RTC_PRINTF_P(PSTR("01:00:00 set next adjustment to %2d\n"), cNextAdjustmentValue);
     }
 
+    if (cNextAdjustmentValue == 0 )
+    {
+        RTC_PRINTF_P(PSTR("01:01:30 adjustment is %2d, so nothing to do.\n"), cNextAdjustmentValue);
+        return;
+    }
+
     // sometimes, time can jump by 2 seconds (asynchronism between main 1 second event loop and RTC internal clock)
     if (    (RTC_tSecondsUntilEpoch == (1*3600 + 1*60 + 30))
          || (RTC_tSecondsUntilEpoch == (1*3600 + 1*60 + 31)) )
     {
         RTC_PRINTF_P(PSTR("01:01:30 adjustment %2d applied!\n"), cNextAdjustmentValue);
-        RTC_vSetTime(1, 1, 30 + cNextAdjustmentValue); //TODO: time saturation! now cNextAdjustmentValue is [-20..20] for workaround
+        RTC_vSetTime ( RTC_ptdLocalTime->tm_hour,
+                       RTC_ptdLocalTime->tm_min,
+                       (char)RTC_ptdLocalTime->tm_sec + cNextAdjustmentValue); //TODO: time saturation! now cNextAdjustmentValue is [-20..20] for workaround
         cNextAdjustmentValue = 0;
     }
 }
