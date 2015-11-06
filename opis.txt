@@ -104,14 +104,14 @@ Aplikacja status (domyslna po starcie)
 
  - działanie pompy - migający czarny znak w prawym dolnym rogu
    Literka 'P' w prawym rogu oznacza wykrytą obecność.
-     +----------------+
-     |Z 23,8'  K 23,4'|
-     |10:03:56       #|
-     +----------------+
-     +----------------+
-     |Z 23,8'  K 23,4'|
-     |10:03:56       P|
-     +----------------+     
+     +----------------+----+
+     |Z 23,8'  K 23,4'|    |
+     |10:03:56       #|POMP|
+     +----------------+----+
+     +----------------+----+
+     |Z 23,8'  K 23,4'|    |
+     |10:03:56       P|023 |
+     +----------------+----+
  
  - jesli pompa zostala wlaczona recznie na czas 10 minut, to licznik w prawym dolnym rogu odlicza czas w sekundach do wylaczenia     
      +----------------+

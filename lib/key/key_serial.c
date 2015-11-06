@@ -146,6 +146,11 @@ ISR(USART_RX_vect)
             eTimeState = TIME_SET_WAIT_FOR_HOUR_1;
             break;
 
+        case 'p': // PIR event
+            uiPIRTTL = pstSettings->uiPumpPIRTime;
+            ucUIInactiveCounter = UI_INACTIVE_TIMEOUT;
+            break;
+
         default:
             break;
     }

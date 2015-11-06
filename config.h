@@ -100,7 +100,7 @@
 
 #define TIMER0_ISR_EVERY_US                 (1000)      ///< Timer ISR is called every ??? us
 
-#define WITH_DCF77_SUPPORT                  TRUE
+#define WITH_DCF77_SUPPORT                  FALSE
 
 #include <globals.h>
 #include <log.h>

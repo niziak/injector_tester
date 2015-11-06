@@ -191,13 +191,15 @@ extern void LCD_DrawDebug(void)
         }
     }
     // DEBUG OUTPUT
-
-    LOG_Log_P(PSTR("\n+----------------+\n"));
+    //                 0123456789012345 6789
+    LOG_Log_P(PSTR("\n+----------------+----+\n"));
     for (ucRow=0; ucRow < LCD_ROWS; ucRow++)
     {
         LOG_Log_P(PSTR("|"));
         for (ucCol=0; ucCol < LCD_COLS; ucCol++)
         {
+        	if (ucCol==16)
+        		LOG_Log_P(PSTR("|"));
             // get character to print
             ucChar = ptdLCDBuf->aucBuf[LCD_MEM_POS(ucCol,ucRow)];
 
@@ -225,7 +227,7 @@ extern void LCD_DrawDebug(void)
         LOG_Log_P(PSTR("|"));
         LOG_NL
     }
-    LOG_Log_P(PSTR("+----------------+\n"));
+    LOG_Log_P(PSTR("+----------------+----+\n"));
 #endif //(LCD_BUFF_DUMP_BUFFER)
 }
 

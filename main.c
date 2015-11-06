@@ -115,8 +115,9 @@ void main(void)
     LCD_BL_HI   // turn on LCD backlight at start
 
     PUMP_LED_SETUP
-
+#if (WITH_DCF77_SUPPORT)
     DCF77_PORT_SETUP
+#endif
     PIR_SETUP
     PCMSK2 |= _BV(PCINT18); // enable PCINT18
     PCICR  |= _BV(PCIE2);   // Pin Change Interrupt Enable 2

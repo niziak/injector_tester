@@ -36,8 +36,16 @@ void APP_LIST_vShowDisplay(void)
             ptdAppList->stMode.astRange[ptdAppList->ucCurrentLine].ucStartMin,
             ptdAppList->stMode.astRange[ptdAppList->ucCurrentLine].ucEndHour,
             ptdAppList->stMode.astRange[ptdAppList->ucCurrentLine].ucEndMin      );
-
-    if (ptdAppList->bEditable)
+    if (! ptdAppList->bEditable)
+    {
+    	//       012345678901234
+    	//    	+----------------+
+    	//    	|Auto5 zakres: 1     |
+    	//    	|00:00 - 00:00       |
+    	//    	+----------------+
+    	LCD_vGotoXY (14,0);
+    }
+    else
     {
             switch (ptdAppList->eCurrentEditPos)
             {
@@ -69,13 +77,6 @@ void APP_LIST_vShowDisplay(void)
                 default:
                     break;
             }
-        LCD_vCursorShow();
     }
-    else
-    {
-        LCD_vCursorHide();
-    }
-
-
-
+	LCD_vCursorShow();
 }

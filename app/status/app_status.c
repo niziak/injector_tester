@@ -28,7 +28,7 @@ static void vDisplayScreenTitle(void)
     switch (eCurrentScreenId)
     {
         case STATUS_SCREEN_IDLE:
-            // no title to show, return immediatelly
+            // no title to show, return immediately
             return;
             break;
         default:
@@ -197,6 +197,7 @@ void DISP_vPrintStatusScreen(void)
             {
                 LCD_vGotoXY(15,1);
                 LCD_vPutc('P');
+                LCD_vPrintf_P(PSTR("%03d"), uiPIRTTL);
             }
 
             // Display system mode
@@ -230,6 +231,7 @@ void DISP_vPrintStatusScreen(void)
                         break;
                     case APP_MODE_AUTO_4:   // A4
                         LCD_vPrintf_P(PSTR("A4"));
+                        break;
                     case APP_MODE_AUTO_5:   // A5
                         LCD_vPrintf_P(PSTR("A5"));
                         //LCD_vPrintf_P(PSTR("A%d"), (pstSettings->eAppMode)-APP_MODE_AUTO_1+1);
@@ -245,6 +247,7 @@ void DISP_vPrintStatusScreen(void)
                 {
                     LCD_vGotoXY(15,1);
                     LCD_vPutc(255); // Put character '#'
+                    LCD_vPrintf_P(PSTR("POMP"));
                 }
             }
             return;
@@ -279,7 +282,7 @@ void DISP_vPrintStatusScreen(void)
             vPrintTemp(ONEWIRE_KRAN_IDX);
             LCD_vPrintf_P(PSTR(" (%02d-%02d)"), pstSettings->ucMinTempKran, pstSettings->ucMaxTempKran);
             break;
-
+#if (WITH_DCF77_SUPPORT)
         case STATUS_SCREEN_DCF:
             LCD_vPrintf_P(PSTR("S%d V%d %d "), dcf77_get_sync(), dcf77_newdata(), DCF77_PIN_GET);
 
@@ -300,6 +303,7 @@ void DISP_vPrintStatusScreen(void)
 
             }
             break;
+#endif
     }
     //int_delay_ms(500);
 }
