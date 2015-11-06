@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------
-# WinAVR Makefile Template written by Eric B. Weddington, Jörg Wunsch, et al.
+# WinAVR Makefile Template written by Eric B. Weddington, J?rg Wunsch, et al.
 #
 # Released to the Public Domain
 #
@@ -38,29 +38,19 @@
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
 
-#
-# !!!  must ends with backslash and NO SPACE AND END !!!
-#
-#GCC_BIN_DIR_PREFIX := n:/tools/WinAVR/bin/
-#POSIX_UTILS_DIR_PREFIX : = n:/tools/WinAVR/utils/bin/
+ifeq ($(OS),Windows_NT)
+  include Makefile.win.mk
+else
+  UNAME_S := $(shell uname -s)
+  ifeq ($(UNAME_S),Linux)
+    include Makefile.linux.mk
+  else
+    $(error Unsupported OS: $(OS))
+  endif
+endif
 
-#GCC_BIN_DIR_PREFIX := n:/tools/avrgcc/bin/
-POSIX_UTILS_DIR_PREFIX := n:/tools/WinAVR/utils/bin/
-
-#GCC_BIN_DIR_PREFIX := n:/Arduino/hardware/tools/avr/bin/
-#POSIX_UTILS_DIR_PREFIX : = n:/Arduino/hardware/tools/avr/utils/bin/
-
-GCC_BIN_DIR_PREFIX := n:/tools/avr-gcc-4.8_2013-03-06_mingw32/bin/
-#POSIX_UTILS_DIR_PREFIX : = n:/tools/avr-gcc-4.8_2013-03-06_mingw32/utils/bin/
-
-#POSIX_UTILS_DIR_PREFIX := n:/tools/msys/bin/
-
-GCC_AVR_SIZE_DIR_PREFIX := tools_win32/
-
-export PATH:=$(patsubst %\,%,$(POSIX_UTILS_DIR_PREFIX));$(PATH)
 
 #JOBS := 8
-JOBS ?= $(NUMBER_OF_PROCESSORS) 
 
 #MCU = atmega8
 MCU = atmega328p
@@ -368,7 +358,7 @@ AVRDUDE_PROGRAMMER = arduino
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
 #AVRDUDE_PORT = usb
-AVRDUDE_PORT = COM25
+#AVRDUDE_PORT = COM3
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(OUTDIR)/$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -391,7 +381,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(OUTDIR)/$(TARGET).hex
 # needed for arduino
 AVRDUDE_NO_AUTOERASE = -D
 
-AVRDUDE_CONF  = tools_win32\avrdude.conf
+AVRDUDE_CONF  = tools_win32/avrdude.conf
 
 AVRDUDE_FLAGS = $(AVRDUDE_CONF)  
 AVRDUDE_FLAGS += -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
@@ -442,7 +432,7 @@ OBJDUMP = $(GCC_BIN_DIR_PREFIX)avr-objdump
 SIZE = $(GCC_AVR_SIZE_DIR_PREFIX)avr-size
 AR = $(GCC_BIN_DIR_PREFIX)avr-ar rcs
 NM = $(GCC_BIN_DIR_PREFIX)avr-nm
-AVRDUDE = tools_win32/avrdude.exe
+
 REMOVE = $(POSIX_UTILS_DIR_PREFIX)rm -f
 REMOVEDIR = $(POSIX_UTILS_DIR_PREFIX)rm -rf
 COPY = $(POSIX_UTILS_DIR_PREFIX)cp
@@ -551,18 +541,33 @@ ELFSIZE = $(SIZE) --mcu=$(MCU) --format=avr $(OUTDIR)/$(TARGET).elf
 OBJSIZE = $(SIZE) --mcu=$(MCU) $(OBJ)
 
 sizebefore:
-	if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); $(ELFSIZE) > sizebefore.txt; \
-	2>/dev/null; echo; fi
+	@if test -f $(OUTDIR)/$(TARGET).elf; then \
+	    echo; \
+	    echo $(MSG_SIZE_BEFORE); \
+	    $(ELFSIZE); \
+	    $(ELFSIZE) > sizebefore.txt; \
+	    2>/dev/null; \
+	    echo; \
+	fi
 
 sizeafter:
-	@echo --- sizebefore ---
-	@cat sizebefore.txt
+	@if test -e sizebefore.txt; then \
+	    echo ------------------; \
+	    echo --- sizebefore ---; \
+	    echo ------------------; \
+	    cat sizebefore.txt; \
+	fi
 	@echo --- sizeafter ---
 	
 #	@if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); \
 #	2>/dev/null; echo; fi
-	if test -f $(OUTDIR)/$(TARGET).elf; then echo; echo $(MSG_SIZE_AFTER); $(OBJSIZE); $(ELFSIZE); \
-	echo; fi
+	if test -f $(OUTDIR)/$(TARGET).elf; then \
+	    echo; \
+	    echo $(MSG_SIZE_AFTER); \
+	    $(OBJSIZE); \
+	    $(ELFSIZE); \
+	    echo; \
+	fi
 #	$(OBJDUMP) -s -j .fuse $(OUTDIR)/$(TARGET).elf
 
 
@@ -578,6 +583,15 @@ objdump:
 #program: $(OUTDIR)/$(TARGET).hex $(OUTDIR)/$(TARGET).eep
 program:
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+
+terminal:
+	tools/serial_console.sh
+
+# lock 0x3f - no locks
+# lock 0x0f - boot loader protection mode 3 LPM and SPM prohibited in bootloader
+program_boot:
+	false
+	$(AVRDUDE) $(AVRDUDE_CONF) -v -c usbasp -y -p atmega328p -U flash:w:tools/bootloaders/optiboot_atmega328.hex:i -U lfuse:w:0xFF:m -U hfuse:w:0xDE:m -U efuse:w:0x05:m -U lock:w:0x3F:m
 
 # Generate avr-gdb config/init file which does the following:
 #     define the reset signal, load the target file, connect to target, and set 
