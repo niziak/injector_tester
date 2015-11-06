@@ -27,6 +27,7 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
         case MENU_FN_SETTINGS_AUTO_2:
         case MENU_FN_SETTINGS_AUTO_3:
         case MENU_FN_SETTINGS_AUTO_4:
+        case MENU_FN_SETTINGS_AUTO_5:
             ptdAppList->ucLines = 5;
             ptdAppList->eEditedAppMode = APP_MODE_AUTO_2 /* ZERO */ + ( eFunctionId - MENU_FN_SETTINGS_AUTO_2 );
             ptdAppList->ucCurrentLine = 0;
@@ -38,6 +39,7 @@ void MENU_vDoFunction(MENU_FN_ID_DEF eFunctionId)
         case MENU_FN_APP_MODE_AUTO_2:
         case MENU_FN_APP_MODE_AUTO_3:
         case MENU_FN_APP_MODE_AUTO_4:
+        case MENU_FN_APP_MODE_AUTO_5:
             // Dirty calculation of mode
             pstSettings->eAppMode = APP_MODE_24H /* ZERO */ + ( eFunctionId - MENU_FN_APP_MODE_24H );
             NVM_vSaveSettings();

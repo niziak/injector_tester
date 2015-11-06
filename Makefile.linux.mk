@@ -1,3 +1,3 @@
 JOBS ?= $(shell nproc)
-AVRDUDE_PORT = /dev/ttyUSB0
+AVRDUDE_PORT = /dev/ttyACM0
 AVRDUDE = avrdude
